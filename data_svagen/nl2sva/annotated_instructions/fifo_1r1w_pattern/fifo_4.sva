@@ -1,0 +1,3 @@
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    wr_push |-> strong(##[0:$] rd_pop)
+);

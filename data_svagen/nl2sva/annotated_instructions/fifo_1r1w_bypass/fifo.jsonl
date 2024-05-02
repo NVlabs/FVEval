@@ -1,0 +1,5 @@
+{"task_id": "fifo_0", "prompt": "that the FIFO does not underflow, assuming bypass is available"}
+{"task_id": "fifo_1", "prompt": "that the FIFO does not overflow, assuming bypass is available"}
+{"task_id": "fifo_2", "prompt": "that the fifo output and read data are consistent, assuming bypass is available"}
+{"task_id": "fifo_3", "prompt": "that when response is pending, data is eventually popped from the FIFO"}
+{"task_id": "fifo_4", "prompt": "that when there is a write push to the FIFO, data is eventually popped"}
