@@ -2,12 +2,6 @@
 
 
 ## Installation
-Note: Current version of the repo is based on internally-hosted ADLR chat LM servers.
-
-We plan to migrate to NVCF based inference servers:
-https://confluence.nvidia.com/display/CHIPNEMOHW/ChipNemo+Inference
-Current plan is to resturcture the LM inference calls based on OpenAI API.
-
 Public-facing versions of our repository will be based on the same OpenAI API to support a wider range of models (and endpoint servers), where only the base_url and API_keys need to be modified.
 
 ```{python}
@@ -21,12 +15,14 @@ conda activate fveval
 pip install -r requirements.txt
 pip install -e .
 ```
+
 ##  Running LLM generation on each task
 ```{python}
-# Run the following commands in your conda environment (e.g. fveval)
+# Run the following commands in your conda environment created above
 # You can supply a list of models to test with the --models flag, with model names ;-separated
 # Run with --debug to print all input and outputs to and from the LM
 # Change LLM decoding temperature with the --temperature flag
+# You can also see the flag options available for each run script by passing the '-h' flag
 
 # Running LM inference on the NL2SVA-machine (assertion generation from directed NL instructions) task:
 python run_svagen_nl2sva.py --mode machine --models "gpt-4;mixtral-chat" 
@@ -45,26 +41,23 @@ Overview of the repository:
 ```
 fv_eval/
 ├── fv_eval/
+│   ├── benchmark_launcher.py (methods for consuming input bmark data and run LM inference)
 │   ├── evaluation.py (methods for LM response evaluation)
 │   ├── fv_tool_execution.py (methods for launching FV tools, i.e. JasperGold)
-│   ├── data.py (methods for input/output data processing)
+│   ├── data.py (definitions for input/output data)
 │   ├── prompts_*.py  (default prompts for each subtask)
 │   ├── utils.py (misc. util functions)
 |
 ├── data_agr/ 
 │   ├── helper_gen/
 |       |── data/ 
-│       |── rtl/
-│       |── tb/ 
 │       |── generate_pipelines_helpergen.py 
 │       |── generate_arbitration-clouds_helpergen.py 
 │       |── generate_fsm_helpergen.py 
 |
 ├── data_svagen/ 
 │   ├── design2sva/
-|   |   |── data/ 
-│   |   |── rtl/ 
-│   |   |── tb/ 
+|   |   |── data/  
 │   |   |── generate_pipelines_design2sva.py 
 │   |   |── generate_arbitration-clouds_design2sva.py 
 │   |   |── generate_fsm_design2sva.py 
@@ -81,9 +74,8 @@ fv_eval/
 │   ├── run_jg_helpergen.tcl
 │   ├── run_jg_nl2sva_human.tcl
 │   ├── run_jg_nl2sva_machine.tcl
-│   ├── run_jg_helpergen.tcl
 |
-├── run_agr_helpergen.py
+├── run_helpergen.py
 ├── run_evaluation.py
 ├── run_svagen_design2sva.py
 ├── run_svagen_nl2sva.py
@@ -92,8 +84,6 @@ fv_eval/
 ├── setup.py
 └── README.md
 
-Note that in the public-facing versions we may not include the benchmark generation scripts (generat_*.py)
-and the raw design/testbench directories, but only share the packaged dataset files (in each data/ subdirectory)
 
 ```
 
