@@ -1,5 +1,4 @@
 import argparse
-from datetime import datetime
 import pathlib
 
 from fv_eval import evaluation, utils

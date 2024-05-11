@@ -2,10 +2,7 @@ import argparse
 from datetime import datetime
 import pathlib
 
-from tqdm import tqdm
-import pandas as pd
-
-from fv_eval import lm_execution, data, utils, prompts_svagen_design2sva, benchmark_launcher
+from fv_eval import data, utils, benchmark_launcher
 
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent

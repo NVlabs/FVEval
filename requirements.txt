@@ -1,4 +1,4 @@
-adlrchat
+openai
 pandas
 evaluate
 absl-py

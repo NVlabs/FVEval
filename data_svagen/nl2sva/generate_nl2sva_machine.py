@@ -4,12 +4,11 @@ import os
 import pathlib
 import random
 
+from openai import OpenAI
 import pandas as pd
 from tqdm import tqdm
 
 from fv_eval.data import InputData
-from adlrchat.langchain import LLMGatewayChat
-from langchain.schema import HumanMessage, SystemMessage
 
 
 def generate_random_signal(max_int: int = 10):
@@ -200,14 +199,10 @@ assert property(@(posedge clk)
 );
 Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, then sig_F must eventually be true
 """
-
-    chat = LLMGatewayChat(
-        streaming=True,
-        temperature=args.temperature,
-        model=model_name,
-        max_tokens=150,
-        stop=["\n", "."]
-    )
+    client = OpenAI()
+    model_name = "gpt-3.5-turbo"
+    max_tokens = 150
+    stop = ["\n", "."]
     dataset = []
     testbech_text = ""
     with open(args.dummy_testbench_path, "r") as f:
@@ -221,17 +216,21 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
             user_prompt += f"\nQuestion: in a single sentence, explain the following SystemVerilog assertion in English.\n{assertion_text}\n"
             user_prompt += "\nDo NOT use phrases such as 'result of the expression ...'"
             user_prompt += "\nAnswer:"
-            lm_response = chat(
-                [
-                    SystemMessage(content=system_prompt),
-                    HumanMessage(content=user_prompt),
-                ]
+            completion = client.completions.create(
+                model=model_name,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt},
+                ],
+                max_tokens=max_tokens,
+                temperature=args.temperature,
+                stop=stop,
             )
             dataset.append(
                 InputData(
                     design_name="nl2sva_machine",
                     task_id=f"{i}_{j}",
-                    prompt=lm_response.content,
+                    prompt=completion.choices[0].message.content,
                     ref_solution=assertion_text,
                     testbench=testbech_text
                 )
@@ -245,6 +244,8 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
     df = pd.DataFrame([asdict(d) for d in dataset])
     if args.debug:
         df.to_csv(args.save_dir / "nl2sva_machine_debug.csv", index=False)
+        print(f"Debug mode: Saved to {args.save_dir + f'/nl2sva_human_debug.csv'} | {len(df)}")
     else:
         df.to_csv(args.save_dir / "nl2sva_machine.csv", index=False)
+        print(f"Saved to {args.save_dir + '/nl2sva_machine.csv'} | {len(df)}")
     

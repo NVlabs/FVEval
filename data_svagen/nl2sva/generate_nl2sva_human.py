@@ -97,10 +97,12 @@ def preprocess_svagen_data(
         pd.DataFrame([asdict(d) for d in full_dataset]).to_csv(
             save_dir + f"/nl2sva_human_debug.csv", sep=",", index=False
         )
+        print(f"Debug mode: Saved to {save_dir + f'/nl2sva_human_debug.csv'} | {len(full_dataset)}")
     else:
         pd.DataFrame([asdict(d) for d in full_dataset]).to_csv(
             save_dir + f"/nl2sva_human.csv", sep=",", index=False
         )
+        print(f"Saved to {save_dir + f'/nl2sva_human.csv'} | {len(full_dataset)}")
 
 
 if __name__ == "__main__":

@@ -15,6 +15,29 @@ conda activate fveval
 pip install -r requirements.txt
 pip install -e .
 ```
+##  Running Dataset Generation and Preprocessing
+
+```{python}
+# Note that all datasets are already generated and stored as .csv files in the 
+# data_svagen/nl2sva/data
+# data_svagen/design2sva/data 
+# data_agr/helpergen/data
+# directories. The following is for generating them new or again.
+
+# (1) generate the NL2SVA-Human dataset
+cd data_svagen/nl2sva && python generate_nl2sva_human.py && cd ../..
+
+# (2) generate the NL2SVA-Machine dataset
+cd data_svagen/nl2sva && python generate_nl2sva_machine.py && cd ../..
+
+# (3) generate the Design2SVA dataset
+cd data_svagen/design2sva && python generate_nl2sva_human.py && cd ../..
+
+# (1) generate the NL2SVA-Human dataset
+cd data_svagen/nl2sva && python generate_nl2sva_human.py && cd ../..
+```
+
+
 
 ##  Running LLM generation on each task
 ```{python}
