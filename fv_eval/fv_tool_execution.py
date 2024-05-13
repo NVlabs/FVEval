@@ -49,6 +49,7 @@ def launch_jg_with_queue(
         "-define", "TASK_ID", task_id,
         "-define", "SV_DIR", sv_dir,
         "-proj", tmp_jg_proj_dir,
+        "-allow_unsupported_OS"
     ]
     result = subprocess.run(jg_command, capture_output=True, text=True)
     output_queue.put(result.stdout.strip())

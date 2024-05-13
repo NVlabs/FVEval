@@ -201,7 +201,6 @@ class Evaluator(object):
                 lm_result = result_list[index]
                 assert lm_result.model_name == model_name
                 assert lm_result.experiment_id == experiment_id
-                uid = f"{lm_result.experiment_id}_{lm_result.task_id}"
 
                 p = multiprocessing.Process(
                     target=fv_tool_execution.launch_jg_with_queue,
@@ -223,7 +222,6 @@ class Evaluator(object):
                 # regex match *.sva in jasper_out_str
                 task_id_match = re.findall(r"\bTASK_ID[^\n]*", jasper_out_str)
                 if not task_id_match:
-                    import pdb; pdb.set_trace()
                     raise ValueError(f"Jasper output does not contain unique id (UID)")
                 task_id = task_id_match[0].split("TASK_ID ")[-1]
                 
