@@ -31,5 +31,5 @@ helper: assert property (@(posedge clk) disable iff (tb_reset)
 );
 Do not add code to output an error message string.
 
-Enclose your SVA code with <CODE> and </CODE>. ONLY output the code snippet and do NOT output anything else.
+Enclose your SVA code with ```systemverilog and ```. ONLY output the code snippet and do NOT output anything else.
 Answer:"""

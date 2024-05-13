@@ -63,14 +63,14 @@ class BenchmarkLauncher(object):
         return []
     
     def parse_code_response(self, lm_response_str) -> str:
-        code_tags = re.findall(r"<CODE>(.*?)</CODE>", lm_response_str, re.DOTALL)
+        code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
         if len(code_tags) > 0:
             for code in code_tags:
-                lm_response_str = lm_response_str.replace(f"<CODE>{code}</CODE>", code)
-        code_tags = re.findall(r"<CODE>(.*?)", lm_response_str, re.DOTALL)
+                lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
+        code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
         if len(code_tags) > 0:
             for code in code_tags:
-                lm_response_str = lm_response_str.replace(f"<CODE>{code}", code)
+                lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
         return lm_response_str
 
     def _prepare_models(self, model_name_list: str):
@@ -103,8 +103,9 @@ class BenchmarkLauncher(object):
                 if "gpt-4" in model_name and "turbo" in model_name:
                     full_model_name = "gpt-4-turbo-preview"
                 elif "gpt-4" in model_name:
-                    full_model_name = "gpt-4-32k-0613"
-                else:
+                    full_model_name = "gpt-4-0613"
+                elif "gpt-3.5-turbo" in model_name:
+                    full_model_name = "gpt-3.5-turbo-0125"
                     full_model_name = model_name
             model_api_list.append(
                 {

@@ -10,14 +10,6 @@ SVAGEN_TB_PREAMBLE = (
     """Here is a partial testbench for you to work on:\n"""
 )
 
-# SVAGEN_QUESTION = """Question: Complete the SV testbench for the design.
-# Include as many SVA assertions to cover diverse functional points of interest.  
-# Enclose your SVA code with <CODE> and </CODE>. Only output the code snippet and do NOT output anything else.
-
-# Answer:
-# """
-
-
 
 SVAGEN_PLANNING_QUESTION = """The following are constraints you need to satisfy in completing the task:
 Do NOT use signals from the design RTL, only use the module input signals or internal signals you have added.
@@ -44,14 +36,16 @@ Do NOT use signals from the design RTL, only use the module input signals or int
 Do NOT use any 'initial' blocks. This testbench is not for running RTL simulation but for formal verification.
 Do NOT instantiate the design module inside the testbench.
 
-When implementing the assertions, implement as concurrent SVA assertions, for example:
+When implementing the assertions, implement as concurrent SVA assertions and do not add code to output an error message string.
+Enclose your SystemVerilog code with ```systemverilog and ```. 
+Only output the code snippet and do NOT output anything else.
+
+For example:
+```systemverilog
 asrt: assert property (@(posedge clk) disable iff (tb_reset)
     (a && b) != 1'b1
 );
-Do not add code to output an error message string.
-
-Enclose your SystemVerilog code with <CODE> and </CODE>. 
-Only output the code snippet and do NOT output anything else.
+```
 
 Answer:
 """
