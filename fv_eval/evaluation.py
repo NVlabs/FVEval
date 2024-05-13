@@ -95,12 +95,7 @@ class Evaluator(object):
         # For each result, write the packaged testbench to a SystemVerilog file
         # in the subdir directory
         for r in results_list:
-            # check for <CODE> and </CODE> tags in the response
             tb = r.output_tb
-            # code_tags = re.findall(r"<CODE>(.*?)</CODE>", tb, re.DOTALL)
-            # if len(code_tags) > 0:
-            #     for code in code_tags:
-            #         tb = tb.replace(f"<CODE>{code}</CODE>", code)
             with open(f"{self.temp_dir}/{r.experiment_id}_{r.task_id}.sva", "w") as f:
                 f.write(tb)
 
