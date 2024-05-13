@@ -4,11 +4,10 @@ import re
 import time
 import random
 
+from openai import OpenAI
+from together import Together
 import pandas as pd
 from tqdm import tqdm
-
-from adlrchat.langchain import ADLRChat, LLMGatewayChat
-from langchain.schema import HumanMessage, SystemMessage
 
 from fv_eval import utils, prompts_svagen_nl2sva, prompts_svagen_design2sva, prompts_avr_helpergen
 from fv_eval.data import InputData, LMResult
@@ -29,8 +28,9 @@ class BenchmarkLauncher(object):
         self.dataset = [InputData(**row) for _, row in df.iterrows()]
         # convert dataset into list of InputData
 
+        self.chat_client = OpenAI()
         self.task = task
-        self.model_name_list = model_name_list
+        self.model_api_list = self._prepare_models(model_name_list)
         self.num_icl_examples = num_icl_examples
         self.debug = debug
         self.experiment_id = dataset_path.split(".csv")[0].split("/")[-1]
@@ -38,7 +38,7 @@ class BenchmarkLauncher(object):
     def _build_iterator(self, model_name: str):
         if self.debug:
             # if debug, only take first 5 rows
-            iterator = self.dataset[:5]
+            iterator = self.dataset[:2]
         else:
             iterator = tqdm(
                 self.dataset,
@@ -46,29 +46,6 @@ class BenchmarkLauncher(object):
                 desc=f"Running for {model_name}",
             )
         return iterator
-
-    def _construct_chat_client(
-        self,
-        model_name: str,
-        temperature: float = 0.0,
-        max_tokens: int = 100,
-    ):
-        self.temperature = temperature
-        self.max_tokens = max_tokens
-        if "gpt" in model_name:
-            self.chat = LLMGatewayChat(
-                streaming=True,
-                temperature=temperature,
-                model=model_name,
-                max_tokens=max_tokens,
-            )
-        else:
-            self.chat = ADLRChat(
-                streaming=True,
-                temperature=temperature,
-                model=model_name,
-                max_tokens=max_tokens,
-            )
 
     def generate_system_prompt(self):
         raise NotImplementedError("generate_system_prompt not implemented")
@@ -96,28 +73,100 @@ class BenchmarkLauncher(object):
                 lm_response_str = lm_response_str.replace(f"<CODE>{code}", code)
         return lm_response_str
 
-    def run_lm(self, model_name, system_prompt, user_prompt, max_retries = 20):
+    def _prepare_models(self, model_name_list: str):
+        TOGETHER_MODEL_DICT = {
+            "llama-3-70b": "meta-llama/Llama-3-70b-chat-hf",
+            "code-llama-70b": "meta-llama/CodeLlama-70b-Instruct-hf",
+            "llama-2-70b": "meta-llama/Llama-2-70b-chat-hf",
+            "mixtral-8x22b": "mistralai/Mixtral-8x22B-Instruct-v0.1",
+            "mixtral-8x7b": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+        }
+        model_api_list = []
+        for model_name in model_name_list:
+            if "vllm" in model_name:
+                api_provider = "vllm"
+                api_key = "EMPTY"
+                base_url = "http://localhost:8000/v1"
+                full_model_name = OpenAI(
+                    api_key=api_key,
+                    base_url=base_url,
+                ).models.list().data[0].id
+            elif model_name in TOGETHER_MODEL_DICT:
+                api_provider = "together"
+                api_key = os.getenv("TOGETHER_API_KEY")
+                base_url = "https://api.together.xyz/v1"
+                full_model_name = TOGETHER_MODEL_DICT[model_name]
+            else:
+                api_provider = "openai"
+                api_key = os.getenv("OPENAI_API_KEY")
+                base_url = "https://api.openai.com/v1"
+                if "gpt-4" in model_name and "turbo" in model_name:
+                    full_model_name = "gpt-4-turbo-preview"
+                elif "gpt-4" in model_name:
+                    full_model_name = "gpt-4-32k-0613"
+                else:
+                    full_model_name = model_name
+            model_api_list.append(
+                {
+                    "short_model_name": model_name,
+                    "model_name": full_model_name,
+                    "api_provider": api_provider,
+                    "api_key": api_key,
+                    "base_url": base_url,
+                }
+            )
+        return model_api_list
+
+    def setup_chat_client(
+            self, 
+            model_name:str,
+            short_model_name: str,
+            api_provider: str,
+            api_key: str,
+            base_url: str
+        ):
+        if api_provider == "vllm" or api_provider == "openai":
+            self.chat_client = OpenAI(
+                api_key=api_key,
+                base_url=base_url,
+            )
+        elif api_provider == "together":
+            self.chat_client = Together(
+                api_key=api_key,
+                base_url=base_url,
+            )
+        else:
+            raise ValueError(f"Unknown API provider: {api_provider}")
+
+
+    def run_lm(
+            self, 
+            model_name, 
+            system_prompt, 
+            user_prompt,
+            temperature: float = 0.0,
+            max_tokens: int = 100,
+            max_retries = 20
+        ):
         num_retries = 0
         delay = 1.0
         error = None
         while num_retries <= max_retries:
             try:
-                lm_response = self.chat(
-                    [
-                        SystemMessage(content=system_prompt),
-                        HumanMessage(content=user_prompt),
-                    ]
+                completion = self.chat_client.chat.completions.create(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=max_tokens,
+                    temperature=temperature,
                 )
-                return lm_response
+                return completion.choices[0].message
 
             # Raise exceptions for any errors specified
             except Exception as e:
                 # Sleep for the delay
-                self._construct_chat_client(
-                    model_name=model_name,
-                    temperature=self.temperature,
-                    max_tokens=self.max_tokens
-                )
                 time.sleep(delay)
                 # Increment the delay
                 delay *= 2 * (1 + 1 * random.random())
@@ -130,15 +179,24 @@ class BenchmarkLauncher(object):
 
             if error is not None:
                 raise error
-        return lm_response
+        return None
 
     def run_lm_chain(
-        self, row: InputData, model_name: str, system_prompt: str, user_prompt: str, max_retries: int = 20
+        self, 
+        row: InputData, 
+        model_name: str, 
+        system_prompt: str, 
+        user_prompt: str,
+        temperature: float = 0.0,
+        max_tokens: int = 100,
+        max_retries: int = 20
     ):  
         lm_response = self.run_lm(
             model_name=model_name,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
+            temperature=temperature,
+            max_tokens=max_tokens,
             max_retries=max_retries
         )          
         lm_response = lm_response.content 
@@ -164,17 +222,19 @@ class BenchmarkLauncher(object):
         cot_strategy: str = "default",
     ):  
         cot_question_chain = self.get_cot_strategy(cot_strategy)
-        for model_name in self.model_name_list:
+        for model_dict in self.model_api_list:
+            self.setup_chat_client(**model_dict)
             results = self.run_experiment_single_model(
-                model_name,
+                model_dict["model_name"],
                 temperature=temperature,
                 max_tokens=max_tokens,
                 cot_question_chain=cot_question_chain,
             )
-            self.save_results(model_name, results)
+            self.save_results(model_dict["short_model_name"], results)
         return results
 
     def save_results(self, model_name: str, results: list[LMResult]):
+        model_name = model_name.split('/')[-1].replace(" ", "_")
         results_df = pd.DataFrame([asdict(response) for response in results])
         results_df.to_csv(
             os.path.join(self.save_dir, f"{model_name}_{self.experiment_id}.csv"),
@@ -236,11 +296,6 @@ class NL2SVALauncher(BenchmarkLauncher):
         cot_question_chain: list[tuple[str, str]] = [],
     ):
         results = []
-        self._construct_chat_client(
-            model_name=model_name,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
         system_prompt = self.generate_system_prompt()
         for row in self._build_iterator(model_name):
             user_prompt = self.generate_user_prompt_prefix(row)
@@ -248,7 +303,14 @@ class NL2SVALauncher(BenchmarkLauncher):
                 user_prompt += "\n" + self.generate_question_prompt(row)
             else:
                 raise NotImplementedError("COT question chain not implemented")
-            lm_response = self.run_lm_chain(row, model_name, system_prompt, user_prompt)
+            lm_response = self.run_lm_chain(
+                row=row, 
+                model_name=model_name, 
+                system_prompt=system_prompt, 
+                user_prompt=user_prompt,
+                temperature=temperature,
+                max_tokens=max_tokens
+            )
             if self.debug:
                 utils.print_lm_response("reference", row.ref_solution)
             packaged_tb_text = self.package_testbench(row, lm_response)
@@ -398,11 +460,6 @@ class Design2SVALauncher(BenchmarkLauncher):
         ],
     ):
         results = []
-        self._construct_chat_client(
-            model_name=model_name,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
         # generate system prompt
         system_prompt = self.generate_system_prompt()
 
@@ -420,7 +477,12 @@ class Design2SVALauncher(BenchmarkLauncher):
                 user_prompt += "\n" + q_str
                 # run LM chain
                 lm_response = self.run_lm_chain(
-                    row, model_name, system_prompt, user_prompt
+                    row=row, 
+                    model_name=model_name, 
+                    system_prompt=system_prompt, 
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    max_tokens=max_tokens
                 )
                 if q_type != cot_question_chain[-1][0]:
                     cot_responses[q_type] = lm_response
@@ -534,7 +596,12 @@ class HelperGenLauncher(BenchmarkLauncher):
                 user_prompt += "\n" + q_str
                 # run LM chain
                 lm_response = self.run_lm_chain(
-                    row, model_name, system_prompt, user_prompt
+                    row=row, 
+                    model_name=model_name, 
+                    system_prompt=system_prompt, 
+                    user_prompt=user_prompt,
+                    temperature=temperature,
+                    max_tokens=max_tokens
                 )
                 if q_type != cot_question_chain[-1][0]:
                     cot_responses[q_type] = lm_response
