@@ -38,7 +38,6 @@ Do NOT instantiate the design module inside the testbench.
 
 When implementing the assertions, implement as concurrent SVA assertions and do not add code to output an error message string.
 Enclose your SystemVerilog code with ```systemverilog and ```. 
-Only output the code snippet and do NOT output anything else.
 
 For example:
 ```systemverilog
@@ -46,6 +45,7 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
     (a && b) != 1'b1
 );
 ```
+Only output the code snippet and do NOT output anything else.
 
 Answer:
 """

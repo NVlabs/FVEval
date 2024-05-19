@@ -15,6 +15,12 @@ if __name__ == "__main__":
         help="path to input dataset directory, potentially holding multiple .csv files",
     )
     parser.add_argument(
+        "--save_dir",
+        "-o",
+        type=str,
+        help="path to input dataset directory, potentially holding multiple .csv files",
+    )
+    parser.add_argument(
         "--temperature", type=float, help="LLM decoder sampling temperature", default=0.0
     )
     parser.add_argument(
@@ -22,7 +28,7 @@ if __name__ == "__main__":
         "-m",
         type=str,
         help="models to run with, ;-separated",
-        default="gpt-4-turbo;gpt-3.5-turbo;llama-3-70b;mixtral-8x22b",
+        default="gpt-4;gpt-4-turbo;gpt-3.5-turbo;llama-3-70b;mixtral-8x22b;llama-2-70b",
     )
     parser.add_argument(
         "--cot_strategy",
@@ -44,7 +50,11 @@ if __name__ == "__main__":
         dataset_dir = dataset_dir.as_posix()
     
     timestamp_str = datetime.now().strftime("%Y%m%d%H")
-    save_dir = f"results_design2sva/{args.cot_strategy}/{timestamp_str}"
+    if not args.save_dir:
+        save_dir = ROOT / f"results_design2sva/{args.cot_strategy}/{timestamp_str}"
+        save_dir = save_dir.as_posix()
+    else:
+        save_dir = args.save_dir
     utils.mkdir_p(save_dir)
 
     dataset_paths = data.read_datasets_from_dir(dataset_dir)

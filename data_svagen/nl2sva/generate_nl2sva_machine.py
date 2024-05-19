@@ -1,6 +1,7 @@
 import argparse
 from dataclasses import asdict
 import os
+import re
 import pathlib
 import random
 
@@ -71,35 +72,35 @@ def choose_from_unary(depth: int):
     random_val = random.random()
     if random_val < 0.8:
         # Generate simple singal
-        return f"{generate_random_signal()}"
+        return "signal"
     else:
         # Generate a unary operator
-        return f"{generate_unary_operator()}{generate_random_signal()}"
+        return f"{generate_unary_operator()}signal"
 
-def choose_from_binary(depth: int):
+def choose_from_binary(depth: int, max_depth=3):
     # Generate a binary operator
     if random.random() < 0.3:
-        return f"({generate_expression(depth + 1)} {generate_binary_operator()} 1'b1)"
+        return f"({generate_expression(depth + 1, max_depth=max_depth)} {generate_binary_operator()} 1'b1)"
     else:
-        return f"({generate_expression(depth + 1)} {generate_binary_operator()} {generate_expression(depth + 1)})"
+        return f"({generate_expression(depth + 1, max_depth=max_depth)} {generate_binary_operator()} {generate_expression(depth + 1, max_depth=max_depth)})"
         
 
-def choose_from_temporal(depth: int):
-    if random.random() < 0.8:
+def choose_from_temporal(depth: int, max_depth=3):
+    if random.random() < 0.7:
         # Generate a temporal operator
         expr = generate_temporal_operator()
         temporal_bound = generate_temporal_bound()
         expr = f"{expr} {temporal_bound}"
-        return f"{generate_expression(depth + 1)} {expr} {generate_expression(depth + 1)}"
-    elif random.random() < 0.1:
+        return f"{generate_expression(depth + 1)} {expr} {generate_expression(depth + 1, max_depth=max_depth)}"
+    elif random.random() < 0.5:
         # Generate a s_temporal operator
         expr, extra_args = generate_s_temporal_operator()
         if extra_args:
-            expr = f"{expr}(##[1:$] {generate_expression(depth + 1)})"
+            expr = f"{expr}(##[1:$] {generate_expression(depth + 1, max_depth=max_depth)})"
         else:
-            expr = f"{expr}({generate_expression(depth + 1)})"
+            expr = f"{expr}({generate_expression(depth + 1, max_depth=max_depth)})"
         if random.random() < 0.8:
-            return f"{generate_expression(depth + 1)} |-> " + expr
+            return f"{generate_expression(depth + 1, max_depth=max_depth)} |-> " + expr
         else:
             return expr
     else:
@@ -107,26 +108,37 @@ def choose_from_temporal(depth: int):
         expr, extra_arg = generate_special_operator()
         if extra_arg:
             constant = random.randint(1, 10)
-            return f"{expr}({generate_expression(depth + 1)}, {constant})"
+            return f"{expr}({generate_expression(depth + 1, max_depth=max_depth)}, {constant})"
         else:
-            return f"{expr}({generate_expression(depth + 1)})"
+            return f"{expr}({generate_expression(depth + 1, max_depth=max_depth)})"
     
-def generate_expression(depth: int=0):
+def generate_expression(depth: int=0, max_depth=3):
     # Base case: Return a simple signal
-    is_leaf = random.random() < 0.25 * depth 
+    is_leaf = random.random() < (1.0 / max_depth) * depth 
     if is_leaf:
         return choose_from_unary(depth)
     elif depth == 0:
         if random.random() < 0.5:
-            return choose_from_temporal(depth)
+            return choose_from_temporal(depth, max_depth=max_depth)
         else:
-            return choose_from_binary(depth)
+            return choose_from_binary(depth, max_depth=max_depth)
     else:
-        return choose_from_binary(depth)
+        return choose_from_binary(depth, max_depth=max_depth)
         
-def generate_assertion():
+def generate_assertion(max_int: int = 10):
     # Generate a full assertion statement
     expression = generate_expression()
+
+    # map "signals" to symbolic names
+    # count number of sigals in expression
+    num_signals = expression.count("signal")
+    prev_symbol = ""
+    for _ in range(num_signals):
+        symbol = generate_random_signal(max_int=max_int)
+        while symbol == prev_symbol:
+            symbol = generate_random_signal(max_int=max_int)
+        expression = expression.replace("signal", symbol, 1)
+        prev_symbol = symbol
     return f"assert property(@(posedge clk)\n\t{expression}\n);"
 
 if __name__ == "__main__":
@@ -200,7 +212,7 @@ assert property(@(posedge clk)
 Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, then sig_F must eventually be true
 """
     client = OpenAI()
-    model_name = "gpt-3.5-turbo"
+    model_name = "gpt-4o"
     max_tokens = 150
     stop = ["\n", "."]
     dataset = []
@@ -211,21 +223,59 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
         # randomly generate assertion 
         assertion_text = generate_assertion()
         for j in range(args.num_nldesc_per_assertion):
-            user_prompt = icl_prompt
-            user_prompt += "\n\n Now here is your question to answer."
-            user_prompt += f"\nQuestion: in a single sentence, explain the following SystemVerilog assertion in English.\n{assertion_text}\n"
-            user_prompt += "\nDo NOT use phrases such as 'result of the expression ...'"
-            user_prompt += "\nAnswer:"
-            completion = client.completions.create(
-                model=model_name,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                max_tokens=max_tokens,
-                temperature=args.temperature,
-                stop=stop,
-            )
+            counter = 0
+            for _ in range(5):
+                user_prompt = icl_prompt
+                user_prompt += "\n\n Now here is your question to answer."
+                user_prompt += f"\nQuestion: in a single sentence, explain the following SystemVerilog assertion in English.\n{assertion_text}\n"
+                user_prompt += "\nDo NOT use phrases such as 'result of the expression ...'"
+                user_prompt += "\nAnswer:"
+                completion = client.chat.completions.create(
+                    model=model_name,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    max_tokens=150,
+                    temperature=args.temperature,
+                    stop=stop,
+                )
+                lm_generated_annotation = completion.choices[0].message.content
+
+                # gpt-4-turbo as a judge
+                judge_system_prompt = "You are tasked with judging the quality of the following natural language description for a SystemVerilog assertion."
+                judge_user_prompt = f"Judge whether the following natural language description is correct for the SystemVerilog\n\nAssertion: {assertion_text}\nDescription: {lm_generated_annotation}"
+                judge_user_prompt += "\n\nPlease provide a score of 0 or 1, where 0 indicates the description is inaccurate or insufficient, and 1 indicates the description is accurate, clear, and sufficiently descriptive."
+                judge_user_prompt += "\n\nScore:"
+                judge_completion = client.chat.completions.create(
+                    model="gpt-4-0125-preview",
+                    messages=[
+                        {"role": "system", "content": judge_system_prompt},
+                        {"role": "user", "content": judge_user_prompt},
+                    ],
+                    max_tokens=1000,
+                    temperature=0.0,
+                )
+                judge_score = judge_completion.choices[0].message.content
+                # regex match to get the score
+                judge_score_numerical = re.search(r"\d+", judge_score)
+                if not judge_score_numerical:
+                    print(judge_score)
+                    continue
+                else:
+                    judge_score_numerical = int(judge_score_numerical.group(0))
+                if judge_score_numerical == 1:
+                    break
+            if judge_score_numerical == 0:
+                continue
+            # dataset.append(
+            #     {
+            #         "assertion": assertion_text,
+            #         "nl_description": lm_generated_annotation,
+            #         "judge_response": judge_score,
+            #         "judge_score": judge_score_numerical
+            #     }
+            # )
             dataset.append(
                 InputData(
                     design_name="nl2sva_machine",
@@ -236,16 +286,17 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
                 )
             )
 
-        if args.debug:
+        if args.debug and i > 100:
             break
             
     if not os.path.isdir(args.save_dir):
         os.makedirs(args.save_dir)
+    df = pd.DataFrame(dataset)
     df = pd.DataFrame([asdict(d) for d in dataset])
     if args.debug:
         df.to_csv(args.save_dir / "nl2sva_machine_debug.csv", index=False)
-        print(f"Debug mode: Saved to {args.save_dir + f'/nl2sva_human_debug.csv'} | {len(df)}")
+        print(f"Debug mode: Saved to {args.save_dir.as_posix() + f'/nl2sva_human_debug.csv'} | {len(df)}")
     else:
         df.to_csv(args.save_dir / "nl2sva_machine.csv", index=False)
-        print(f"Saved to {args.save_dir + '/nl2sva_machine.csv'} | {len(df)}")
+        print(f"Saved to {args.save_dir.as_posix() + '/nl2sva_machine.csv'} | {len(df)}")
     

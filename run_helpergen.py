@@ -14,6 +14,12 @@ if __name__ == "__main__":
         help="path to input dataset directory, potentially holding multiple .csv files",
     )
     parser.add_argument(
+        "--save_dir",
+        "-o",
+        type=str,
+        help="path to input dataset directory, potentially holding multiple .csv files",
+    )
+    parser.add_argument(
         "--temperature", type=float, help="LLM decoder sampling temperature", default=0.0
     )
     parser.add_argument(
@@ -41,9 +47,12 @@ if __name__ == "__main__":
         dataset_dir = ROOT / "data_agr" / "helpergen" / "data"
         assert dataset_dir.is_dir()
         dataset_dir = dataset_dir.as_posix()
-    
-    timestamp_str = datetime.now().strftime("%Y%m%d%H")
-    save_dir = f"results_helpergen/{args.cot_strategy}/{timestamp_str}"
+    if not args.save_dir:
+        timestamp_str = datetime.now().strftime("%Y%m%d%H")
+        save_dir = ROOT / f"results_helpergen/{args.cot_strategy}/{timestamp_str}"
+        save_dir = save_dir.as_posix()
+    else:
+        save_dir = args.save_dir
     utils.mkdir_p(save_dir)
 
     dataset_paths = data.read_datasets_from_dir(dataset_dir)

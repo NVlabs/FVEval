@@ -101,7 +101,7 @@ class BenchmarkLauncher(object):
                 api_key = os.getenv("OPENAI_API_KEY")
                 base_url = "https://api.openai.com/v1"
                 if "gpt-4" in model_name and "turbo" in model_name:
-                    full_model_name = "gpt-4-turbo-preview"
+                    full_model_name = "gpt-4-0125-preview"
                 elif "gpt-4" in model_name:
                     full_model_name = "gpt-4-0613"
                 elif "gpt-3.5-turbo" in model_name:

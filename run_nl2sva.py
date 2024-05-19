@@ -17,6 +17,12 @@ if __name__ == "__main__":
         help="path to input dataset",
     )
     parser.add_argument(
+        "--save_dir",
+        "-o",
+        type=str,
+        help="path to input dataset directory, potentially holding multiple .csv files",
+    )
+    parser.add_argument(
         "--temperature", type=float, help="LLM decoder sampling temperature", default=0.0
     )
     parser.add_argument(
@@ -60,7 +66,12 @@ if __name__ == "__main__":
         else:
             dataset_path = args.dataset_path
 
-        save_dir = f"results_nl2sva_human/{args.num_icl}/{timestamp_str}"
+        if not args.save_dir:
+            timestamp_str = datetime.now().strftime("%Y%m%d%H")
+            save_dir = ROOT / f"results_nl2sva_human/{args.num_icl}/{timestamp_str}"
+            save_dir = save_dir.as_posix()
+        else:
+            save_dir = args.save_dir
         utils.mkdir_p(save_dir)
 
         bmark_launcher = benchmark_launcher.NL2SVAHumanLauncher(
@@ -82,7 +93,12 @@ if __name__ == "__main__":
             dataset_path = dataset_path.as_posix()
         else:
             dataset_path = args.dataset_path
-        save_dir = f"results_nl2sva_machine/{args.num_icl}/{timestamp_str}"
+        if not args.save_dir:
+            timestamp_str = datetime.now().strftime("%Y%m%d%H")
+            save_dir = ROOT / f"results_nl2sva_machine/{args.num_icl}/{timestamp_str}"
+            save_dir = save_dir.as_posix()
+        else:
+            save_dir = args.save_dir
         utils.mkdir_p(save_dir)
 
         bmark_launcher = benchmark_launcher.NL2SVAMachineLauncher(
