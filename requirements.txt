@@ -1,4 +1,7 @@
 openai
+together
+google-generativeai
+anthropic
 pandas
 evaluate
 absl-py

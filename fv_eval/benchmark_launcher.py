@@ -6,6 +6,8 @@ import random
 
 from openai import OpenAI
 from together import Together
+import google.generativeai as genai
+from anthropic import Anthropic
 import pandas as pd
 from tqdm import tqdm
 
@@ -96,6 +98,16 @@ class BenchmarkLauncher(object):
                 api_key = os.getenv("TOGETHER_API_KEY")
                 base_url = "https://api.together.xyz/v1"
                 full_model_name = TOGETHER_MODEL_DICT[model_name]
+            elif "gemini" in model_name:
+                api_provider = "google"
+                api_key = os.getenv("GOOGLE_API_KEY")
+                base_url = "https://gemini.googleapis.com/v1"
+                full_model_name = model_name
+            elif "claude" in model_name:
+                api_provider = "anthropic"
+                api_key = os.getenv("ANTHROPIC_API_KEY")
+                base_url = "https://api.anthropic.com/v1"
+                full_model_name = model_name
             else:
                 api_provider = "openai"
                 api_key = os.getenv("OPENAI_API_KEY")
@@ -131,11 +143,23 @@ class BenchmarkLauncher(object):
                 api_key=api_key,
                 base_url=base_url,
             )
+            self.api_provider = api_provider
         elif api_provider == "together":
             self.chat_client = Together(
                 api_key=api_key,
                 base_url=base_url,
             )
+            self.api_provider = api_provider
+        elif api_provider == "google":
+            genai.configure(api_key=api_key)
+            self.chat_client = genai.GenerativeModel(model_name)
+            self.api_provider = api_provider
+        elif api_provider == "anthropic":
+            self.chat_client = Anthropic(
+                api_key=api_key,
+                base_url=base_url,
+            )
+            self.api_provider = api_provider
         else:
             raise ValueError(f"Unknown API provider: {api_provider}")
 
@@ -152,18 +176,42 @@ class BenchmarkLauncher(object):
         num_retries = 0
         delay = 1.0
         error = None
+        api_provider = self.api_provider
         while num_retries <= max_retries:
             try:
-                completion = self.chat_client.chat.completions.create(
-                    model=model_name,
-                    messages=[
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                )
-                return completion.choices[0].message
+                if api_provider == "vllm" or api_provider == "together" or api_provider == "openai":
+                    completion = self.chat_client.chat.completions.create(
+                        model=model_name,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                    )
+                
+                    return completion.choices[0].message
+                elif api_provider == "google":
+                    completion = self.chat_client.generate_content(
+                        prompt=user_prompt,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                    )
+                    return completion.text
+                elif api_provider == "anthropic":
+                    completion = self.chat_client.chat.completions.create(
+                        model=model_name,
+                        messages=[
+                            {"role": "system", "content": system_prompt},
+                            {"role": "user", "content": user_prompt},
+                        ],
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                    )
+                    return completion.choices[0].message
+                else:
+                    utils.print_error("ERROR", f"Unknown API provider: {api_provider}")
+                    break
 
             # Raise exceptions for any errors specified
             except Exception as e:
@@ -575,11 +623,6 @@ class HelperGenLauncher(BenchmarkLauncher):
         ],
     ):
         results = []
-        self._construct_chat_client(
-            model_name=model_name,
-            temperature=temperature,
-            max_tokens=max_tokens,
-        )
         # generate system prompt
         system_prompt = self.generate_system_prompt()
 
