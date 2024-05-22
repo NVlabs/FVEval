@@ -221,5 +221,4 @@ SVAGEN_QUESTION_POSTAMBLE = """
 Do not add code to output an error message string.
 Enclose your SVA code with ```systemverilog and ```. Only output the code snippet and do NOT output anything else.
 
-Answer:
-"""
+Answer:"""

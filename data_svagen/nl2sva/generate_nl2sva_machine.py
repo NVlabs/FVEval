@@ -219,7 +219,9 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
     testbech_text = ""
     with open(args.dummy_testbench_path, "r") as f:
         testbech_text = f.read()
-    for i in tqdm(range(args.num_assertions)):
+
+    i = 0
+    while True:
         # randomly generate assertion 
         assertion_text = generate_assertion()
         for j in range(args.num_nldesc_per_assertion):
@@ -268,14 +270,6 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
                     break
             if judge_score_numerical == 0:
                 continue
-            # dataset.append(
-            #     {
-            #         "assertion": assertion_text,
-            #         "nl_description": lm_generated_annotation,
-            #         "judge_response": judge_score,
-            #         "judge_score": judge_score_numerical
-            #     }
-            # )
             dataset.append(
                 InputData(
                     design_name="nl2sva_machine",
@@ -285,6 +279,9 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
                     testbench=testbech_text
                 )
             )
+            i += 1
+            if i >= args.num_assertions:
+                break
 
         if args.debug and i > 100:
             break

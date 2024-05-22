@@ -27,7 +27,7 @@ if __name__ == "__main__":
         "-m",
         type=str,
         help="models to run with, ;-separated",
-        default="gpt-4;gpt-3.5-turbo;llama-3-70b;mixtral-8x22b",
+        default="gpt-4-turbo;gpt-3.5-turbo;mixtral-8x22b;mixtral-8x7b",
     )
     parser.add_argument(
         "--cot_strategy",

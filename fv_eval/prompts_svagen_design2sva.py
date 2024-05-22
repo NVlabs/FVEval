@@ -20,13 +20,11 @@ Do NOT instantiate the design module inside the testbench.
 Question: in words, write a list of all features of the design that should be verified.
 Consider as many and diverse functional points of interest.
 
-Answer:
-"""
+Answer:"""
 
 SVAGEN_MODELING_QUESTION = """Question: for each of the features you listed, implement modeling code, including wires, registers, and their assignements,
 that is necessary for creating assertions.
-Answer:
-"""
+Answer:"""
 
 
 SVAGEN_QUESTION = """Question: generate an SVA assertion for each of the features you listed. 
@@ -47,5 +45,4 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
 ```
 Only output the code snippet and do NOT output anything else.
 
-Answer:
-"""
+Answer:"""

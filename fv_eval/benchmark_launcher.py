@@ -108,17 +108,19 @@ class BenchmarkLauncher(object):
                 api_key = os.getenv("ANTHROPIC_API_KEY")
                 base_url = "https://api.anthropic.com/v1"
                 full_model_name = model_name
-            else:
+            elif "gpt" in model_name:
                 api_provider = "openai"
                 api_key = os.getenv("OPENAI_API_KEY")
                 base_url = "https://api.openai.com/v1"
-                if "gpt-4" in model_name and "turbo" in model_name:
+                if "gpt-4-turbo" in model_name:
                     full_model_name = "gpt-4-0125-preview"
-                elif "gpt-4" in model_name:
+                elif model_name == "gpt-4":
                     full_model_name = "gpt-4-0613"
                 elif "gpt-3.5-turbo" in model_name:
                     full_model_name = "gpt-3.5-turbo-0125"
                     full_model_name = model_name
+            else:
+                raise ValueError(f"Unknown model: {model_name}")
             model_api_list.append(
                 {
                     "short_model_name": model_name,
