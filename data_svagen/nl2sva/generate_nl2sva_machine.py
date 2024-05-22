@@ -230,7 +230,7 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
                 user_prompt = icl_prompt
                 user_prompt += "\n\n Now here is your question to answer."
                 user_prompt += f"\nQuestion: in a single sentence, explain the following SystemVerilog assertion in English.\n{assertion_text}\n"
-                user_prompt += "\nDo NOT use phrases such as 'result of the expression ...'"
+                user_prompt += "\nDo NOT use phrases such as 'result of the expression ...'. Do NOT mention 'assertion' in your answer."
                 user_prompt += "\nAnswer:"
                 completion = client.chat.completions.create(
                     model=model_name,
@@ -279,9 +279,10 @@ Answer: If sig_C contains at least one '1' bit or sig_D is not equal to sig_A, t
                     testbench=testbech_text
                 )
             )
-            i += 1
-            if i >= args.num_assertions:
-                break
+        i += 1
+        if i >= args.num_assertions:
+            break
+        print(f"Generated {i} assertions", end="\r")
 
         if args.debug and i > 100:
             break
