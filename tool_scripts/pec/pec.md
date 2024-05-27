@@ -7,9 +7,9 @@ include /vols/jasper_users/gvamorim/workspace/pec/pec.tcl
 
 set p1 {A |-> ##[0:$] B}
 set p2 {A |-> s_eventually(B)}
-set clk ""
-set rst ""
-set signal_list {A B}
+set clk clk
+set rst tb_reset
+set signal_list {clk tb_reset A B}
 
 prop_eq_checker $p1 $p2 $clk $rst $signal_list
 ```

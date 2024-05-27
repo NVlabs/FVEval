@@ -29,7 +29,7 @@ wire [NUM_OF_CLIENTS-1 : 0] tb_hold;
 
 genvar a;
 for(a=0;a<NUM_OF_CLIENTS;a++) begin 
-    assign tb_req[a] = (req_en_option == 1) ? req[NUM_OF_CLIENTS-1-a] & req_en[NUM_OF_CLIENTS-1-a] : req[NUM_OF_CLIENTS-1-a];
+    assign tb_req[a] = req[NUM_OF_CLIENTS-1-a];
     assign tb_gnt[a] = gnt[NUM_OF_CLIENTS-1-a];
     assign tb_req_for_starvation[a] = req[NUM_OF_CLIENTS-1-a];
 end

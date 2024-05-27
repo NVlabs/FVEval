@@ -293,6 +293,113 @@ class NL2SVAHumanEvaluator(Evaluator):
             debug=debug,
         )
 
+    def evaluate_jg(
+        self,
+        result_list: list[LMResult],
+        with_rtl_design: bool = False,
+    ):  
+        # setup temp and save directories
+        if not os.path.isdir(self.temp_dir):
+            utils.mkdir_p(self.temp_dir)
+        # For each result, write the packaged testbench to a SystemVerilog file
+        # in the temp directory
+        if with_rtl_design:
+            self.write_design_sv(result_list)
+        self.write_testbench_sv(result_list)
+
+        # set up execution parameters
+        model_name = result_list[0].model_name
+        experiment_id = result_list[0].experiment_id
+        num_test_cases = len(result_list)
+        num_batchs = num_test_cases // self.parallel_jobs + 1
+        eval_results = []
+
+        # iterate over all test cases
+        for batch_id in tqdm(range(num_batchs), desc=f"Evaluating test cases {model_name} {experiment_id}"):
+            jasper_outputs = []
+            
+            # launch parallel jobs
+            processes = []
+            output_queue = multiprocessing.Queue()
+
+            # iterate over all parallel workers
+            for worker_id in range(self.parallel_jobs):
+                index = batch_id * self.parallel_jobs + worker_id
+                if index >= num_test_cases:
+                    continue
+                
+                lm_result = result_list[index]
+                assert lm_result.model_name == model_name
+                assert lm_result.experiment_id == experiment_id
+
+                lm_assertion_text = utils.parse_code_response(lm_result.response).strip().replace('\n', '')
+                lm_assertion_text = lm_assertion_text.split('tb_reset)')[-1].strip().split(');')[0].strip()
+                
+                ref_assertion_text = lm_result.ref_solution.strip().replace('\n', '')
+                ref_assertion_text = ref_assertion_text.split('tb_reset)')[-1].strip().split(');')[0].strip()
+                
+                signal_list = re.findall(r"'([^'\s]+)'", lm_result.user_prompt)
+
+                params = re.findall(r"\b(parameter|localparam)\s+(int\s+|real\s+|bit\s+|\[[^]]+\]\s*)?(\w+)", lm_result.output_tb)
+                params = [m[2] for m in params]
+                signal_list.extend(params)
+                signal_list_text = ",".join(signal_list)
+
+                fv_tool_execution.launch_jg_with_queue_custom_equiv_check(
+                    tcl_file_path=self.tcl_file_path,
+                    lm_assertion_text=lm_assertion_text,
+                    ref_assertion_text=ref_assertion_text,
+                    signal_list_text=signal_list_text,
+                    sv_dir=self.temp_dir,
+                    experiment_id=lm_result.experiment_id,
+                    task_id=lm_result.task_id,
+                    output_queue=output_queue
+                )
+                
+                p = multiprocessing.Process(
+                    target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
+                    kwargs={
+                        "tcl_file_path": self.tcl_file_path,
+                        "lm_assertion_text": lm_assertion_text,
+                        "ref_assertion_text": ref_assertion_text,
+                        "signal_list_text": signal_list_text,
+                        "sv_dir": self.temp_dir,
+                        "experiment_id": lm_result.experiment_id,
+                        "task_id": lm_result.task_id,
+                        "output_queue": output_queue
+                    }
+                )
+                processes.append(p)
+                p.start()
+            for p in processes:
+                p.join()
+            while not output_queue.empty():
+                jasper_outputs.append(output_queue.get())
+            
+            for jasper_out_str in jasper_outputs:
+                print(jasper_out_str)
+                # regex match *.sva in jasper_out_str
+                task_id_match = re.findall(r"\bTASK_ID[^\n]*", jasper_out_str)
+                if not task_id_match:
+                    raise ValueError(f"Jasper output does not contain unique id (UID)")
+                task_id = task_id_match[0].split("TASK_ID ")[-1]
+                
+                if self.debug:
+                    print(jasper_out_str)
+                result_dict = self.calculate_jg_metric(jasper_out_str)
+                eval_results.append(
+                    JGEvaluationResult(
+                        experiment_id=experiment_id,
+                        task_id=task_id,
+                        model_name=model_name,
+                        **result_dict
+                    )
+                )
+        if self.cleanup_temp_files:
+            shutil.rmtree(self.temp_dir)
+        return eval_results
+    
+    
     def calculate_jg_metric(
         self,
         jasper_out_str: str,
@@ -303,19 +410,11 @@ class NL2SVAHumanEvaluator(Evaluator):
             return {"syntax": 0.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
         
         # check for functionality error
-        lm_coi_match = re.findall(r"\bLM_COI[^\n]*", jasper_out_str)
-        ref_coi_match = re.findall(r"\bREF_COI[^\n]*", jasper_out_str) 
-        if not lm_coi_match or not ref_coi_match:
+        # match for "Full equivalence" in jaspert output string
+        full_equiv_match = re.findall(r"Full equivalence", jasper_out_str)
+        if not full_equiv_match:            
             return {"syntax": 1.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
-        
-        indexing_pattern = r"\[\s*\d+\]"
-        lm_coi = lm_coi_match[-1].split(":")[-1].strip()
-        lm_coi = re.sub(indexing_pattern, '', lm_coi)
-        lm_coi = lm_coi.split(' ')
-        ref_coi = ref_coi_match[-1].split(":")[-1].strip()
-        ref_coi = re.sub(indexing_pattern, '', ref_coi)
-        ref_coi = ref_coi.split(' ')
-        return {"syntax": 0.0, "functionality": float(ref_coi == lm_coi), "coverage": 0.0, "bound_improve": 0.0}
+        return {"syntax": 0.0, "functionality": 1.0, "coverage": 0.0, "bound_improve": 0.0}
     
 class NL2SVAMachineEvaluator(Evaluator):
     def __init__(
@@ -337,6 +436,96 @@ class NL2SVAMachineEvaluator(Evaluator):
             debug=debug,
         )
 
+    def evaluate_jg(
+        self,
+        result_list: list[LMResult],
+        with_rtl_design: bool = False,
+    ):  
+        # setup temp and save directories
+        if not os.path.isdir(self.temp_dir):
+            utils.mkdir_p(self.temp_dir)
+        # For each result, write the packaged testbench to a SystemVerilog file
+        # in the temp directory
+        if with_rtl_design:
+            self.write_design_sv(result_list)
+        self.write_testbench_sv(result_list)
+
+        # set up execution parameters
+        model_name = result_list[0].model_name
+        experiment_id = result_list[0].experiment_id
+        num_test_cases = len(result_list)
+        num_batchs = num_test_cases // self.parallel_jobs + 1
+        eval_results = []
+
+        # iterate over all test cases
+        for batch_id in tqdm(range(num_batchs), desc=f"Evaluating test cases {model_name} {experiment_id}"):
+            jasper_outputs = []
+            
+            # launch parallel jobs
+            processes = []
+            output_queue = multiprocessing.Queue()
+
+            # iterate over all parallel workers
+            for worker_id in range(self.parallel_jobs):
+                index = batch_id * self.parallel_jobs + worker_id
+                if index >= num_test_cases:
+                    continue
+
+                lm_result = result_list[index]
+                assert lm_result.model_name == model_name
+                assert lm_result.experiment_id == experiment_id
+                
+                lm_assertion_text = utils.parse_code_response(lm_result.response).strip().replace('\n', '')
+                lm_assertion_text = lm_assertion_text.split('tb_reset)')[-1].strip().split(');')[0].strip()
+                
+                ref_assertion_text = lm_result.ref_solution.strip().replace('\n', '')
+                ref_assertion_text = ref_assertion_text.split('tb_reset)')[-1].strip().split(');')[0].strip()
+                
+                signal_list = re.findall(r"'([^'\s]+)'", lm_result.user_prompt) 
+                signal_list_text = ",".join(signal_list)
+
+                p = multiprocessing.Process(
+                    target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
+                    kwargs={
+                        "tcl_file_path": self.tcl_file_path,
+                        "lm_assertion_text": lm_assertion_text,
+                        "ref_assertion_text": ref_assertion_text,
+                        "signal_list_text": signal_list_text,
+                        "sv_dir": self.temp_dir,
+                        "experiment_id": lm_result.experiment_id,
+                        "task_id": lm_result.task_id,
+                        "output_queue": output_queue
+                    }
+                )
+                processes.append(p)
+                p.start()
+            for p in processes:
+                p.join()
+            while not output_queue.empty():
+                jasper_outputs.append(output_queue.get())
+            for jasper_out_str in jasper_outputs:
+                # regex match *.sva in jasper_out_str
+                task_id_match = re.findall(r"\bTASK_ID[^\n]*", jasper_out_str)
+                if not task_id_match:
+                    raise ValueError(f"Jasper output does not contain unique id (UID)")
+                task_id = task_id_match[0].split("TASK_ID ")[-1]
+                
+                if self.debug:
+                    print(jasper_out_str)
+                result_dict = self.calculate_jg_metric(jasper_out_str)
+                eval_results.append(
+                    JGEvaluationResult(
+                        experiment_id=experiment_id,
+                        task_id=task_id,
+                        model_name=model_name,
+                        **result_dict
+                    )
+                )
+        if self.cleanup_temp_files:
+            shutil.rmtree(self.temp_dir)
+        return eval_results
+    
+
     def calculate_jg_metric(
         self,
         jasper_out_str: str,
@@ -345,7 +534,13 @@ class NL2SVAMachineEvaluator(Evaluator):
         syntax_error_match = re.findall(r"syntax error", jasper_out_str)
         if syntax_error_match:
             return {"syntax": 0.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
-        return {"syntax": 1.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
+        
+        # check for functionality error
+        # match for "Full equivalence" in jaspert output string
+        full_equiv_match = re.findall(r"Full equivalence", jasper_out_str)
+        if not full_equiv_match:            
+            return {"syntax": 1.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
+        return {"syntax": 0.0, "functionality": 1.0, "coverage": 0.0, "bound_improve": 0.0}
 
 class Design2SVAEvaluator(Evaluator):
     def __init__(

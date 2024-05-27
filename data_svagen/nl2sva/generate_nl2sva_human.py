@@ -113,7 +113,7 @@ if __name__ == "__main__":
         "--svagen_nl2sva_input_dir",
         type=str,
         help="path to raw NL2SVA input dataset",
-        default=ROOT / "annotated_instructions",
+        default=ROOT / "annotated_instructions_with_signals",
     ) 
     parser.add_argument(
         "--svagen_nl2sva_tb_dir",

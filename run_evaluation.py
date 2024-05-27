@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 import pathlib
 
 from fv_eval import evaluation, utils
@@ -24,7 +25,7 @@ if __name__ == "__main__":
         "-t",
         type=str,
         help="path to temp dir",
-        default=ROOT / "tmp",
+        default=ROOT / f"tmp_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
     )
     parser.add_argument(
         "--cleanup_temp", type=bool, help="Whether to clean up the temp dir afterwards", default=True
@@ -58,7 +59,8 @@ if __name__ == "__main__":
         save_dir = args.save_dir
 
     save_dir = save_dir.as_posix()
-    tmp_dir = args.temp_dir / args.task
+    datetime_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    tmp_dir = args.temp_dir  / args.task
     tmp_dir = tmp_dir.as_posix()
     
     if "nl2sva" in args.task:

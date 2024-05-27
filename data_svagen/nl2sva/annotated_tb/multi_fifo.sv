@@ -102,7 +102,7 @@ begin
         tb_rd_ptr <= 0;
     end else begin
         tb_wr_ptr <= tb_wr_ptr + tb_push_cnt; // wr_ptr always move when write
-        if (fifo_will_overflow) begin
+        if ((tb_fifo_filled_cnt + tb_push_cnt - tb_pop_cnt) > max_fifo_entries) begin
         tb_rd_ptr <= tb_wr_ptr + tb_push_cnt - max_fifo_entries;  // overflow will push rd_ptr
         end else begin
         tb_rd_ptr <= tb_rd_ptr + tb_pop_cnt;  // when not overflow, rd_ptr moves when fifo read
@@ -204,7 +204,7 @@ endgenerate
 
 always_comb
 begin
-    if (fifo_will_overflow) begin
+    if ((tb_fifo_filled_cnt + tb_push_cnt - tb_pop_cnt) > max_fifo_entries) begin
         tb_shift = tb_push_cnt + tb_fifo_filled_cnt - max_fifo_entries;
     end else begin
         tb_shift = tb_pop_cnt;

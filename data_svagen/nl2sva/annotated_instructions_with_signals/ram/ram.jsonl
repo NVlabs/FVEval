@@ -1,0 +1,7 @@
+{"task_id": "ram_0", "prompt": "read address is not greater than number of entries i.e. the read address is not pointing to an address not in the memory. Use the signals 're' and 'ra'."}
+{"task_id": "ram_1", "prompt": "write address is not greater than number of entries i.e. the write address is not pointing to an address not in the memory. Use the signals 'we' and 'wa'."}
+{"task_id": "ram_2", "prompt": "write through violation, where   a read from and a write to thesame address happen in same cycle, does not occur. Use the signals 'we', 'wa', 're' and 'ra'."}
+{"task_id": "ram_3", "prompt": "write after write cases, where writes to the same address happen before a read, does not occur. Use the signals 'we', 'wa', 'symbolic_constant_a', and 'addr_aw_seen'."}
+{"task_id": "ram_4", "prompt": "read after read cases, where read to the same address happen before a write, does not occur. Use the signals 're', 'ra', 'symbolic_constant_a', and 'addr_ar_seen'."}
+{"task_id": "ram_5", "prompt": "read before write cases, where read to the same address happen before a write, does not occur. Use the signals 're', 'ra', 'symbolic_constant_a', and 'addr_first_aw_seen'."}
+{"task_id": "ram_6", "prompt": "max latency between a write and following read is within the specified write-read latency threshold. Use the signal 'latency_cnt'."}

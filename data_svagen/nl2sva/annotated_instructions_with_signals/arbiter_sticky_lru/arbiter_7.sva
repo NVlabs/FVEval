@@ -1,0 +1,5 @@
+for (genvar i=0;i<NUM_OF_CLIENTS;i++) begin
+    asrt: assert property (@(posedge clk) disable iff (tb_reset)
+        (lru_gnt_num > lru[i] && !busy && !cont_gnt && !arbiter_in_sticky && !tb_gnt[i] && tb_req[i] != 1'b0) !== 1'b1
+    );
+end

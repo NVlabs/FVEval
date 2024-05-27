@@ -1,0 +1,5 @@
+{"task_id": "counter_0", "prompt": "that the counter does not overflow. Use the signals 'count', 'count_d1', 'jump_vld_d1', and 'tb_reset_1_cycle_pulse_shadow'."}
+{"task_id": "counter_1", "prompt": "that the counter does not underflow. Use the signals 'count', 'count_d1', 'jump_vld_d1', and 'tb_reset_1_cycle_pulse_shadow'."}
+{"task_id": "counter_2", "prompt": "that the counter count value is within legal range. Use the signal 'count'."}
+{"task_id": "counter_3", "prompt": "that for the jump case, counter is properly assigned with the jump value. Use the signals 'count' and 'jump_vld_d1'."}
+{"task_id": "counter_4", "prompt": "that if there is no increment, decrement or jump, the counter should retain its value. Use the signals 'count', 'count_d1', 'jump_vld_d1', 'incr_vld_d1', 'decr_vld_d1', and 'tb_reset_1_cycle_pulse_shadow'."}

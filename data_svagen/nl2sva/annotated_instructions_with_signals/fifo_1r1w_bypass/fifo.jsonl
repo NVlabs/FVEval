@@ -1,0 +1,5 @@
+{"task_id": "fifo_0", "prompt": "that the FIFO does not underflow, assuming no bypass. Use the signals 'rd_pop' and 'fifo_empty'."}
+{"task_id": "fifo_1", "prompt": "that the FIFO does not overflow, assuming no bypass. Use the signals 'wr_push' and 'fifo_full'."}
+{"task_id": "fifo_2", "prompt": "that the fifo output and read data are consistent, assuming no bypass. Use the signals 'rd_pop', 'rd_data', 'wr_push', 'wr_data', 'fifo_empty', and 'fifo_out_data'."}
+{"task_id": "fifo_3", "prompt": "that when response is pending, data is eventually popped from the FIFO. Use the signals 'rd_pop' and 'fifo_empty'."}
+{"task_id": "fifo_4", "prompt": "that when there is a write push to the FIFO, data is eventually popped. Use the signals 'rd_pop' and 'wr_push'."}

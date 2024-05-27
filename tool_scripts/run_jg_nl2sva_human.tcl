@@ -6,6 +6,7 @@
 # Possible outcomes:
 # 1. Syntax error in the testbench; this will be caught during elaboration and script will immediately exit
 # 2. Success: script completes assertion signal match, prints to STDOUT the list of signals used in each assertion
+
 # Analyze property files
 clear -all
 analyze -clear
@@ -14,11 +15,18 @@ analyze -sv12 ${SV_DIR}/${EXP_ID}_${TASK_ID}.sva
 elaborate
 # set design_info [get_design_info]
 
-set lm_assertion [get_property_list -include {name {*asrt*} type assert}]
-set reference_assertion [get_property_list -include {name {*reference*} type assert}]
+clear -all
+include tool_scripts/pec/pec.tcle
+set signal_list [split $SIGNAL_LIST ","]
+prop_eq_checker $LM_ASSERT_TEXT $REF_ASSERT_TEXT "" "" $signal_list
 
-set lm_coi [get_fanin -transitive [lindex $lm_assertion 0]]
-set ref_coi [get_fanin -transitive [lindex $reference_assertion 0]]
+# set lm_assertion [get_property_list -include {name {*asrt*} type assert}]
+# set reference_assertion [get_property_list -include {name {*reference*} type assert}]
 
-puts "LM_COI: $lm_coi"
-puts "REF_COI: $ref_coi"
+# set reference_assertion_signals [get_property_info [lindex $reference_assertion 0] -include {signal}]
+
+# set lm_coi [get_fanin -transitivnl2sva_human_arbiter_reverse_priority_arbiter_000e [lindex $lm_assertion 0]]
+# set ref_coi [get_fanin -transitive [lindex $reference_assertion 0]]
+
+# puts "LM_COI: $lm_coi"
+# puts "REF_COI: $ref_coi"

@@ -1,0 +1,2 @@
+{"task_id": "fsm_transition_0", "prompt": "that the FSM must always transition from a particular state to another given state (could be more than 1 state). Use the signals 'fsm_state' and 'tb_fsm_sequence'."}
+{"task_id": "fsm_transition_1", "prompt": "that each of the FSM states provided as the input sequence should end in the final end state. Use the signal 'match_tracker'."}

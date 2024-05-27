@@ -2,6 +2,7 @@ import errno
 import gzip
 import json
 import os
+import re
 from typing import Iterable, Dict
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -80,3 +81,14 @@ def write_jsonl(filename: str, data: Iterable[Dict], append: bool = False):
             for x in data:
                 if x:
                     fp.write((json.dumps(x) + "\n").encode("utf-8"))
+
+def parse_code_response(lm_response_str) -> str:
+    code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
+    if len(code_tags) > 0:
+        for code in code_tags:
+            lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
+    code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
+    if len(code_tags) > 0:
+        for code in code_tags:
+            lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
+    return lm_response_str

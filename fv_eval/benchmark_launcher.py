@@ -64,21 +64,21 @@ class BenchmarkLauncher(object):
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         return []
     
-    def parse_code_response(self, lm_response_str) -> str:
-        code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
-        if len(code_tags) > 0:
-            for code in code_tags:
-                lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
-        code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
-        if len(code_tags) > 0:
-            for code in code_tags:
-                lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
-        return lm_response_str
+    # def parse_code_response(self, lm_response_str) -> str:
+    #     code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
+    #     if len(code_tags) > 0:
+    #         for code in code_tags:
+    #             lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
+    #     code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
+    #     if len(code_tags) > 0:
+    #         for code in code_tags:
+    #             lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
+    #     return lm_response_str
 
     def _prepare_models(self, model_name_list: str):
         TOGETHER_MODEL_DICT = {
             "llama-3-70b": "meta-llama/Llama-3-70b-chat-hf",
-            "code-llama-70b": "meta-llama/CodeLlama-70b-Instruct-hf",
+            "code-llama-70b": "codellama/CodeLlama-70b-Instruct-hf",
             "llama-2-70b": "meta-llama/Llama-2-70b-chat-hf",
             "mixtral-8x22b": "mistralai/Mixtral-8x22B-Instruct-v0.1",
             "mixtral-8x7b": "mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -114,6 +114,9 @@ class BenchmarkLauncher(object):
                 base_url = "https://api.openai.com/v1"
                 if "gpt-4-turbo" in model_name:
                     full_model_name = "gpt-4-0125-preview"
+                elif model_name == "gpt-4o":
+                    full_model_name = "gpt-4o"
+                    model_name = "gpt-4o"
                 elif model_name == "gpt-4":
                     full_model_name = "gpt-4-0613"
                 elif "gpt-3.5-turbo" in model_name:
@@ -321,7 +324,7 @@ class NL2SVALauncher(BenchmarkLauncher):
     def package_testbench(self, row: InputData, lm_response: str):
         question_prompt = self.generate_question_prompt(row)
         reference_assertion_text = row.ref_solution.replace("asrt", "reference")
-        assertion_text = self.parse_code_response(lm_response)
+        assertion_text = utils.parse_code_response(lm_response)
 
         # retrieve question text
         commented_question_text = "\n//".join(question_prompt.split("\n"))
@@ -472,7 +475,7 @@ class Design2SVALauncher(BenchmarkLauncher):
         return user_prompt_prefix
 
     def package_testbench(self, row: InputData, lm_response: str):
-        testbench_lm = self.parse_code_response(lm_response)
+        testbench_lm = utils.parse_code_response(lm_response)
         if not "endmodule" in testbench_lm:
             testbench_lm += "\nendmodule"
         bind_statement = row.testbench.split("endmodule")[-1]
@@ -589,7 +592,7 @@ class HelperGenLauncher(BenchmarkLauncher):
 
 
     def package_testbench(self, row: InputData, lm_response: str):
-        assertion_text = self.parse_code_response(lm_response)
+        assertion_text = utils.parse_code_response(lm_response)
 
         # retrieve question text
         testbench_text = row.testbench
