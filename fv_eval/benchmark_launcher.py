@@ -475,30 +475,33 @@ class Design2SVALauncher(BenchmarkLauncher):
         return user_prompt_prefix
 
     def package_testbench(self, row: InputData, lm_response: str):
-        testbench_lm = utils.parse_code_response(lm_response)
-        if not "endmodule" in testbench_lm:
-            testbench_lm += "\nendmodule"
-        bind_statement = row.testbench.split("endmodule")[-1]
-        
+        testbench_text_prefix = row.testbench
+        testbench_text_prefix = testbench_text_prefix.split("assign tb_reset")[0]
+        testbench_text_prefix += "assign tb_reset = (reset_ == 1'b0);\n"
+        testbench_text_postfix = "endmodule\n" + row.testbench.split("endmodule")[-1]
+        lm_response = utils.parse_code_response(lm_response)
         packaged_tb_text = (
-            testbench_lm
-            + bind_statement
+            testbench_text_prefix
+            + "\n"
+            + lm_response
+            + "\n"
+            +testbench_text_postfix
         )
         return packaged_tb_text
 
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         if cot_strategy == "default":
-            return [("question", prompts_svagen_design2sva.SVAGEN_QUESTION)]
+            return [("question", prompts_svagen_design2sva.SVAGEN_DIRECT_QUESTION)]
         elif cot_strategy == "plan-act":
             return [
                 ("plan", prompts_svagen_design2sva.SVAGEN_PLANNING_QUESTION),
-                ("question", prompts_svagen_design2sva.SVAGEN_QUESTION),
+                ("question", prompts_svagen_design2sva.SVAGEN_ASSERTION_QUESTION),
             ]
         elif cot_strategy == "plan-model-act":
             return [
                 ("plan", prompts_svagen_design2sva.SVAGEN_PLANNING_QUESTION),
                 ("model", prompts_svagen_design2sva.SVAGEN_MODELING_QUESTION),
-                ("question", prompts_svagen_design2sva.SVAGEN_QUESTION),
+                ("question", prompts_svagen_design2sva.SVAGEN_ASSERTION_QUESTION),
             ]
         else:
             utils.print_error("ERROR", f"Unsupported COT strategy: {cot_strategy}")
@@ -510,7 +513,7 @@ class Design2SVALauncher(BenchmarkLauncher):
         temperature: float = 0.0,
         max_tokens: int = 100,
         cot_question_chain: list[tuple[str, str]] = [
-            ("question", prompts_svagen_design2sva.SVAGEN_QUESTION)
+            ("question", prompts_svagen_design2sva.SVAGEN_DIRECT_QUESTION)
         ],
     ):
         results = []
@@ -560,9 +563,9 @@ class Design2SVALauncher(BenchmarkLauncher):
                 user_prompt=user_prompt,
                 output_tb=packaged_tb_text,
                 design_rtl=row.prompt,               
-                cot_response=cot_responses,
+                cot_response=cot_response,
             )
-            results.append(response)
+            results.append(response)        
         return results
     
 

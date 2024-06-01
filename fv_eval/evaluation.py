@@ -345,16 +345,6 @@ class NL2SVAHumanEvaluator(Evaluator):
                 signal_list.extend(params)
                 signal_list_text = ",".join(signal_list)
 
-                fv_tool_execution.launch_jg_with_queue_custom_equiv_check(
-                    tcl_file_path=self.tcl_file_path,
-                    lm_assertion_text=lm_assertion_text,
-                    ref_assertion_text=ref_assertion_text,
-                    signal_list_text=signal_list_text,
-                    sv_dir=self.temp_dir,
-                    experiment_id=lm_result.experiment_id,
-                    task_id=lm_result.task_id,
-                    output_queue=output_queue
-                )
                 
                 p = multiprocessing.Process(
                     target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
@@ -377,7 +367,6 @@ class NL2SVAHumanEvaluator(Evaluator):
                 jasper_outputs.append(output_queue.get())
             
             for jasper_out_str in jasper_outputs:
-                print(jasper_out_str)
                 # regex match *.sva in jasper_out_str
                 task_id_match = re.findall(r"\bTASK_ID[^\n]*", jasper_out_str)
                 if not task_id_match:
@@ -414,7 +403,7 @@ class NL2SVAHumanEvaluator(Evaluator):
         full_equiv_match = re.findall(r"Full equivalence", jasper_out_str)
         if not full_equiv_match:            
             return {"syntax": 1.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
-        return {"syntax": 0.0, "functionality": 1.0, "coverage": 0.0, "bound_improve": 0.0}
+        return {"syntax": 1.0, "functionality": 1.0, "coverage": 0.0, "bound_improve": 0.0}
     
 class NL2SVAMachineEvaluator(Evaluator):
     def __init__(
@@ -470,20 +459,30 @@ class NL2SVAMachineEvaluator(Evaluator):
                 index = batch_id * self.parallel_jobs + worker_id
                 if index >= num_test_cases:
                     continue
-
                 lm_result = result_list[index]
                 assert lm_result.model_name == model_name
                 assert lm_result.experiment_id == experiment_id
                 
                 lm_assertion_text = utils.parse_code_response(lm_result.response).strip().replace('\n', '')
-                lm_assertion_text = lm_assertion_text.split('tb_reset)')[-1].strip().split(');')[0].strip()
+                lm_assertion_text = lm_assertion_text.split('clk)')[-1].strip().split(');')[0].strip()
                 
                 ref_assertion_text = lm_result.ref_solution.strip().replace('\n', '')
-                ref_assertion_text = ref_assertion_text.split('tb_reset)')[-1].strip().split(');')[0].strip()
+                ref_assertion_text = ref_assertion_text.split('clk)')[-1].strip().split(');')[0].strip()
                 
-                signal_list = re.findall(r"'([^'\s]+)'", lm_result.user_prompt) 
+                signal_list = re.findall(r"\bsig_\w+", lm_result.ref_solution)
+                signal_list = list(set(signal_list))
                 signal_list_text = ",".join(signal_list)
 
+                # fv_tool_execution.launch_jg_with_queue_custom_equiv_check(
+                #     tcl_file_path=self.tcl_file_path,
+                #     lm_assertion_text=lm_assertion_text,
+                #     ref_assertion_text=ref_assertion_text,
+                #     signal_list_text=signal_list_text,
+                #     sv_dir=self.temp_dir,
+                #     experiment_id=lm_result.experiment_id,
+                #     task_id=lm_result.task_id,
+                #     output_queue=output_queue
+                # )
                 p = multiprocessing.Process(
                     target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
                     kwargs={
@@ -540,7 +539,7 @@ class NL2SVAMachineEvaluator(Evaluator):
         full_equiv_match = re.findall(r"Full equivalence", jasper_out_str)
         if not full_equiv_match:            
             return {"syntax": 1.0, "functionality": 0.0, "coverage": 0.0, "bound_improve": 0.0}
-        return {"syntax": 0.0, "functionality": 1.0, "coverage": 0.0, "bound_improve": 0.0}
+        return {"syntax": 1.0, "functionality": 1.0, "coverage": 0.0, "bound_improve": 0.0}
 
 class Design2SVAEvaluator(Evaluator):
     def __init__(
@@ -587,7 +586,8 @@ class Design2SVAEvaluator(Evaluator):
     def calculate_jg_metric(
         self,
         jasper_out_str: str,
-    ):
+    ):  
+        print(jasper_out_str)
         # check for syntax error
         top_module = re.findall(r"top: [^\n]*", jasper_out_str)
         if not top_module:
@@ -606,18 +606,18 @@ class Design2SVAEvaluator(Evaluator):
         proof_result_list = proof_result_match[-1].split(":")[-1].strip().split(" ")
         # count # of "proven"
         functionality_score  = float(proof_result_list.count("proven")) / float(len(proof_result_list)) 
-
+        return {"syntax": syntax_score, "functionality": functionality_score, "coverage": 0.0, "bound_improve": 0.0}
         # parse formal coverage
-        cov_report_match = re.findall(r"\bformal_coverage[^\n]*", jasper_out_str)
-        if not cov_report_match:
-            return {"syntax": syntax_score, "functionality": functionality_score, "coverage": 0.0, "bound_improve": 0.0}
-        testbench_name = f"{top_module_name}"
-        escaped_testbench_name = re.escape(testbench_name)
-        testbench_cov_match = re.findall(fr"\b{escaped_testbench_name}\b[^\n]*", cov_report_match[0])
-        if not testbench_cov_match:
-            return {"syntax": syntax_score, "functionality": functionality_score, "coverage": 0.0, "bound_improve": 0.0}
-        cov_value = re.search(r"coverage_percentage {\s*(\d+\.\d+)%", testbench_cov_match[0]).group(1)
-        return {"syntax": syntax_score, "functionality": functionality_score, "coverage": float(cov_value), "bound_improve": 0.0}
+        # cov_report_match = re.findall(r"\bformal_coverage[^\n]*", jasper_out_str)
+        # if not cov_report_match:
+        #     return {"syntax": syntax_score, "functionality": functionality_score, "coverage": 0.0, "bound_improve": 0.0}
+        # testbench_name = f"{top_module_name}"
+        # escaped_testbench_name = re.escape(testbench_name)
+        # testbench_cov_match = re.findall(fr"\b{escaped_testbench_name}\b[^\n]*", cov_report_match[0])
+        # if not testbench_cov_match:
+        #     return {"syntax": syntax_score, "functionality": functionality_score, "coverage": 0.0, "bound_improve": 0.0}
+        # cov_value = re.search(r"coverage_percentage {\s*(\d+\.\d+)%", testbench_cov_match[0]).group(1)
+        # return {"syntax": syntax_score, "functionality": functionality_score, "coverage": float(cov_value), "bound_improve": 0.0}
 
 
 

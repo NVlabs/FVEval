@@ -82,13 +82,21 @@ def write_jsonl(filename: str, data: Iterable[Dict], append: bool = False):
                 if x:
                     fp.write((json.dumps(x) + "\n").encode("utf-8"))
 
+# def parse_code_response(lm_response_str) -> str:
+#     code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
+#     if len(code_tags) > 0:
+#         # remove all substrings before and after code_tag
+#         for code in code_tags:
+#             lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
+#     code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
+#     if len(code_tags) > 0:
+#         for code in code_tags:
+#             lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
+#     return lm_response_str
+
 def parse_code_response(lm_response_str) -> str:
-    code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
-    if len(code_tags) > 0:
-        for code in code_tags:
-            lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
-    code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
-    if len(code_tags) > 0:
-        for code in code_tags:
-            lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
-    return lm_response_str
+    if "```systemverilog" in lm_response_str:
+        lm_response_str = lm_response_str.split("```systemverilog")[-1]
+    if "```" in lm_response_str:
+        lm_response_str = lm_response_str.split("```")[0]
+    return lm_response_str.strip()

@@ -47,6 +47,8 @@ if __name__ == "__main__":
         dataset_dir = ROOT / "data_agr" / "helpergen" / "data"
         assert dataset_dir.is_dir()
         dataset_dir = dataset_dir.as_posix()
+    else:
+        dataset_dir = args.dataset_dir
     if not args.save_dir:
         timestamp_str = datetime.now().strftime("%Y%m%d%H")
         save_dir = ROOT / f"results_helpergen/{args.cot_strategy}/{timestamp_str}"

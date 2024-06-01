@@ -277,7 +277,8 @@ def gen_module_instatiation(
 
 
 def gen_pipeline(
-    depths: int,
+    num_stages: int,
+    depth: int,
     op_recursive_depth: int,
     ensure_consistency: bool = False
 ) -> str:
@@ -290,33 +291,42 @@ def gen_pipeline(
     if ensure_consistency: 
         operations_list = []
         dual_operations_list = []
-        for _ in depths:
+        for _ in range(num_stages):
             ops = random_arithemtic_pairs(max_depth=op_recursive_depth)
             operations_list.append(ops[0])
             dual_operations_list.append(ops[1])
     else:
         operations_list = [
             random_single_input_arithmetic(max_depth=op_recursive_depth)
-            for _ in depths
+            for _ in range(num_stages)
         ]
 
     pipeline_module_rtl_text = []
     sv_modules_rtl_text = []
 
-    module_stage_indices = [0] + list(accumulate(depths))
-    sv_modules_indices = list(range(len(depths)))
+    # randomly assign latencies of each submodule, such that they add up to at most depth cycles
+    sv_modules_depths = [
+        1 if random.random() < 0.5 else random.randint(1, depth // 2)
+        for _ in range(num_stages)
+    ]
+    while sum(sv_modules_depths) > depth:
+        sv_modules_depths[random.randint(0, num_stages - 1)] = 1
+    remaining_depth = depth - sum(sv_modules_depths)
+    module_stage_indices = [0] + list(accumulate(sv_modules_depths))
+
+    sv_modules_indices = list(range(num_stages))
     random.shuffle(sv_modules_indices)
 
     # package into a list of dictionaries
     operations = [
         {
             "op_str": operations_list[i],
-            "depth": depths[i],
+            "depth": sv_modules_depths[i],
             "stage_idx": module_stage_indices[i],
             "idx_shuffled": sv_modules_indices[i],
             "idx_orig": i,
         }
-        for i in range(len(depths))
+        for i in range(num_stages)
     ]
 
     # for downstream generation, duplicate entries with depth > 1 in operations_list
@@ -346,19 +356,19 @@ def gen_pipeline(
                 depth=op_dict["depth"],
             )
         )
-    # if remaining_depth > 0:
-    #     sv_modules_rtl_text.append(
-    #         gen_arith_pipeline_module(
-    #             module_idx=num_stages, operation_str="x", depth=remaining_depth
-    #         )
-    #     )
-    #     pipeline_module_rtl_text.append(
-    #         gen_module_instatiation(
-    #             module_idx=num_stages,
-    #             stage_idx=sum(sv_modules_depths),
-    #             depth=remaining_depth,
-    #         )
-    #     )
+    if remaining_depth > 0:
+        sv_modules_rtl_text.append(
+            gen_arith_pipeline_module(
+                module_idx=num_stages, operation_str="x", depth=remaining_depth
+            )
+        )
+        pipeline_module_rtl_text.append(
+            gen_module_instatiation(
+                module_idx=num_stages,
+                stage_idx=sum(sv_modules_depths),
+                depth=remaining_depth,
+            )
+        )
     random.shuffle(sv_modules_rtl_text)
     # random.shuffle(pipeline_module_rtl_text)
     return (
@@ -385,7 +395,7 @@ Higher-level methods for pipeline design SV and testbench SV code generation
 
 
 def gen_pipeline_design(
-    depths: list[int], width: int = 32, op_recursive_depth: int = 2,
+    num_stages: int, depth: int, width: int = 32, op_recursive_depth: int = 2,
     ensure_consistency: bool=False
 ):
     ptr = 0
@@ -393,7 +403,7 @@ def gen_pipeline_design(
     # pipeline_module_rtl_text = PIPELINE_PREFIX
     full_rtl_text = f"`define WIDTH {width}\n`define DEPTH {depth}\n"
     sv_modules_rtl_text, pipeline_module_rtl_text, operations_list = gen_pipeline(
-        depths=depths, op_recursive_depth=op_recursive_depth,
+        num_stages=num_stages, depth=depth, op_recursive_depth=op_recursive_depth,
         ensure_consistency=ensure_consistency
     )
     pipeline_module_rtl_text = PIPELINE_PREFIX + pipeline_module_rtl_text
@@ -550,14 +560,15 @@ args:
 
 def generate_testcase(
     num_pipelines: int,
-    depths: list[int],
+    num_stages: int,
+    depth: int,
     width: int = 32,
     op_recursive_depth: int = 2,
 ):
     if num_pipelines == 1:
-        depth = sum(depths)
         pipeline_rtl, operations_list = gen_pipeline_design(
-            depths=depths,
+            num_stages=num_stages,
+            depth=depth,
             op_recursive_depth=op_recursive_depth,
             width=width,
         )
@@ -566,12 +577,10 @@ def generate_testcase(
         )
         return pipeline_rtl, pipeline_tb_rtl
     else:
-        assert num_pipelines == 2
-        assert sum(depths[0]) == sum(depths[1])
-        depth = sum(depths[0])
         pipeline_rtl, operations_list = gen_multi_pipeline_design(
             num_pipelines=num_pipelines,
-            depths=depths,
+            num_stages=num_stages,
+            depth=depth,
             op_recursive_depth=op_recursive_depth,
             width=width,
         )
@@ -621,54 +630,26 @@ if __name__ == "__main__":
     # single pipeline & no guarantee of e2e data equivalence
     for ns in [2, 5, 10]:
         for width in [128, 256]:
-            for opd in [2, 3, 4]:
-                for i in range(args.num_test_cases):
-                    depths = []
-                    for _ in range(ns):
-                        d = 1 if random.random() < 0.7 else random.randint(2, 4)
-                        depths.append(d)
-                    depth = sum(depths)
-                    tag=f"ns_{ns}-w_{width}-d_{depth}-{i}"
-                    pipeline_rtl, pipeline_tb_rtl = generate_testcase(
-                        num_pipelines=1,
-                        depths=depths,
-                        width=width,
-                        op_recursive_depth=opd,
-                    )
-                    dataset.append(
-                        InputData(
-                            design_name=experiment_id,
-                            task_id=tag,
-                            prompt=pipeline_rtl,
-                            ref_solution="",
-                            testbench=pipeline_tb_rtl,
+            for depth in [10, 20, 50]:
+                for opd in [2, 3, 4]:
+                    for i in range(args.num_test_cases):
+                        tag=f"ns_{ns}-w_{width}-d_{depth}-{i}"
+                        pipeline_rtl, pipeline_tb_rtl = generate_testcase(
+                            num_pipelines=1,
+                            num_stages=ns,
+                            depth=depth,
+                            width=width,
+                            op_recursive_depth=opd,
                         )
-                    )
-    # for ns in [2]:
-    #     for width in [128]:
-    #         for opd in [3]:
-    #             for i in range(args.num_test_cases):
-    #                 depths = []
-    #                 for _ in range(ns):
-    #                     d = 1 if random.random() < 0.7 else random.randint(2, 4)
-    #                     depths.append(d)
-    #                 depth = sum(depths)
-    #                 tag=f"ns_{ns}-w_{width}-d_{depth}-{i}"
-    #                 pipeline_rtl, pipeline_tb_rtl = generate_testcase(
-    #                     num_pipelines=1,
-    #                     depths=depths,
-    #                     width=width,
-    #                     op_recursive_depth=opd,
-    #                 )
-    #                 dataset.append(
-    #                     InputData(
-    #                         design_name=experiment_id,
-    #                         task_id=tag,
-    #                         prompt=pipeline_rtl,
-    #                         ref_solution="",
-    #                         testbench=pipeline_tb_rtl,
-    #                     )
-    #                 )
+                        dataset.append(
+                            InputData(
+                                design_name=experiment_id,
+                                task_id=tag,
+                                prompt=pipeline_rtl,
+                                ref_solution="",
+                                testbench=pipeline_tb_rtl,
+                            )
+                        )
     df = pd.DataFrame([asdict(d) for d in dataset])
     df.to_csv(args.save_dir / f"design2sva_{experiment_id}.csv", index=False)
     print(f"generated {len(df)} cases")

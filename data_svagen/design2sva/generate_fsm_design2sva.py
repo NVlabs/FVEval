@@ -249,7 +249,7 @@ if __name__ == "__main__":
         "-n",
         type=int,
         help="number of random pipeline designs to create per category",
-        default=10,
+        default=1,
     )
     parser.add_argument(
         "--seed",
@@ -268,13 +268,36 @@ if __name__ == "__main__":
 
     dataset = []
     experiment_id = "fsm"
-    for i in range(args.num_test_cases):
-        for ni in [4, 8]:
-            for nn in [16, 32]:
-                for ne in [40, 80]:
-                    for wd in [32, 64]:
-                        for opd in [2, 4]:
-                            tag = f"{ni}_{nn}_{ne}_{wd}_{opd}"
+    # for ni_log in [1, 2, 3]:
+    #     for nn_log in [3, 4, 5]:
+    #         for ne_multiplier in [2, 3, 4]:
+    #             for wd in [32]:
+    #                 for opd in [2, 4]:
+    #                     for i in range(args.num_test_cases):
+    #                         ni = 2**ni_log
+    #                         nn = 2**nn_log
+    #                         ne = nn * ne_multiplier
+    #                         tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
+    #                         fsm_rtl, fsm_tb_rtl = generate_testcase(num_inputs=ni, num_nodes=nn, num_edges=ne, width=wd, op_recursive_depth=opd)
+    #                         dataset.append(
+    #                             InputData(
+    #                                 design_name=experiment_id,
+    #                                 task_id=tag,
+    #                                 prompt=fsm_rtl,
+    #                                 ref_solution="",
+    #                                 testbench=fsm_tb_rtl,
+    #                             )
+    #                         )
+    for ni_log in [4]:
+        for nn_log in [3, 4]:
+            for ne_multiplier in [2]:
+                for wd in [32]:
+                    for opd in [2, 4]:
+                        for i in range(args.num_test_cases):
+                            ni = 2**ni_log
+                            nn = 2**nn_log
+                            ne = nn * ne_multiplier
+                            tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
                             fsm_rtl, fsm_tb_rtl = generate_testcase(num_inputs=ni, num_nodes=nn, num_edges=ne, width=wd, op_recursive_depth=opd)
                             dataset.append(
                                 InputData(

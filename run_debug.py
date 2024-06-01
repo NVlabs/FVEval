@@ -81,7 +81,6 @@ if __name__ == "__main__":
                 parallel_jobs=args.nparallel,
                 debug=args.debug,
             )
-            evaluator.run_evaluation()
     elif "design2sva" in args.task:
         evaluator = evaluation.Design2SVAEvaluator(
             llm_output_dir=args.llm_output_dir,
@@ -91,8 +90,6 @@ if __name__ == "__main__":
             parallel_jobs=args.nparallel,
             debug=args.debug,
         )
-        evaluator.write_design_sv(results_list=evaluator.llm_results[0][1])
-        evaluator.write_testbench_sv(results_list=evaluator.llm_results[0][1])
     elif "helpergen" in args.task:
         evaluator = evaluation.HelperGenEvaluator(
             llm_output_dir=args.llm_output_dir,
@@ -102,4 +99,5 @@ if __name__ == "__main__":
             parallel_jobs=args.nparallel,
             debug=args.debug,
         )
-        evaluator.run_evaluation()
+    evaluator.write_design_sv(results_list=evaluator.llm_results[0][1])
+    evaluator.write_testbench_sv(results_list=evaluator.llm_results[0][1])

@@ -48,6 +48,8 @@ if __name__ == "__main__":
         dataset_dir = ROOT / "data_svagen" / "design2sva" / "data"
         assert dataset_dir.is_dir()
         dataset_dir = dataset_dir.as_posix()
+    else:
+        dataset_dir = args.dataset_dir
     
     timestamp_str = datetime.now().strftime("%Y%m%d%H")
     if not args.save_dir:

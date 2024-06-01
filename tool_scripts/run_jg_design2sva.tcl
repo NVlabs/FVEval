@@ -9,7 +9,7 @@
 
 # Analyze property files
 clear -all
-check_cov -init
+# check_cov -init
 analyze -clear
 analyze -sv12 ${SV_DIR}/${EXP_ID}_${TASK_ID}.sv
 analyze -sv12 ${SV_DIR}/${EXP_ID}_${TASK_ID}.sva
@@ -22,9 +22,11 @@ set_reset_max_iterations 1000
 clock clk
 reset -expression (${top}_tb_inst.tb_reset)
 
+prove -all
+
 # Run coverage
-check_cov -measure -type stimuli -silent -time_limit 5m
-check_cov -measure -type proof -silent -time_limit 5m
-check_cov -report -type formal -silent
+# check_cov -measure -type stimuli -silent -time_limit 5m
+# check_cov -measure -type proof -silent -time_limit 5m
+# check_cov -report -type formal -silent
 
 puts "proofs: [get_status [get_property_list -include {type {assert} disabled {0}}]]"
