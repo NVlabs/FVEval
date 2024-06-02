@@ -7,13 +7,9 @@ A helper assertion is an assertion that
 
 """
 
-AGR_HELPERGEN_DUT_PREAMBLE = (
-    """Here is the design RTL:\n"""
-)
+AGR_HELPERGEN_DUT_PREAMBLE = """Here is the design RTL:\n"""
 
-AGR_HELPERGEN_TB_PREAMBLE = (
-    """Here is the testbench with the target assertion to generate helpers for marked as 'target':\n"""
-)
+AGR_HELPERGEN_TB_PREAMBLE = """Here is the testbench with the target assertion to generate helpers for marked as 'target':\n"""
 
 AGR_HELPERGEN_QUESTION_COT_THOUGHT = """ Question: 
 Generate a helper assertion for the specified target assertion.

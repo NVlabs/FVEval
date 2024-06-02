@@ -22,7 +22,7 @@ set_reset_max_iterations 1000
 clock clk
 reset -expression (${top}_tb_inst.tb_reset)
 
-prove -all
+prove -all -time_limit 1m
 
 # Run coverage
 # check_cov -measure -type stimuli -silent -time_limit 5m

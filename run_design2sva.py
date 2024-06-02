@@ -7,7 +7,9 @@ from fv_eval import data, utils, benchmark_launcher
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent
 
-    parser = argparse.ArgumentParser(description="Run LLM Inference for the FVEval-Design2SVA Benchmark")
+    parser = argparse.ArgumentParser(
+        description="Run LLM Inference for the FVEval-Design2SVA Benchmark"
+    )
     parser.add_argument(
         "--dataset_dir",
         "-d",
@@ -21,7 +23,17 @@ if __name__ == "__main__":
         help="path to input dataset directory, potentially holding multiple .csv files",
     )
     parser.add_argument(
-        "--temperature", type=float, help="LLM decoder sampling temperature", default=0.0
+        "--temperature",
+        type=float,
+        help="LLM decoder sampling temperature",
+        default=0.0,
+    )
+    parser.add_argument(
+        "--num_assertions",
+        "-k",
+        type=int,
+        help="Measure out of k assertions",
+        default=1,
     )
     parser.add_argument(
         "--models",
@@ -50,10 +62,10 @@ if __name__ == "__main__":
         dataset_dir = dataset_dir.as_posix()
     else:
         dataset_dir = args.dataset_dir
-    
+
     timestamp_str = datetime.now().strftime("%Y%m%d%H")
     if not args.save_dir:
-        save_dir = ROOT / f"results_design2sva/{args.cot_strategy}/{timestamp_str}"
+        save_dir = ROOT / f"results_design2sva/{args.cot_strategy}_{args.num_assertions}/{timestamp_str}"
         save_dir = save_dir.as_posix()
     else:
         save_dir = args.save_dir
@@ -66,11 +78,11 @@ if __name__ == "__main__":
             dataset_path=dataset_path,
             task="design2sva",
             model_name_list=args.models.split(";"),
-            debug=args.debug
+            num_assertions=args.num_assertions,
+            debug=args.debug,
         )
         bmark_launcher.run_benchmark(
             temperature=args.temperature,
             max_tokens=2000,
-            cot_strategy=args.cot_strategy
+            cot_strategy=args.cot_strategy,
         )
-        

@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 setup(
     name="fv-eval",
     py_modules=["fv-eval"],
-    version="1.0",
+    version="0.1",
     description="",
     author="Nvidia",
     packages=find_packages(),

@@ -12,7 +12,6 @@ import pandas as pd
 from fv_eval.data import read_sv_from_dir, InputData
 
 
-
 def read_reference_solutions(solutions_dir: str, dut_name_list: Iterable[str]) -> Dict:
     benchmark_reference_outputs = {}
     for dut_name in dut_name_list:
@@ -90,14 +89,16 @@ def preprocess_svagen_data(
                     task_id=task_id,
                     prompt=prompt,
                     ref_solution=ref_solution,
-                    testbench=testbench_context
+                    testbench=testbench_context,
                 )
             )
     if debug:
         pd.DataFrame([asdict(d) for d in full_dataset]).to_csv(
             save_dir + f"/nl2sva_human_debug.csv", sep=",", index=False
         )
-        print(f"Debug mode: Saved to {save_dir + f'/nl2sva_human_debug.csv'} | {len(full_dataset)}")
+        print(
+            f"Debug mode: Saved to {save_dir + f'/nl2sva_human_debug.csv'} | {len(full_dataset)}"
+        )
     else:
         pd.DataFrame([asdict(d) for d in full_dataset]).to_csv(
             save_dir + f"/nl2sva_human.csv", sep=",", index=False
@@ -108,13 +109,15 @@ def preprocess_svagen_data(
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent
 
-    parser = argparse.ArgumentParser(description="Run LLM Inference for the FVEval-SVAGen Benchmark")
+    parser = argparse.ArgumentParser(
+        description="Run LLM Inference for the FVEval-SVAGen Benchmark"
+    )
     parser.add_argument(
         "--svagen_nl2sva_input_dir",
         type=str,
         help="path to raw NL2SVA input dataset",
         default=ROOT / "annotated_instructions_with_signals",
-    ) 
+    )
     parser.add_argument(
         "--svagen_nl2sva_tb_dir",
         type=str,

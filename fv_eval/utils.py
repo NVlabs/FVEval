@@ -7,27 +7,36 @@ from typing import Iterable, Dict
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
 
-def print_error(header:str, body:str):
+class bcolors:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
+def print_error(header: str, body: str):
     print(f"{bcolors.FAIL}{header}:{bcolors.ENDC}\n{body}")
 
-def print_lm_response(header:str, body:str):
-    print(f"{bcolors.OKCYAN}{header}:{bcolors.ENDC}\n{bcolors.BOLD}{body}{bcolors.ENDC}")
 
-def print_user_prompt(header:str, body:str):
+def print_lm_response(header: str, body: str):
+    print(
+        f"{bcolors.OKCYAN}{header}:{bcolors.ENDC}\n{bcolors.BOLD}{body}{bcolors.ENDC}"
+    )
+
+
+def print_user_prompt(header: str, body: str):
     body = body.split("Question:")[-1]
     body = "Question:" + body
-    print(f"{bcolors.OKBLUE}{header}:{bcolors.ENDC}\n{bcolors.BOLD}{body}{bcolors.ENDC}")
+    print(
+        f"{bcolors.OKBLUE}{header}:{bcolors.ENDC}\n{bcolors.BOLD}{body}{bcolors.ENDC}"
+    )
+
 
 def mkdir_p(path):
     """mkdir -p in python
@@ -82,6 +91,7 @@ def write_jsonl(filename: str, data: Iterable[Dict], append: bool = False):
                 if x:
                     fp.write((json.dumps(x) + "\n").encode("utf-8"))
 
+
 # def parse_code_response(lm_response_str) -> str:
 #     code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
 #     if len(code_tags) > 0:
@@ -93,6 +103,7 @@ def write_jsonl(filename: str, data: Iterable[Dict], append: bool = False):
 #         for code in code_tags:
 #             lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
 #     return lm_response_str
+
 
 def parse_code_response(lm_response_str) -> str:
     if "```systemverilog" in lm_response_str:

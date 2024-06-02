@@ -1,10 +1,11 @@
+# NL2SVA-Human Question Prompts
 SVAGEN_HEADER = """You are an AI assistant tasked with formal verification of register transfer level (RTL) designs.
 Your job is to translate a description of an assertion to concrete SystemVerilog Assertion (SVA) implementation.
 Do not add code to output an error message string.
 Enclose your SVA code with ```systemverilog and ```. Only output the code snippet and do NOT output anything else.
 """
 
-SVAGEN_MACHINE_ICL_EXAMPLE_1="""As an example:
+SVAGEN_MACHINE_ICL_EXAMPLE_1 = """As an example:
 
 Question: Create a SVA assertion that checks: Whenever sig_A is high and sig_B is low, sig_C will be high on the next clock edge.
 Do not add code to output an error message string.
@@ -19,7 +20,7 @@ assert property(@(posedge clk)
 """
 
 
-SVAGEN_MACHINE_ICL_EXAMPLE_2="""As an example:
+SVAGEN_MACHINE_ICL_EXAMPLE_2 = """As an example:
 
 Question: Create a SVA assertion that checks: Whenever sig_A is high and sig_B is low, sig_C will be high on the next clock edge.
 Do not add code to output an error message string.
@@ -44,7 +45,7 @@ assert property(@(posedge clk)
 ```
 """
 
-SVAGEN_MACHINE_ICL_EXAMPLE_3="""As an example:
+SVAGEN_MACHINE_ICL_EXAMPLE_3 = """As an example:
 
 Question: Create a SVA assertion that checks: Whenever sig_A is high and sig_B is low, sig_C will be high on the next clock edge.
 Do not add code to output an error message string.
@@ -79,7 +80,7 @@ assert property(@(posedge clk)
 );
 ```
 """
-SVAGEN_HUMAN_ICL_EXAMPLE_1="""As an example, consider the following SystemVerilog module:
+SVAGEN_HUMAN_ICL_EXAMPLE_1 = """As an example, consider the following SystemVerilog module:
 
 module ShiftRegister #(
   parameter Width = 4
@@ -135,7 +136,7 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
 ```
 """
 
-SVAGEN_HUMAN_ICL_EXAMPLE_3="""As an example, consider the following SystemVerilog module:
+SVAGEN_HUMAN_ICL_EXAMPLE_3 = """As an example, consider the following SystemVerilog module:
 
 module ShiftRegister #(
   parameter Width = 4
@@ -210,15 +211,22 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
 ```
 """
 
-SVAGEN_TB_PREAMBLE = (
-    """Now here is the testbench to perform your translation:\n"""
-)
+SVAGEN_TB_PREAMBLE = """Now here is the testbench to perform your translation:\n"""
 
 SVAGEN_IC_EX_PREAMBLE = """\n\nMore detailed examples of correct translations from description into an SVA assertion:"""
 
+
+# NL2SVA-Human Question Prompts
 SVAGEN_QUESTION_PREAMBLE = "\nQuestion: Create a SVA assertion that checks: "
+
 SVAGEN_QUESTION_POSTAMBLE = """
 Do not add code to output an error message string.
 Enclose your SVA code with ```systemverilog and ```. Only output the code snippet and do NOT output anything else.
 
+For example,
+```systemverilog
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    (a && b) != 1'b1
+);
+```
 Answer:"""

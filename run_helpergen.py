@@ -6,7 +6,9 @@ from fv_eval import data, utils, benchmark_launcher
 
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent
-    parser = argparse.ArgumentParser(description="Run LLM Inference for the FVEval-AGR-HelperGen Benchmark")
+    parser = argparse.ArgumentParser(
+        description="Run LLM Inference for the FVEval-AGR-HelperGen Benchmark"
+    )
     parser.add_argument(
         "--dataset_dir",
         "-d",
@@ -20,7 +22,10 @@ if __name__ == "__main__":
         help="path to input dataset directory, potentially holding multiple .csv files",
     )
     parser.add_argument(
-        "--temperature", type=float, help="LLM decoder sampling temperature", default=0.0
+        "--temperature",
+        type=float,
+        help="LLM decoder sampling temperature",
+        default=0.0,
     )
     parser.add_argument(
         "--models",
@@ -64,10 +69,10 @@ if __name__ == "__main__":
             dataset_path=dataset_path,
             task="helpergen",
             model_name_list=args.models.split(";"),
-            debug=args.debug
+            debug=args.debug,
         )
         bmark_launcher.run_benchmark(
             temperature=args.temperature,
             max_tokens=3000,
-            cot_strategy=args.cot_strategy
+            cot_strategy=args.cot_strategy,
         )

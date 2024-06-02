@@ -24,7 +24,7 @@ ROOT = pathlib.Path(__file__).parent.parent
 #     if os.path.isdir(tmp_jg_proj_dir):
 #      shutil.rmtree(tmp_jg_proj_dir)
 #     jg_command = [
-#         "jg", "-fpv", "-batch", "-tcl", tcl_file_path, 
+#         "jg", "-fpv", "-batch", "-tcl", tcl_file_path,
 #         "-define", "EXP_NAME", exp_name,
 #         "-define", "EXP_ID", exp_id,
 #         "-define", "TB_DIR", tb_dir,
@@ -33,26 +33,71 @@ ROOT = pathlib.Path(__file__).parent.parent
 #     result = subprocess.run(jg_command, capture_output=True, text=True)
 #     return result.stdout
 
+def launch_jg_debug(
+    tcl_file_path: str,
+    sv_dir: str,
+    experiment_id: str,
+    task_id: str,
+    output_queue: multiprocessing.Queue = None,
+) -> None:
+    tmp_jg_proj_dir = sv_dir + f"/jg/{experiment_id}_{task_id}"
+    if os.path.isdir(tmp_jg_proj_dir):
+        shutil.rmtree(tmp_jg_proj_dir)
+    jg_command = [
+        "jg",
+        "-fpv",
+        "-batch",
+        "-tcl",
+        tcl_file_path,
+        "-define",
+        "EXP_ID",
+        experiment_id,
+        "-define",
+        "TASK_ID",
+        task_id,
+        "-define",
+        "SV_DIR",
+        sv_dir,
+        "-proj",
+        tmp_jg_proj_dir,
+        "-allow_unsupported_OS",
+    ]
+    result = subprocess.run(jg_command, capture_output=True, text=True)
+    return result.stdout.strip()
+
+
 def launch_jg_with_queue(
     tcl_file_path: str,
     sv_dir: str,
     experiment_id: str,
     task_id: str,
     output_queue: multiprocessing.Queue = None,
-)-> None:
+) -> None:
     tmp_jg_proj_dir = sv_dir + f"/jg/{experiment_id}_{task_id}"
     if os.path.isdir(tmp_jg_proj_dir):
         shutil.rmtree(tmp_jg_proj_dir)
     jg_command = [
-        "jg", "-fpv", "-batch", "-tcl", tcl_file_path, 
-        "-define", "EXP_ID", experiment_id,
-        "-define", "TASK_ID", task_id,
-        "-define", "SV_DIR", sv_dir,
-        "-proj", tmp_jg_proj_dir,
-        "-allow_unsupported_OS"
+        "jg",
+        "-fpv",
+        "-batch",
+        "-tcl",
+        tcl_file_path,
+        "-define",
+        "EXP_ID",
+        experiment_id,
+        "-define",
+        "TASK_ID",
+        task_id,
+        "-define",
+        "SV_DIR",
+        sv_dir,
+        "-proj",
+        tmp_jg_proj_dir,
+        "-allow_unsupported_OS",
     ]
     result = subprocess.run(jg_command, capture_output=True, text=True)
     output_queue.put(result.stdout.strip())
+
 
 def launch_jg_with_queue_custom_equiv_check(
     tcl_file_path: str,
@@ -63,20 +108,37 @@ def launch_jg_with_queue_custom_equiv_check(
     ref_assertion_text: str,
     signal_list_text: str,
     output_queue: multiprocessing.Queue = None,
-)-> None:
+) -> None:
     tmp_jg_proj_dir = sv_dir + f"/jg/{experiment_id}_{task_id}"
     if os.path.isdir(tmp_jg_proj_dir):
         shutil.rmtree(tmp_jg_proj_dir)
     jg_command = [
-        "jg", "-fpv", "-batch", "-tcl", tcl_file_path, 
-        "-define", "LM_ASSERT_TEXT", lm_assertion_text,
-        "-define", "REF_ASSERT_TEXT", ref_assertion_text,
-        "-define", "SIGNAL_LIST", signal_list_text,
-        "-define", "EXP_ID", experiment_id,
-        "-define", "TASK_ID", task_id,
-        "-define", "SV_DIR", sv_dir,
-        "-proj", tmp_jg_proj_dir,
-        "-allow_unsupported_OS"
+        "jg",
+        "-fpv",
+        "-batch",
+        "-tcl",
+        tcl_file_path,
+        "-define",
+        "LM_ASSERT_TEXT",
+        lm_assertion_text,
+        "-define",
+        "REF_ASSERT_TEXT",
+        ref_assertion_text,
+        "-define",
+        "SIGNAL_LIST",
+        signal_list_text,
+        "-define",
+        "EXP_ID",
+        experiment_id,
+        "-define",
+        "TASK_ID",
+        task_id,
+        "-define",
+        "SV_DIR",
+        sv_dir,
+        "-proj",
+        tmp_jg_proj_dir,
+        "-allow_unsupported_OS",
     ]
     result = subprocess.run(jg_command, capture_output=True, text=True)
     output_queue.put(result.stdout.strip())

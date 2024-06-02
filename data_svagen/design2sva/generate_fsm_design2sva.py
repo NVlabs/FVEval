@@ -9,14 +9,25 @@ import networkx as nx
 
 from fv_eval.data import InputData
 
-def decimal_to_binary(decimal: int, num_bits:int):
+
+def decimal_to_binary(decimal: int, num_bits: int):
     return f"{num_bits}'b{decimal:0{num_bits}b}"
 
-def generate_module_header(is_design: bool, num_inputs: int, num_nodes: int, width: int = 32):
+
+def generate_module_header(
+    is_design: bool, num_inputs: int, num_nodes: int, width: int = 32
+):
     num_bits = int(np.ceil(np.log2(num_nodes)))
     input_ports = ",\n".join([f"    in_{chr(65+i)}" for i in range(num_inputs)])
-    input_port_def = ";\n".join([f"    input [WIDTH-1:0] in_{chr(65+i)}" for i in range(num_inputs)])
-    fsm_state_def = ";\n".join([f"    parameter S{i} = {decimal_to_binary(i, num_bits)}" for i in range(num_nodes)])
+    input_port_def = ";\n".join(
+        [f"    input [WIDTH-1:0] in_{chr(65+i)}" for i in range(num_inputs)]
+    )
+    fsm_state_def = ";\n".join(
+        [
+            f"    parameter S{i} = {decimal_to_binary(i, num_bits)}"
+            for i in range(num_nodes)
+        ]
+    )
     module_name = "fsm" if is_design else "fsm_tb"
     port_direction = "output" if is_design else "input"
     return f"""
@@ -37,12 +48,26 @@ module {module_name}(
 {input_port_def};
     {port_direction} reg [FSM_WIDTH-1:0] fsm_out;
 """
-    
-def generate_fsm_module(num_inputs: int, num_nodes: int, num_edges: int, max_recursive_dapth: int = 2, width: int = 32):
-    G = generate_random_fsm(num_inputs=num_inputs, num_nodes=num_nodes, num_edges=num_edges, max_recursive_dapth=max_recursive_dapth)
+
+
+def generate_fsm_module(
+    num_inputs: int,
+    num_nodes: int,
+    num_edges: int,
+    max_recursive_dapth: int = 2,
+    width: int = 32,
+):
+    G = generate_random_fsm(
+        num_inputs=num_inputs,
+        num_nodes=num_nodes,
+        num_edges=num_edges,
+        max_recursive_dapth=max_recursive_dapth,
+    )
     # Generate the module prefix
-    
-    module_header = generate_module_header(is_design=True, num_nodes=num_nodes, num_inputs=num_inputs, width=width)
+
+    module_header = generate_module_header(
+        is_design=True, num_nodes=num_nodes, num_inputs=num_inputs, width=width
+    )
     # Generate the module body
     module_body = "    reg [FSM_WIDTH-1:0] state, next_state;\n"
     module_body += "    always_ff @(posedge clk or negedge reset_) begin\n"
@@ -64,7 +89,9 @@ def generate_fsm_module(num_inputs: int, num_nodes: int, num_edges: int, max_rec
             dst = out_vertices[0]
             module_body += f"                next_state = S{out_vertices[0]};\n"
         elif len(out_vertices) == 2:
-            module_body += f"                if ({G[src][out_vertices[0]]['operation']}) begin\n"
+            module_body += (
+                f"                if ({G[src][out_vertices[0]]['operation']}) begin\n"
+            )
             module_body += f"                    next_state = S{out_vertices[0]};\n"
             module_body += "                end\n"
             module_body += f"                else begin\n"
@@ -72,16 +99,20 @@ def generate_fsm_module(num_inputs: int, num_nodes: int, num_edges: int, max_rec
             module_body += "                end\n"
         else:
             for i, dst in enumerate(out_vertices):
-                if i==0:
-                    module_body += f"                if ({G[src][dst]['operation']}) begin\n"
+                if i == 0:
+                    module_body += (
+                        f"                if ({G[src][dst]['operation']}) begin\n"
+                    )
                     module_body += f"                    next_state = S{dst};\n"
                     module_body += "                end\n"
-                elif i == len(out_vertices)-1:
+                elif i == len(out_vertices) - 1:
                     module_body += f"                else begin\n"
                     module_body += f"                    next_state = S{dst};\n"
                     module_body += "                end\n"
                 else:
-                    module_body += f"                else if ({G[src][dst]['operation']}) begin\n"
+                    module_body += (
+                        f"                else if ({G[src][dst]['operation']}) begin\n"
+                    )
                     module_body += f"                    next_state = S{dst};\n"
                     module_body += "                end\n"
         module_body += f"            end\n"
@@ -92,9 +123,13 @@ def generate_fsm_module(num_inputs: int, num_nodes: int, num_edges: int, max_rec
     return module_header + module_body + module_suffix, G
 
 
-def generate_fsm_tb_module(G: nx.DiGraph, num_inputs: int, num_nodes: int, width: int = 32):
+def generate_fsm_tb_module(
+    G: nx.DiGraph, num_inputs: int, num_nodes: int, width: int = 32
+):
     # Generate the module prefix
-    module_header = generate_module_header(is_design=False, num_nodes=num_nodes, num_inputs=num_inputs, width=width)
+    module_header = generate_module_header(
+        is_design=False, num_nodes=num_nodes, num_inputs=num_inputs, width=width
+    )
     # Generate the module body
     module_body = "    wire tb_reset;\n"
     module_body += "    assign tb_reset = (reset_ == 1'b0);\n"
@@ -107,11 +142,12 @@ bind fsm fsm_tb #(
     """
     return module_header + module_body + module_suffix
 
+
 def generate_random_digraph(num_nodes: int, num_edges: int):
     G = nx.DiGraph()
     for i in range(num_nodes):
         G.add_node(i)
-    
+
     # create edges such that each node has at least one outgoing edge
     # total number of edges is num_nodes + num_edges
     # ensure that graph is connected and there are no self edges
@@ -129,7 +165,6 @@ def generate_random_digraph(num_nodes: int, num_edges: int):
         dst = random.choice(node_list)
         G.add_edge(src, dst)
 
-
     # ensure that there is an outedge from state 0
     if len(list(G.successors(0))) == 0:
         node_list = list(range(num_nodes))
@@ -138,12 +173,17 @@ def generate_random_digraph(num_nodes: int, num_edges: int):
         G.add_edge(0, dst)
     return G
 
-def generate_random_fsm(num_inputs:int, num_nodes: int, num_edges: int, max_recursive_dapth: int = 2):
+
+def generate_random_fsm(
+    num_inputs: int, num_nodes: int, num_edges: int, max_recursive_dapth: int = 2
+):
     G = generate_random_digraph(num_nodes, num_edges)
     # annotate edges with random operations
     for src, dst in G.edges():
-        expression_string = generate_transition_condition(num_inputs=num_inputs, depth=0, max_recursive_dapth=max_recursive_dapth)
-            # check that if there are more than two signals in expr, they must all not be the same
+        expression_string = generate_transition_condition(
+            num_inputs=num_inputs, depth=0, max_recursive_dapth=max_recursive_dapth
+        )
+        # check that if there are more than two signals in expr, they must all not be the same
 
         G[src][dst]["operation"] = expression_string
         print(f"Edge {src} -> {dst}: {G[src][dst]['operation']}")
@@ -165,13 +205,19 @@ def generate_binary_operator():
     else:
         return f"{random.choice(relational_operators)}"
 
+
 def generate_unary_operator():
     # List of operators we can use in assertions
     operators = ["!", "~", "&", "~&", "|", "~|", "^", "~^"]
     return f"{random.choice(operators)}"
 
-def generate_transition_condition(num_inputs: int, depth: int = 0, max_recursive_dapth: int =2):
-    expression = generate_expression(num_inputs=num_inputs, depth=depth, max_recursive_dapth=max_recursive_dapth)
+
+def generate_transition_condition(
+    num_inputs: int, depth: int = 0, max_recursive_dapth: int = 2
+):
+    expression = generate_expression(
+        num_inputs=num_inputs, depth=depth, max_recursive_dapth=max_recursive_dapth
+    )
     # map "signals" to symbolic names
     # count number of sigals in expression
     num_signals = expression.count("signal")
@@ -191,7 +237,8 @@ def generate_random_signal(num_inputs: int = 10):
     max_val = min(num_inputs, 26)
     return f"in_{chr(random.randint(65, 65 + max_val - 1))}"
 
-def generate_expression(num_inputs: int, depth: int = 0, max_recursive_dapth: int =2):
+
+def generate_expression(num_inputs: int, depth: int = 0, max_recursive_dapth: int = 2):
     # Base case: Return a simple signal
     is_leaf = random.random() < (1.0 / max_recursive_dapth) * depth
     if is_leaf:
@@ -208,10 +255,18 @@ def generate_expression(num_inputs: int, depth: int = 0, max_recursive_dapth: in
     if knob < 0.5:
         return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(logical_operators)} {generate_expression(num_inputs=num_inputs, depth=depth + 1)})"
     elif knob < 0.9:
-        options = [generate_expression(num_inputs=num_inputs, depth=depth + 1), "'d1", "'d0"]
+        options = [
+            generate_expression(num_inputs=num_inputs, depth=depth + 1),
+            "'d1",
+            "'d0",
+        ]
         return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(equivalence_operator)} {random.choice(options)})"
     else:
-        options = [generate_expression(num_inputs=num_inputs, depth=depth + 1), "'d1", "'d0"]
+        options = [
+            generate_expression(num_inputs=num_inputs, depth=depth + 1),
+            "'d1",
+            "'d0",
+        ]
         return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(relational_operators)} {random.choice(options)})"
 
 
@@ -220,6 +275,8 @@ Top-level function to generate each random pipeline design/testbench RTL
 Both SV code is saved as .sv files
 args:
 """
+
+
 def generate_testcase(
     num_inputs: int = 4,
     num_nodes: int = 10,
@@ -227,16 +284,26 @@ def generate_testcase(
     width: int = 32,
     op_recursive_depth: int = 2,
 ):
-    
-    fsm_rtl, G = generate_fsm_module(num_inputs=num_inputs, num_nodes=num_nodes, num_edges=num_edges, max_recursive_dapth=op_recursive_depth, width=width)
-    fsm_tb_rtl = generate_fsm_tb_module(G, num_inputs=num_inputs, num_nodes=num_nodes, width=width)
+
+    fsm_rtl, G = generate_fsm_module(
+        num_inputs=num_inputs,
+        num_nodes=num_nodes,
+        num_edges=num_edges,
+        max_recursive_dapth=op_recursive_depth,
+        width=width,
+    )
+    fsm_tb_rtl = generate_fsm_tb_module(
+        G, num_inputs=num_inputs, num_nodes=num_nodes, width=width
+    )
     return fsm_rtl, fsm_tb_rtl
 
 
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent
 
-    parser = argparse.ArgumentParser(description="Generate Aribitrary FSM designs for the FVEVal-Design2SVA Benchmark")
+    parser = argparse.ArgumentParser(
+        description="Generate Aribitrary FSM designs for the FVEVal-Design2SVA Benchmark"
+    )
     parser.add_argument(
         "--save_dir",
         "-o",
@@ -265,7 +332,6 @@ if __name__ == "__main__":
         save_dir = args.save_dir
     random.seed(args.seed)
 
-
     dataset = []
     experiment_id = "fsm"
     # for ni_log in [1, 2, 3]:
@@ -288,17 +354,23 @@ if __name__ == "__main__":
     #                                 testbench=fsm_tb_rtl,
     #                             )
     #                         )
-    for ni_log in [4]:
-        for nn_log in [3, 4]:
+    for ni_log in [2]:
+        for nn_log in [2, 4]:
             for ne_multiplier in [2]:
                 for wd in [32]:
-                    for opd in [2, 4]:
+                    for opd in [2, 3, 4]:
                         for i in range(args.num_test_cases):
                             ni = 2**ni_log
                             nn = 2**nn_log
                             ne = nn * ne_multiplier
                             tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
-                            fsm_rtl, fsm_tb_rtl = generate_testcase(num_inputs=ni, num_nodes=nn, num_edges=ne, width=wd, op_recursive_depth=opd)
+                            fsm_rtl, fsm_tb_rtl = generate_testcase(
+                                num_inputs=ni,
+                                num_nodes=nn,
+                                num_edges=ne,
+                                width=wd,
+                                op_recursive_depth=opd,
+                            )
                             dataset.append(
                                 InputData(
                                     design_name=experiment_id,

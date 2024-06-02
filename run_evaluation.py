@@ -7,7 +7,9 @@ from fv_eval import evaluation, utils
 ROOT = pathlib.Path(__file__).parent
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run JG-based Evaluation of FVEval-SVAGen Results")
+    parser = argparse.ArgumentParser(
+        description="Run JG-based Evaluation of FVEval-SVAGen Results"
+    )
     parser.add_argument(
         "--llm_output_dir",
         "-i",
@@ -28,7 +30,10 @@ if __name__ == "__main__":
         default=ROOT / f"tmp_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
     )
     parser.add_argument(
-        "--cleanup_temp", type=bool, help="Whether to clean up the temp dir afterwards", default=True
+        "--cleanup_temp",
+        type=bool,
+        help="Whether to clean up the temp dir afterwards",
+        default=True,
     )
     parser.add_argument(
         "--task",
@@ -48,10 +53,13 @@ if __name__ == "__main__":
         action="store_true",
         help="debug ",
     )
-    
+
     args = parser.parse_args()
     if not args.llm_output_dir:
-        utils.print_error("Argument Error", "empty path to llm_output_dir. Provide correct args to --llm_output_dir")
+        utils.print_error(
+            "Argument Error",
+            "empty path to llm_output_dir. Provide correct args to --llm_output_dir",
+        )
         raise ValueError("empty path to llm_output_dir")
     if not args.save_dir:
         save_dir = pathlib.Path(args.llm_output_dir) / "eval"
@@ -60,9 +68,9 @@ if __name__ == "__main__":
 
     save_dir = save_dir.as_posix()
     datetime_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    tmp_dir = args.temp_dir  / args.task
+    tmp_dir = args.temp_dir / args.task
     tmp_dir = tmp_dir.as_posix()
-    
+
     if "nl2sva" in args.task:
         if "human" in args.task:
             evaluator = evaluation.NL2SVAHumanEvaluator(

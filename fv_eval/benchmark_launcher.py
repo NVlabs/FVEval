@@ -11,8 +11,15 @@ from anthropic import Anthropic
 import pandas as pd
 from tqdm import tqdm
 
-from fv_eval import utils, prompts_svagen_nl2sva, prompts_svagen_design2sva, prompts_avr_helpergen
+from fv_eval import (
+    prompts_design2sva,
+    prompts_nl2sva_machine,
+    prompts_nl2sva_human,
+    utils,
+    prompts_avr_helpergen,
+)
 from fv_eval.data import InputData, LMResult
+
 
 class BenchmarkLauncher(object):
     def __init__(
@@ -60,20 +67,9 @@ class BenchmarkLauncher(object):
 
     def package_testbench(self, row: InputData, lm_response: str):
         raise NotImplementedError("package_testbench not implemented")
-    
+
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         return []
-    
-    # def parse_code_response(self, lm_response_str) -> str:
-    #     code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
-    #     if len(code_tags) > 0:
-    #         for code in code_tags:
-    #             lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
-    #     code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
-    #     if len(code_tags) > 0:
-    #         for code in code_tags:
-    #             lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
-    #     return lm_response_str
 
     def _prepare_models(self, model_name_list: str):
         TOGETHER_MODEL_DICT = {
@@ -89,10 +85,15 @@ class BenchmarkLauncher(object):
                 api_provider = "vllm"
                 api_key = "EMPTY"
                 base_url = "http://localhost:8000/v1"
-                full_model_name = OpenAI(
-                    api_key=api_key,
-                    base_url=base_url,
-                ).models.list().data[0].id
+                full_model_name = (
+                    OpenAI(
+                        api_key=api_key,
+                        base_url=base_url,
+                    )
+                    .models.list()
+                    .data[0]
+                    .id
+                )
             elif model_name in TOGETHER_MODEL_DICT:
                 api_provider = "together"
                 api_key = os.getenv("TOGETHER_API_KEY")
@@ -136,13 +137,13 @@ class BenchmarkLauncher(object):
         return model_api_list
 
     def setup_chat_client(
-            self, 
-            model_name:str,
-            short_model_name: str,
-            api_provider: str,
-            api_key: str,
-            base_url: str
-        ):
+        self,
+        model_name: str,
+        short_model_name: str,
+        api_provider: str,
+        api_key: str,
+        base_url: str,
+    ):
         if api_provider == "vllm" or api_provider == "openai":
             self.chat_client = OpenAI(
                 api_key=api_key,
@@ -168,23 +169,26 @@ class BenchmarkLauncher(object):
         else:
             raise ValueError(f"Unknown API provider: {api_provider}")
 
-
     def run_lm(
-            self, 
-            model_name, 
-            system_prompt, 
-            user_prompt,
-            temperature: float = 0.0,
-            max_tokens: int = 100,
-            max_retries = 20
-        ):
+        self,
+        model_name,
+        system_prompt,
+        user_prompt,
+        temperature: float = 0.0,
+        max_tokens: int = 100,
+        max_retries=20,
+    ):
         num_retries = 0
         delay = 1.0
         error = None
         api_provider = self.api_provider
         while num_retries <= max_retries:
             try:
-                if api_provider == "vllm" or api_provider == "together" or api_provider == "openai":
+                if (
+                    api_provider == "vllm"
+                    or api_provider == "together"
+                    or api_provider == "openai"
+                ):
                     completion = self.chat_client.chat.completions.create(
                         model=model_name,
                         messages=[
@@ -194,7 +198,7 @@ class BenchmarkLauncher(object):
                         max_tokens=max_tokens,
                         temperature=temperature,
                     )
-                
+
                     return completion.choices[0].message
                 elif api_provider == "google":
                     completion = self.chat_client.generate_content(
@@ -229,31 +233,34 @@ class BenchmarkLauncher(object):
                 # Increment retries
                 num_retries += 1
 
-                utils.print_error("Retrying  after error", f" {e} (retry {num_retries} of {max_retries})")
+                utils.print_error(
+                    "Retrying  after error",
+                    f" {e} (retry {num_retries} of {max_retries})",
+                )
 
             if error is not None:
                 raise error
         return None
 
     def run_lm_chain(
-        self, 
-        row: InputData, 
-        model_name: str, 
-        system_prompt: str, 
+        self,
+        row: InputData,
+        model_name: str,
+        system_prompt: str,
         user_prompt: str,
         temperature: float = 0.0,
         max_tokens: int = 100,
-        max_retries: int = 20
-    ):  
+        max_retries: int = 20,
+    ):
         lm_response = self.run_lm(
             model_name=model_name,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             temperature=temperature,
             max_tokens=max_tokens,
-            max_retries=max_retries
-        )          
-        lm_response = lm_response.content 
+            max_retries=max_retries,
+        )
+        lm_response = lm_response.content
 
         if self.debug:
             utils.print_user_prompt(row.design_name + "/" + row.task_id, user_prompt)
@@ -274,7 +281,7 @@ class BenchmarkLauncher(object):
         temperature: float = 0.0,
         max_tokens: int = 100,
         cot_strategy: str = "default",
-    ):  
+    ):
         cot_question_chain = self.get_cot_strategy(cot_strategy)
         for model_dict in self.model_api_list:
             self.setup_chat_client(**model_dict)
@@ -288,7 +295,7 @@ class BenchmarkLauncher(object):
         return results
 
     def save_results(self, model_name: str, results: list[LMResult]):
-        model_name = model_name.split('/')[-1].replace(" ", "_")
+        model_name = model_name.split("/")[-1].replace(" ", "_")
         results_df = pd.DataFrame([asdict(response) for response in results])
         results_df.to_csv(
             os.path.join(self.save_dir, f"{model_name}_{self.experiment_id}.csv"),
@@ -308,17 +315,6 @@ class NL2SVALauncher(BenchmarkLauncher):
     ):
         super().__init__(
             save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
-        )
-
-    def generate_system_prompt(self):
-        return prompts_svagen_nl2sva.SVAGEN_HEADER
-
-    def generate_question_prompt(sefl, row: InputData):
-        return (
-            prompts_svagen_nl2sva.SVAGEN_QUESTION_PREAMBLE
-            + row.prompt
-            + "\n"
-            + prompts_svagen_nl2sva.SVAGEN_QUESTION_POSTAMBLE
         )
 
     def package_testbench(self, row: InputData, lm_response: str):
@@ -358,12 +354,12 @@ class NL2SVALauncher(BenchmarkLauncher):
             else:
                 raise NotImplementedError("COT question chain not implemented")
             lm_response = self.run_lm_chain(
-                row=row, 
-                model_name=model_name, 
-                system_prompt=system_prompt, 
+                row=row,
+                model_name=model_name,
+                system_prompt=system_prompt,
                 user_prompt=user_prompt,
                 temperature=temperature,
-                max_tokens=max_tokens
+                max_tokens=max_tokens,
             )
             if self.debug:
                 utils.print_lm_response("reference", row.ref_solution)
@@ -397,19 +393,30 @@ class NL2SVAHumanLauncher(NL2SVALauncher):
             save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
         )
 
+    def generate_system_prompt(self):
+        return prompts_nl2sva_human.SVAGEN_HEADER
+
+    def generate_question_prompt(self, row: InputData):
+        question_prompt = prompts_nl2sva_human.SVAGEN_QUESTION_PREAMBLE
+        question_prompt += row.prompt + "\n"
+        return (
+            question_prompt
+            + prompts_nl2sva_human.SVAGEN_QUESTION_POSTAMBLE
+        )
+
     def generate_user_prompt_prefix(self, row: InputData):
         if self.num_icl_examples == 0:
             user_prompt_prefix = ""
         elif self.num_icl_examples == 1:
-            user_prompt_prefix = prompts_svagen_nl2sva.SVAGEN_HUMAN_ICL_EXAMPLE_1
+            user_prompt_prefix = prompts_nl2sva_human.SVAGEN_HUMAN_ICL_EXAMPLE_1
         elif self.num_icl_examples == 3:
-            user_prompt_prefix = prompts_svagen_nl2sva.SVAGEN_HUMAN_ICL_EXAMPLE_3
+            user_prompt_prefix = prompts_nl2sva_human.SVAGEN_HUMAN_ICL_EXAMPLE_3
         else:
             utils.print_error(
                 "ERROR",
                 f"Unsupported number of in-context examples: {self.num_icl_examples}",
             )
-        user_prompt_prefix += "\n\n" + prompts_svagen_nl2sva.SVAGEN_TB_PREAMBLE
+        user_prompt_prefix += "\n\n" + prompts_nl2sva_human.SVAGEN_TB_PREAMBLE
         user_prompt_prefix += "\n" + row.testbench
         return user_prompt_prefix
 
@@ -428,15 +435,33 @@ class NL2SVAMachineLauncher(NL2SVALauncher):
             save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
         )
 
+    def generate_system_prompt(self):
+        return prompts_nl2sva_machine.SVAGEN_HEADER
+
+    def generate_question_prompt(self, row: InputData):
+        question_prompt = prompts_nl2sva_machine.SVAGEN_QUESTION_PREAMBLE
+        question_prompt += row.prompt + "\n"
+
+        if self.num_icl_examples == 0:
+            return (
+                question_prompt
+                + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE_ZERO_SHOT
+            )
+        return (
+            question_prompt
+            + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE
+        )
+
+
     def generate_user_prompt_prefix(self, row: InputData):
         if self.num_icl_examples == 0:
             user_prompt_prefix = ""
         elif self.num_icl_examples == 1:
-            user_prompt_prefix = prompts_svagen_nl2sva.SVAGEN_MACHINE_ICL_EXAMPLE_1
+            user_prompt_prefix = prompts_nl2sva_machine.SVAGEN_MACHINE_ICL_EXAMPLE_1
         elif self.num_icl_examples == 2:
-            user_prompt_prefix = prompts_svagen_nl2sva.SVAGEN_MACHINE_ICL_EXAMPLE_2
+            user_prompt_prefix = prompts_nl2sva_machine.SVAGEN_MACHINE_ICL_EXAMPLE_2
         elif self.num_icl_examples == 3:
-            user_prompt_prefix = prompts_svagen_nl2sva.SVAGEN_MACHINE_ICL_EXAMPLE_3
+            user_prompt_prefix = prompts_nl2sva_machine.SVAGEN_MACHINE_ICL_EXAMPLE_3
         else:
             utils.print_error(
                 "ERROR",
@@ -453,24 +478,25 @@ class Design2SVALauncher(BenchmarkLauncher):
         dataset_path: str,
         task: str = "design2sva",
         model_name_list: list[str] = ["gpt-4"],
-        num_icl_examples: int = 3,
+        num_assertions: int = 1,
         debug: bool = False,
     ):
         super().__init__(
-            save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
+            save_dir, dataset_path, task, model_name_list, 0, debug
         )
+        self.num_assertions = num_assertions
 
     def generate_system_prompt(self):
-        return prompts_svagen_design2sva.SVAGEN_HEADER
+        return prompts_design2sva.SVAGEN_HEADER
 
     def generate_user_prompt_prefix(self, row: InputData):
         testbench_text = row.testbench
         testbench_text = testbench_text.split("assign tb_reset")[0]
         testbench_text += "assign tb_reset = (reset_ == 1'b0);\n"
 
-        user_prompt_prefix = prompts_svagen_design2sva.SVAGEN_DUT_PREAMBLE
+        user_prompt_prefix = prompts_design2sva.SVAGEN_DUT_PREAMBLE
         user_prompt_prefix += row.prompt
-        user_prompt_prefix += "\n\n" + prompts_svagen_design2sva.SVAGEN_TB_PREAMBLE
+        user_prompt_prefix += "\n\n" + prompts_design2sva.SVAGEN_TB_PREAMBLE
         user_prompt_prefix += "\n" + testbench_text
         return user_prompt_prefix
 
@@ -481,27 +507,23 @@ class Design2SVALauncher(BenchmarkLauncher):
         testbench_text_postfix = "endmodule\n" + row.testbench.split("endmodule")[-1]
         lm_response = utils.parse_code_response(lm_response)
         packaged_tb_text = (
-            testbench_text_prefix
-            + "\n"
-            + lm_response
-            + "\n"
-            +testbench_text_postfix
+            testbench_text_prefix + "\n" + lm_response + "\n" + testbench_text_postfix
         )
         return packaged_tb_text
 
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         if cot_strategy == "default":
-            return [("question", prompts_svagen_design2sva.SVAGEN_DIRECT_QUESTION)]
+            return [("question", prompts_design2sva.get_design2sva_direct_question_prompt(self.num_assertions))]
         elif cot_strategy == "plan-act":
             return [
-                ("plan", prompts_svagen_design2sva.SVAGEN_PLANNING_QUESTION),
-                ("question", prompts_svagen_design2sva.SVAGEN_ASSERTION_QUESTION),
+                ("plan", prompts_design2sva.get_design2sva_planning_prompt(self.num_assertions)),
+                ("question", prompts_design2sva.get_design2sva_question_prompt(self.num_assertions)),
             ]
         elif cot_strategy == "plan-model-act":
             return [
-                ("plan", prompts_svagen_design2sva.SVAGEN_PLANNING_QUESTION),
-                ("model", prompts_svagen_design2sva.SVAGEN_MODELING_QUESTION),
-                ("question", prompts_svagen_design2sva.SVAGEN_ASSERTION_QUESTION),
+                ("plan", prompts_design2sva.get_design2sva_planning_prompt(self.num_assertions)),
+                ("model", prompts_design2sva.SVAGEN_MODELING_QUESTION),
+                ("question", prompts_design2sva.get_design2sva_question_prompt(self.num_assertions)),
             ]
         else:
             utils.print_error("ERROR", f"Unsupported COT strategy: {cot_strategy}")
@@ -513,7 +535,7 @@ class Design2SVALauncher(BenchmarkLauncher):
         temperature: float = 0.0,
         max_tokens: int = 100,
         cot_question_chain: list[tuple[str, str]] = [
-            ("question", prompts_svagen_design2sva.SVAGEN_DIRECT_QUESTION)
+            ("question", prompts_design2sva.get_design2sva_direct_question_prompt(1))
         ],
     ):
         results = []
@@ -534,17 +556,17 @@ class Design2SVALauncher(BenchmarkLauncher):
                 user_prompt += "\n" + q_str
                 # run LM chain
                 lm_response = self.run_lm_chain(
-                    row=row, 
-                    model_name=model_name, 
-                    system_prompt=system_prompt, 
+                    row=row,
+                    model_name=model_name,
+                    system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     temperature=temperature,
-                    max_tokens=max_tokens
+                    max_tokens=max_tokens,
                 )
                 if q_type != cot_question_chain[-1][0]:
                     cot_responses[q_type] = lm_response
                     user_prompt += "\n" + lm_response
-            
+
             # stringify cot_responses
             cot_response = "cot_response\n"
             for key, value in cot_responses.items():
@@ -562,12 +584,12 @@ class Design2SVALauncher(BenchmarkLauncher):
                 ref_solution=row.ref_solution,
                 user_prompt=user_prompt,
                 output_tb=packaged_tb_text,
-                design_rtl=row.prompt,               
+                design_rtl=row.prompt,
                 cot_response=cot_response,
             )
-            results.append(response)        
+            results.append(response)
         return results
-    
+
 
 class HelperGenLauncher(BenchmarkLauncher):
     def __init__(
@@ -593,7 +615,6 @@ class HelperGenLauncher(BenchmarkLauncher):
         user_prompt_prefix += row.testbench
         return user_prompt_prefix
 
-
     def package_testbench(self, row: InputData, lm_response: str):
         assertion_text = utils.parse_code_response(lm_response)
 
@@ -611,7 +632,9 @@ class HelperGenLauncher(BenchmarkLauncher):
 
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         if cot_strategy == "default":
-            return [("question", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_ANSWER)]
+            return [
+                ("question", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_ANSWER)
+            ]
         elif cot_strategy == "plan-act":
             return [
                 ("plan", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_THOUGHT),
@@ -648,17 +671,17 @@ class HelperGenLauncher(BenchmarkLauncher):
                 user_prompt += "\n" + q_str
                 # run LM chain
                 lm_response = self.run_lm_chain(
-                    row=row, 
-                    model_name=model_name, 
-                    system_prompt=system_prompt, 
+                    row=row,
+                    model_name=model_name,
+                    system_prompt=system_prompt,
                     user_prompt=user_prompt,
                     temperature=temperature,
-                    max_tokens=max_tokens
+                    max_tokens=max_tokens,
                 )
                 if q_type != cot_question_chain[-1][0]:
                     cot_responses[q_type] = lm_response
                     user_prompt += "\n" + lm_response
-            
+
             # stringify cot_responses
             cot_response = "cot_response\n"
             for key, value in cot_responses.items():
@@ -676,7 +699,7 @@ class HelperGenLauncher(BenchmarkLauncher):
                 ref_solution=row.ref_solution,
                 user_prompt=user_prompt,
                 output_tb=packaged_tb_text,
-                design_rtl=row.prompt,               
+                design_rtl=row.prompt,
                 cot_response=cot_responses,
             )
             results.append(response)

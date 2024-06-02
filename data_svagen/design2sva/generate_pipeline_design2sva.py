@@ -128,14 +128,13 @@ def random_arithemtic_pairs(
 ) -> list[str]:
     # Possible basic operations
     operators = ["+", "-", "<<<", ">>>"]
-    dual_operators = ["-", "+",  ">>>", "<<<"]
+    dual_operators = ["-", "+", ">>>", "<<<"]
     # Create a random compound operation from basic components
     index = random.randint(0, len(operators))  # Choose a random operator
     op = operators[index]
     dual_op = dual_operators[index]
     const = random.randint(1, 10)  # Choose a random constant or width
     return [f"({operation} {op} {const})", f"({operation} {dual_op} {const})"]
-
 
 
 def random_single_input_arithmetic(
@@ -277,9 +276,7 @@ def gen_module_instatiation(
 
 
 def gen_pipeline(
-    depths: int,
-    op_recursive_depth: int,
-    ensure_consistency: bool = False
+    depths: int, op_recursive_depth: int, ensure_consistency: bool = False
 ) -> str:
     """
     Wrapper function to generate a single pipeline with random arithemtic logic
@@ -287,7 +284,7 @@ def gen_pipeline(
     Output is a tuple of two strings: (1) submodules specifying the random arithmetics
     and (2) submodule instantiation to be appended to the main module
     """
-    if ensure_consistency: 
+    if ensure_consistency:
         operations_list = []
         dual_operations_list = []
         for _ in depths:
@@ -296,8 +293,7 @@ def gen_pipeline(
             dual_operations_list.append(ops[1])
     else:
         operations_list = [
-            random_single_input_arithmetic(max_depth=op_recursive_depth)
-            for _ in depths
+            random_single_input_arithmetic(max_depth=op_recursive_depth) for _ in depths
         ]
 
     pipeline_module_rtl_text = []
@@ -385,16 +381,19 @@ Higher-level methods for pipeline design SV and testbench SV code generation
 
 
 def gen_pipeline_design(
-    depths: list[int], width: int = 32, op_recursive_depth: int = 2,
-    ensure_consistency: bool=False
+    depths: list[int],
+    width: int = 32,
+    op_recursive_depth: int = 2,
+    ensure_consistency: bool = False,
 ):
     ptr = 0
     operations_list = []
     # pipeline_module_rtl_text = PIPELINE_PREFIX
     full_rtl_text = f"`define WIDTH {width}\n`define DEPTH {depth}\n"
     sv_modules_rtl_text, pipeline_module_rtl_text, operations_list = gen_pipeline(
-        depths=depths, op_recursive_depth=op_recursive_depth,
-        ensure_consistency=ensure_consistency
+        depths=depths,
+        op_recursive_depth=op_recursive_depth,
+        ensure_consistency=ensure_consistency,
     )
     pipeline_module_rtl_text = PIPELINE_PREFIX + pipeline_module_rtl_text
     full_rtl_text += (
@@ -483,9 +482,7 @@ def gen_pipeline_tb_design(operations_list: list[str], depth: int, width: int = 
         if i == 0:
             tb_rtl_text += f"    wire [WIDTH-1:0] data_{i};\n"
             tb_rtl_text += (
-                f"    assign data_{i} = "
-                + operation.replace("x", "in_data")
-                + ";\n"
+                f"    assign data_{i} = " + operation.replace("x", "in_data") + ";\n"
             )
         else:
             tb_rtl_text += f"    wire [WIDTH-1:0] data_{i};\n"
@@ -584,7 +581,9 @@ def generate_testcase(
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent
 
-    parser = argparse.ArgumentParser(description="Generate Aribitrary Pipeline designs for the FVEVal-Design2SVA Benchmark")
+    parser = argparse.ArgumentParser(
+        description="Generate Aribitrary Pipeline designs for the FVEVal-Design2SVA Benchmark"
+    )
     parser.add_argument(
         "--save_dir",
         "-o",
@@ -613,7 +612,6 @@ if __name__ == "__main__":
         save_dir = args.save_dir
     random.seed(args.seed)
 
-
     dataset = []
 
     # (1) single pipeline designs
@@ -628,7 +626,7 @@ if __name__ == "__main__":
                         d = 1 if random.random() < 0.7 else random.randint(2, 4)
                         depths.append(d)
                     depth = sum(depths)
-                    tag=f"ns_{ns}-w_{width}-d_{depth}-{i}"
+                    tag = f"ns_{ns}-w_{width}-opd_{opd}-{i}"
                     pipeline_rtl, pipeline_tb_rtl = generate_testcase(
                         num_pipelines=1,
                         depths=depths,
@@ -672,7 +670,6 @@ if __name__ == "__main__":
     df = pd.DataFrame([asdict(d) for d in dataset])
     df.to_csv(args.save_dir / f"design2sva_{experiment_id}.csv", index=False)
     print(f"generated {len(df)} cases")
-
 
     with open("pipeline.sv", "w") as f:
         f.write(dataset[-1].prompt)

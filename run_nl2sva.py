@@ -9,7 +9,9 @@ from fv_eval import data, utils, benchmark_launcher
 if __name__ == "__main__":
     ROOT = pathlib.Path(__file__).parent
 
-    parser = argparse.ArgumentParser(description="Run LLM Inference for the FVEval-SVAGen Benchmark")
+    parser = argparse.ArgumentParser(
+        description="Run LLM Inference for the FVEval-SVAGen Benchmark"
+    )
     parser.add_argument(
         "--dataset_path",
         "-d",
@@ -23,7 +25,10 @@ if __name__ == "__main__":
         help="path to input dataset directory, potentially holding multiple .csv files",
     )
     parser.add_argument(
-        "--temperature", type=float, help="LLM decoder sampling temperature", default=0.0
+        "--temperature",
+        type=float,
+        help="LLM decoder sampling temperature",
+        default=0.0,
     )
     parser.add_argument(
         "--num_icl", type=int, help="number of in-context examples to use", default=3
@@ -54,7 +59,6 @@ if __name__ == "__main__":
     # else:
     #     dataset_path = args.dataset_path
 
-
     if args.debug:
         print("Executing in debug mode")
 
@@ -80,15 +84,14 @@ if __name__ == "__main__":
             task="nl2sva_human",
             model_name_list=args.models.split(";"),
             num_icl_examples=args.num_icl,
-            debug=args.debug
+            debug=args.debug,
         )
-        bmark_launcher.run_benchmark(
-            temperature=args.temperature,
-            max_tokens=200
-        )
+        bmark_launcher.run_benchmark(temperature=args.temperature, max_tokens=200)
     elif args.mode == "machine":
         if not args.dataset_path:
-            dataset_path = ROOT / "data_svagen" / "nl2sva" / "data" / "nl2sva_machine.csv"
+            dataset_path = (
+                ROOT / "data_svagen" / "nl2sva" / "data" / "nl2sva_machine.csv"
+            )
             assert dataset_path.exists()
             dataset_path = dataset_path.as_posix()
         else:
@@ -107,12 +110,9 @@ if __name__ == "__main__":
             task="nl2sva_machine",
             model_name_list=args.models.split(";"),
             num_icl_examples=args.num_icl,
-            debug=args.debug
+            debug=args.debug,
         )
-        bmark_launcher.run_benchmark(
-            temperature=args.temperature,
-            max_tokens=100
-        )
+        bmark_launcher.run_benchmark(temperature=args.temperature, max_tokens=100)
     else:
         print(f"Unsupported eval mode: {args.mode}")
         raise NotImplementedError

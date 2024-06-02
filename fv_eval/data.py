@@ -6,6 +6,7 @@ from typing import Iterable, Dict
 
 import pandas as pd
 
+
 @dataclass
 class TextSimilarityEvaluationResult:
     experiment_id: str
@@ -15,6 +16,7 @@ class TextSimilarityEvaluationResult:
     rouge: float
     exact_match: float
 
+
 @dataclass
 class JGEvaluationResult:
     experiment_id: str
@@ -22,8 +24,9 @@ class JGEvaluationResult:
     model_name: str
     syntax: float
     functionality: float
-    coverage: float
-    bound_improve: int
+    func_relaxed: float
+    # bound_improve: int
+
 
 @dataclass
 class LMResult:
@@ -37,6 +40,7 @@ class LMResult:
     user_prompt: str
     cot_response: str
 
+
 @dataclass
 class InputData:
     design_name: str
@@ -45,6 +49,7 @@ class InputData:
     ref_solution: str
     testbench: str
 
+
 ROOT = pathlib.Path(__file__).parent.parent
 
 """
@@ -52,6 +57,8 @@ ROOT = pathlib.Path(__file__).parent.parent
     args: directory path to SV files (str)
     returns: Dict of (SV file descripter, raw SV text)
 """
+
+
 def read_sv_from_dir(data_dir: str, is_testbench: bool = False) -> Dict[str, str]:
     dut_texts = {}
     file_suffix = ".sva" if is_testbench else ".sv"
@@ -63,20 +70,24 @@ def read_sv_from_dir(data_dir: str, is_testbench: bool = False) -> Dict[str, str
         dut_texts.update({dut_name: svtext.strip()})
     return dut_texts
 
+
 """
     Read dataset CSV files from given data directory
     args: directory path to SV files (str)
     returns: Dict of (SV file descripter, raw SV text)
 """
+
+
 def read_datasets_from_dir(data_dir: str) -> Dict[str, str]:
     file_suffix = ".csv"
     return glob.glob(data_dir + f"/*{file_suffix}")
+
 
 # def write_nl2sva_human_testbenches(
 #     dataset_path: str,
 #     llm_response_save_dir: str,
 #     save_dir: str = f"{ROOT}/tmp"
-# ):  
+# ):
 #     df = pd.read_csv(dataset_path)
 #     result_csvs = glob.glob(f"{llm_response_save_dir}/*.csv")
 
@@ -93,7 +104,7 @@ def read_datasets_from_dir(data_dir: str) -> Dict[str, str]:
 #             reference_assertion_text = row.ref_solution
 #             reference_assertion_text = reference_assertion_text.replace("asrt", "reference")
 #             assertion_text = row.lm_code_response
-            
+
 #             # retrieve question text
 #             commented_question_text = "\n//".join(row.question_prompt.split('\n'))
 
@@ -112,13 +123,13 @@ def read_datasets_from_dir(data_dir: str) -> Dict[str, str]:
 #             )
 #             with open(f"{save_dir}/{experiment_tag_name}/{idx}.sv", "w") as f:
 #                 f.write(packaged_tb_text)
-                
+
 
 # def write_nl2sva_machine_testbenches(
 #     dummy_testbench_rtl_path: str,
 #     llm_response_save_dir: str,
 #     save_dir: str = f"{ROOT}/tmp"
-# ):  
+# ):
 #     testbench_dict = read_sv_from_dir(data_dir=dummy_testbench_rtl_path,)
 #     testbench_text = testbench_dict['dummy']
 #     result_csvs = glob.glob(f"{llm_response_save_dir}/*.csv")
@@ -160,7 +171,7 @@ def read_datasets_from_dir(data_dir: str) -> Dict[str, str]:
 # def write_design2sva_testbenches(
 #     llm_response_save_dir: str,
 #     save_dir: str = f"{ROOT}/tmp"
-# ):  
+# ):
 #     result_csvs = glob.glob(f"{llm_response_save_dir}/*.csv")
 
 #     # read out LM response results per each model (stored as separate .csvs)
