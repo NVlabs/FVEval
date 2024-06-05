@@ -334,43 +334,17 @@ if __name__ == "__main__":
 
     dataset = []
     experiment_id = "fsm"
-    # for ni_log in [1, 2, 3]:
-    #     for nn_log in [3, 4, 5]:
-    #         for ne_multiplier in [2, 3, 4]:
-    #             for wd in [32]:
-    #                 for opd in [2, 4]:
-    #                     for i in range(args.num_test_cases):
-    #                         ni = 2**ni_log
-    #                         nn = 2**nn_log
-    #                         ne = nn * ne_multiplier
-    #                         tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
-    #                         fsm_rtl, fsm_tb_rtl = generate_testcase(num_inputs=ni, num_nodes=nn, num_edges=ne, width=wd, op_recursive_depth=opd)
-    #                         dataset.append(
-    #                             InputData(
-    #                                 design_name=experiment_id,
-    #                                 task_id=tag,
-    #                                 prompt=fsm_rtl,
-    #                                 ref_solution="",
-    #                                 testbench=fsm_tb_rtl,
-    #                             )
-    #                         )
-    for ni_log in [2]:
-        for nn_log in [2, 4]:
-            for ne_multiplier in [2]:
+    for ni_log in [1, ]:
+        for nn_log in [3, ]:
+            for ne_multiplier in [2, 3]:
                 for wd in [32]:
-                    for opd in [2, 3, 4]:
+                    for opd in [2]:
                         for i in range(args.num_test_cases):
                             ni = 2**ni_log
                             nn = 2**nn_log
                             ne = nn * ne_multiplier
                             tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
-                            fsm_rtl, fsm_tb_rtl = generate_testcase(
-                                num_inputs=ni,
-                                num_nodes=nn,
-                                num_edges=ne,
-                                width=wd,
-                                op_recursive_depth=opd,
-                            )
+                            fsm_rtl, fsm_tb_rtl = generate_testcase(num_inputs=ni, num_nodes=nn, num_edges=ne, width=wd, op_recursive_depth=opd)
                             dataset.append(
                                 InputData(
                                     design_name=experiment_id,
@@ -380,6 +354,32 @@ if __name__ == "__main__":
                                     testbench=fsm_tb_rtl,
                                 )
                             )
+    # for ni_log in [2, 4]:
+    #     for nn_log in [2, 3, 4]:
+    #         for ne_multiplier in [1, 2, 3, 4]:
+    #             for wd in [32]:
+    #                 for opd in [2, 3, 4, 5]:
+    #                     for i in range(args.num_test_cases):
+    #                         ni = 2**ni_log
+    #                         nn = 2**nn_log
+    #                         ne = nn * ne_multiplier
+    #                         tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
+    #                         fsm_rtl, fsm_tb_rtl = generate_testcase(
+    #                             num_inputs=ni,
+    #                             num_nodes=nn,
+    #                             num_edges=ne,
+    #                             width=wd,
+    #                             op_recursive_depth=opd,
+    #                         )
+    #                         dataset.append(
+    #                             InputData(
+    #                                 design_name=experiment_id,
+    #                                 task_id=tag,
+    #                                 prompt=fsm_rtl,
+    #                                 ref_solution="",
+    #                                 testbench=fsm_tb_rtl,
+    #                             )
+    #                         )
     df = pd.DataFrame([asdict(d) for d in dataset])
     df.to_csv(args.save_dir / f"design2sva_{experiment_id}.csv", index=False)
     print(f"generated {len(df)} cases")

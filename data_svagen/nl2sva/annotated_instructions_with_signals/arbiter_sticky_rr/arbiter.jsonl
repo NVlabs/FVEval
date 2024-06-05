@@ -1,12 +1,8 @@
 {"task_id": "arbiter_0", "prompt": "that the arbiter grant signal is 0-1-hot. Use the signal 'tb_gnt'."}
-{"task_id": "arbiter_1", "prompt": "that the arbiter holds requests until valid. Use the signals 'tb_gnt' and 'tb_req_for_starvation'."}
-{"task_id": "arbiter_2", "prompt": "that whether starvation occurs, i.e. check that each request from client is eventually granted. Use the signals 'tb_gnt' and 'req_seen_flag'."}
 {"task_id": "arbiter_3", "prompt": "that if there is a req, there will be a grant except when busy. Use the signals 'tb_req', 'busy', and 'tb_gnt'."}
 {"task_id": "arbiter_4", "prompt": "that each grant must be to a requesting client only. Use the signals 'tb_req' and 'tb_gnt'."}
 {"task_id": "arbiter_5", "prompt": "that no grants are made when the arbiter downstream is busy. Use the signals 'tb_gnt', 'hold', 'busy', and 'last_gnt'."}
 {"task_id": "arbiter_6", "prompt": "that the arbiter holds onto grants when there is hold. Use the signals 'tb_gnt', 'hold', and 'tb_req'."}
-{"task_id": "arbiter_7", "prompt": "that the arbiter follows the Round Robin policy with stickiness: if sticky bit is high (hold) then keep granting the same client, and move to the next client in round robin fashion. Use the signals 'tb_gnt', 'last_gnt', 'arbiter_in_sticky', 'valid_request_mask_rr', and 'tb_req'."}
-{"task_id": "arbiter_8", "prompt": "that the first grant of the arbiter follows the Round Robin policy with stickiness: if sticky bit is high (hold) then keep granting the same client, and move to the next client in round robin fashion. Use the signals 'tb_gnt, 'last_gnt', and 'tb_req'."}
 {"task_id": "arbiter_12", "prompt": "that no grants are given while there is a grant bubble. Use the signals 'tb_gnt', 'tb_req', 'sticky_req', and 'arbiter_in_sticky'."}
 {"task_id": "arbiter_13", "prompt": "that the grant of the arbiter stays sticky, i.e.  if sticky bit is high (hold) then keep granting the same client. Use the signals 'tb_gnt', 'sticky_req', and 'arbiter_in_sticky'"}
 {"task_id": "arbiter_9", "prompt": "that the arbiter is never on hold or busy or on continued grant at the same time. Use the signals 'tb_req', 'tb_gnt', 'hold', 'valid_request_mask_rr', and 'cont_gnt'."}

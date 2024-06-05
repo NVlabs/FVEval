@@ -17,6 +17,13 @@ if __name__ == "__main__":
         help="path to LLM results dir",
     )
     parser.add_argument(
+        "--model_name",
+        "-m",
+        type=str,
+        help="specific model name to evaluate for",
+        default="",
+    )
+    parser.add_argument(
         "--save_dir",
         "-o",
         type=str,
@@ -27,7 +34,6 @@ if __name__ == "__main__":
         "-t",
         type=str,
         help="path to temp dir",
-        default=ROOT / f"tmp_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}",
     )
     parser.add_argument(
         "--cleanup_temp",
@@ -67,14 +73,17 @@ if __name__ == "__main__":
         save_dir = args.save_dir
 
     save_dir = save_dir.as_posix()
-    datetime_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    tmp_dir = args.temp_dir / args.task
-    tmp_dir = tmp_dir.as_posix()
+    if not args.temp_dir:
+        datetime_str = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        tmp_dir = ROOT.as_posix() + f"/tmp_{args.task}/{args.model_name}_{datetime_str}"
+    else:
+        tmp_dir = args.temp_dir
 
     if "nl2sva" in args.task:
         if "human" in args.task:
             evaluator = evaluation.NL2SVAHumanEvaluator(
                 llm_output_dir=args.llm_output_dir,
+                model_name=args.model_name,
                 temp_dir=tmp_dir,
                 save_dir=save_dir,
                 cleanup_temp_files=args.cleanup_temp,
@@ -85,6 +94,7 @@ if __name__ == "__main__":
         elif "machine" in args.task:
             evaluator = evaluation.NL2SVAMachineEvaluator(
                 llm_output_dir=args.llm_output_dir,
+                model_name=args.model_name,
                 temp_dir=tmp_dir,
                 save_dir=save_dir,
                 cleanup_temp_files=args.cleanup_temp,
@@ -95,6 +105,7 @@ if __name__ == "__main__":
     elif "design2sva" in args.task:
         evaluator = evaluation.Design2SVAEvaluator(
             llm_output_dir=args.llm_output_dir,
+            model_name=args.model_name,
             temp_dir=tmp_dir,
             save_dir=save_dir,
             cleanup_temp_files=args.cleanup_temp,
@@ -102,13 +113,13 @@ if __name__ == "__main__":
             debug=args.debug,
         )
         evaluator.run_evaluation()
-    elif "helpergen" in args.task:
-        evaluator = evaluation.HelperGenEvaluator(
-            llm_output_dir=args.llm_output_dir,
-            temp_dir=tmp_dir,
-            save_dir=save_dir,
-            cleanup_temp_files=args.cleanup_temp,
-            parallel_jobs=args.nparallel,
-            debug=args.debug,
-        )
-        evaluator.run_evaluation()
+    # elif "helpergen" in args.task:
+    #     evaluator = evaluation.HelperGenEvaluator(
+    #         llm_output_dir=args.llm_output_dir,
+    #         temp_dir=tmp_dir,
+    #         save_dir=save_dir,
+    #         cleanup_temp_files=args.cleanup_temp,
+    #         parallel_jobs=args.nparallel,
+    #         debug=args.debug,
+    #     )
+    #     evaluator.run_evaluation()

@@ -34,6 +34,13 @@ if __name__ == "__main__":
         "--num_icl", type=int, help="number of in-context examples to use", default=3
     )
     parser.add_argument(
+        "--num_assertions",
+        "-k",
+        type=int,
+        help="Measure out of k assertions, i.e. measure pass@k",
+        default=1,
+    )
+    parser.add_argument(
         "--models",
         "-m",
         type=str,
@@ -58,6 +65,7 @@ if __name__ == "__main__":
     #     dataset_path = args.dataset_path.as_posix()
     # else:
     #     dataset_path = args.dataset_path
+    temperature = args.temperature if args.num_assertions < 2 else 0.8
 
     if args.debug:
         print("Executing in debug mode")
@@ -86,7 +94,7 @@ if __name__ == "__main__":
             num_icl_examples=args.num_icl,
             debug=args.debug,
         )
-        bmark_launcher.run_benchmark(temperature=args.temperature, max_tokens=200)
+        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=200, num_cases=args.num_assertions)
     elif args.mode == "machine":
         if not args.dataset_path:
             dataset_path = (
@@ -112,7 +120,7 @@ if __name__ == "__main__":
             num_icl_examples=args.num_icl,
             debug=args.debug,
         )
-        bmark_launcher.run_benchmark(temperature=args.temperature, max_tokens=100)
+        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=100, num_cases=args.num_assertions)
     else:
         print(f"Unsupported eval mode: {args.mode}")
         raise NotImplementedError

@@ -1,10 +1,5 @@
-{"task_id": "multi_fifo_0", "prompt": "that when the read pointer matches the registered pointer value, the correct data gets propagated to the output. Use the signals 'rd_ready', 'rd_vld', 'rd_data', 'registered_ptr', 'tb_rd_ptr', 'fifo_entry_cntr', 'tb_random_1_bit_data_selector_registered', and 'registered_data'."}
 {"task_id": "multi_fifo_1", "prompt": "for forward progress: whenever there is a push, an output data pop eventually happens. Use the signals 'tb_push_cnt' and 'tb_pop_cnt'."}
 {"task_id": "multi_fifo_2", "prompt": "for forward progress: whenever the FIFO becomes full, an output data pop eventually happens. Use the signals 'tb_fifo_filled_cnt' and 'tb_pop_cnt'."}
 {"task_id": "multi_fifo_4", "prompt": "that when the pop count is greater than current filled count, then FIFO goes through underflow. Use the signals 'tb_fifo_filled_cnt' and 'tb_pop_cnt'."}
 {"task_id": "multi_fifo_5", "prompt": "that the filled count is less than or equal to maximum allowed entires in the FIFO. Use the signal 'tb_fifo_filled_cnt'."}
 {"task_id": "multi_fifo_6", "prompt": "that the FIFO does not experience overflow. Use the signals 'tb_push_cnt', 'tb_pop_cnt, and 'tb_fifo_filled_cnt'."}
-{"task_id": "multi_fifo_7", "prompt": "that write ports are properly ordered, i.e. if the ith write valid is set then all preceding write valids should all be set. Use the signal 'wr_vld'."}
-{"task_id": "multi_fifo_8", "prompt": "that write ports are properly ordered, i.e. if the ith write ready is set then all preceding write ready signals should all be set. Use the signal 'wr_ready'."}
-{"task_id": "multi_fifo_9", "prompt": "that read ports are properly ordered, i.e. if the ith read valid is set then all preceding read valids should all be set. Use the signal 'rd_vld'."}
-{"task_id": "multi_fifo_10", "prompt": "that read ports are properly ordered, i.e. if the ith read ready is set then all preceding read ready signals should all be set. Use the signal 'rd_ready'."}

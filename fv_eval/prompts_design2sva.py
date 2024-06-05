@@ -35,8 +35,8 @@ that is necessary for creating assertions.
 Answer:"""
 
 def get_design2sva_question_prompt (num_assertions: int = 1) -> str:
-    return f"""Question: generate {num_assertions} SVA assertion(s) for the feature you listed. 
-If necessary, include any extra code, including wires, registers, and their assignements.
+    return f"""Question: generate a single SVA assertion for the feature you listed. 
+If necessary, include any extra code, including wires, registers, and their assignments.
 
 Do NOT use signals from the design RTL, only use the module input signals or internal signals you have added.
 Do NOT use any 'initial' blocks. This testbench is not for running RTL simulation but for formal verification.
@@ -54,14 +54,15 @@ assign b = c | d;
 assert property (@(posedge clk) disable iff (tb_reset)
     (a && b) != 1'b1
 );
-```Only output the code snippet and do NOT output anything else.
-Remember to output only {num_assertions} assertion(s).
+```
+Only output the code snippet and do NOT output anything else.
+Remember to output only one assertion.
 
 Answer:"""
 
 def get_design2sva_direct_question_prompt (num_assertions: int = 1) -> str:
-    return  f"""Question: generate {num_assertions} SVA assertion(s) for the given design RTL that is most important to verify.
-If necessary, produce any extra code, including wires, registers, and their assignements.
+    return  f"""Question: generate a single SVA assertion for the given design RTL that is most important to verify.
+If necessary, produce any extra code, including wires, registers, and their assignments.
 
 Do NOT use signals from the design RTL, only use the module input signals or internal signals you have added.
 Do NOT use any 'initial' blocks. This testbench is not for running RTL simulation but for formal verification.
@@ -81,6 +82,6 @@ assert property (@(posedge clk) disable iff (tb_reset)
 );
 ```
 Only output the code snippet and do NOT output anything else.
-Remember to output only {num_assertions} assertion(s).
+Remember to output only one assertion.
 
 Answer:"""

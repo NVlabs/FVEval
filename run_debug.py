@@ -22,6 +22,13 @@ if __name__ == "__main__":
         help="path to save JG eval results",
     )
     parser.add_argument(
+        "--model_name",
+        "-m",
+        type=str,
+        help="specific model name to evaluate for",
+        default="",
+    )
+    parser.add_argument(
         "--temp_dir",
         "-t",
         type=str,
@@ -73,16 +80,17 @@ if __name__ == "__main__":
         if "human" in args.task:
             evaluator = evaluation.NL2SVAHumanEvaluator(
                 llm_output_dir=args.llm_output_dir,
+                model_name=args.model_name,
                 temp_dir=tmp_dir,
                 save_dir=save_dir,
                 cleanup_temp_files=args.cleanup_temp,
                 parallel_jobs=args.nparallel,
                 debug=args.debug,
             )
-            evaluator.run_evaluation()
         elif "machine" in args.task:
             evaluator = evaluation.NL2SVAMachineEvaluator(
                 llm_output_dir=args.llm_output_dir,
+                model_name=args.model_name,
                 temp_dir=tmp_dir,
                 save_dir=save_dir,
                 cleanup_temp_files=args.cleanup_temp,
@@ -92,6 +100,7 @@ if __name__ == "__main__":
     elif "design2sva" in args.task:
         evaluator = evaluation.Design2SVAEvaluator(
             llm_output_dir=args.llm_output_dir,
+            model_name=args.model_name,
             temp_dir=tmp_dir,
             save_dir=save_dir,
             cleanup_temp_files=args.cleanup_temp,

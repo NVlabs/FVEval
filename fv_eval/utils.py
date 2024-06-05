@@ -3,6 +3,7 @@ import gzip
 import json
 import os
 import re
+import numpy as np
 from typing import Iterable, Dict
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -111,3 +112,17 @@ def parse_code_response(lm_response_str) -> str:
     if "```" in lm_response_str:
         lm_response_str = lm_response_str.split("```")[0]
     return lm_response_str.strip()
+
+
+def pass_at_k(x, n, k):
+    pass_at_k_values = np.zeros_like(x, dtype=float)
+
+    for i in range(len(x)):
+        c = x[i]
+        if n - c < k:
+            pass_at_k_values[i] = 1.0
+        else:
+            range_values = np.arange(n - c + 1, n + 1)
+            pass_at_k_values[i] = 1.0 - np.prod(1.0 - k / range_values)
+
+    return pass_at_k_values

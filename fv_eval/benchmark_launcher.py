@@ -73,8 +73,9 @@ class BenchmarkLauncher(object):
 
     def _prepare_models(self, model_name_list: str):
         TOGETHER_MODEL_DICT = {
+            "llama-3-8b": "meta-llama/Llama-3-8b-chat-hf",
             "llama-3-70b": "meta-llama/Llama-3-70b-chat-hf",
-            "code-llama-70b": "codellama/CodeLlama-70b-Instruct-hf",
+            "codellama-34b": "codellama/CodeLlama-34b-Instruct-hf",
             "llama-2-70b": "meta-llama/Llama-2-70b-chat-hf",
             "mixtral-8x22b": "mistralai/Mixtral-8x22B-Instruct-v0.1",
             "mixtral-8x7b": "mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -108,7 +109,14 @@ class BenchmarkLauncher(object):
                 api_provider = "anthropic"
                 api_key = os.getenv("ANTHROPIC_API_KEY")
                 base_url = "https://api.anthropic.com/v1"
-                full_model_name = model_name
+                if "opus" in model_name:
+                    full_model_name = "claude-3-opus-20240229"
+                elif "sonnet" in model_name:
+                    full_model_name = "claude-3-sonnet-20240229"
+                elif "haiku" in model_name:
+                    full_model_name = "claude-3-haiku-20240229"
+                else:
+                    raise ValueError(f"Unknown Anthropic model: {model_name}")
             elif "gpt" in model_name:
                 api_provider = "openai"
                 api_key = os.getenv("OPENAI_API_KEY")
@@ -123,6 +131,8 @@ class BenchmarkLauncher(object):
                 elif "gpt-3.5-turbo" in model_name:
                     full_model_name = "gpt-3.5-turbo-0125"
                     full_model_name = model_name
+                else:
+                    raise ValueError(f"Unknown OpenAI model: {model_name}")
             else:
                 raise ValueError(f"Unknown model: {model_name}")
             model_api_list.append(
@@ -176,13 +186,14 @@ class BenchmarkLauncher(object):
         user_prompt,
         temperature: float = 0.0,
         max_tokens: int = 100,
-        max_retries=20,
+        max_retries: int = 40,
+        num_cases: int = 1,
     ):
         num_retries = 0
         delay = 1.0
         error = None
         api_provider = self.api_provider
-        while num_retries <= max_retries:
+        while num_retries <= 20:
             try:
                 if (
                     api_provider == "vllm"
@@ -197,30 +208,31 @@ class BenchmarkLauncher(object):
                         ],
                         max_tokens=max_tokens,
                         temperature=temperature,
+                        top_p=0.95,
+                        n=num_cases,
                     )
-
-                    return completion.choices[0].message
+                    #return completion.choices[0].message
+                    return [choice.message.content for choice in completion.choices]
                 elif api_provider == "google":
                     completion = self.chat_client.generate_content(
                         prompt=user_prompt,
                         max_tokens=max_tokens,
                         temperature=temperature,
+                        top_p=0.95,
+                        n=num_cases,
                     )
                     return completion.text
                 elif api_provider == "anthropic":
-                    completion = self.chat_client.chat.completions.create(
+                    completion = Anthropic().messages.create(
                         model=model_name,
+                        system=system_prompt,
                         messages=[
-                            {"role": "system", "content": system_prompt},
                             {"role": "user", "content": user_prompt},
                         ],
                         max_tokens=max_tokens,
                         temperature=temperature,
                     )
-                    return completion.choices[0].message
-                else:
-                    utils.print_error("ERROR", f"Unknown API provider: {api_provider}")
-                    break
+                    return [textblock.text for textblock in completion.content]
 
             # Raise exceptions for any errors specified
             except Exception as e:
@@ -251,21 +263,22 @@ class BenchmarkLauncher(object):
         temperature: float = 0.0,
         max_tokens: int = 100,
         max_retries: int = 20,
+        num_cases: int = 1,
     ):
-        lm_response = self.run_lm(
+        lm_response_list = self.run_lm(
             model_name=model_name,
             system_prompt=system_prompt,
             user_prompt=user_prompt,
             temperature=temperature,
             max_tokens=max_tokens,
             max_retries=max_retries,
+            num_cases=num_cases,
         )
-        lm_response = lm_response.content
 
         if self.debug:
             utils.print_user_prompt(row.design_name + "/" + row.task_id, user_prompt)
-            utils.print_lm_response(model_name, lm_response)
-        return lm_response
+            utils.print_lm_response(model_name, lm_response_list[0])
+        return lm_response_list
 
     def run_experiment_single_model(
         self,
@@ -273,6 +286,7 @@ class BenchmarkLauncher(object):
         temperature: float = 0.0,
         max_tokens: int = 100,
         cot_question_chain: list[tuple[str, str]] = [],
+        num_cases: int = 1,
     ):
         raise NotImplementedError("run_experiment_single_model not implemented")
 
@@ -281,6 +295,7 @@ class BenchmarkLauncher(object):
         temperature: float = 0.0,
         max_tokens: int = 100,
         cot_strategy: str = "default",
+        num_cases: int = 1,
     ):
         cot_question_chain = self.get_cot_strategy(cot_strategy)
         for model_dict in self.model_api_list:
@@ -290,6 +305,7 @@ class BenchmarkLauncher(object):
                 temperature=temperature,
                 max_tokens=max_tokens,
                 cot_question_chain=cot_question_chain,
+                num_cases=num_cases,
             )
             self.save_results(model_dict["short_model_name"], results)
         return results
@@ -344,6 +360,7 @@ class NL2SVALauncher(BenchmarkLauncher):
         temperature: float = 0.0,
         max_tokens: int = 100,
         cot_question_chain: list[tuple[str, str]] = [],
+        num_cases: int = 1,
     ):
         results = []
         system_prompt = self.generate_system_prompt()
@@ -353,29 +370,31 @@ class NL2SVALauncher(BenchmarkLauncher):
                 user_prompt += "\n" + self.generate_question_prompt(row)
             else:
                 raise NotImplementedError("COT question chain not implemented")
-            lm_response = self.run_lm_chain(
+            lm_response_list = self.run_lm_chain(
                 row=row,
                 model_name=model_name,
                 system_prompt=system_prompt,
                 user_prompt=user_prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
+                num_cases=num_cases
             )
-            if self.debug:
-                utils.print_lm_response("reference", row.ref_solution)
-            packaged_tb_text = self.package_testbench(row, lm_response)
-            response = LMResult(
-                experiment_id=self.experiment_id,
-                task_id=row.design_name + "_" + row.task_id,
-                model_name=model_name,
-                response=lm_response,
-                ref_solution=row.ref_solution,
-                user_prompt=user_prompt,
-                output_tb=packaged_tb_text,
-                design_rtl="\n",
-                cot_response="cot_response\n",
-            )
-            results.append(response)
+            for i, lm_response in enumerate(lm_response_list):
+                if self.debug:
+                    utils.print_lm_response("reference", row.ref_solution)
+                packaged_tb_text = self.package_testbench(row, lm_response)
+                response = LMResult(
+                    experiment_id=self.experiment_id,
+                    task_id=row.design_name + "_" + row.task_id + f"_trial_{i}",
+                    model_name=model_name,
+                    response=lm_response,
+                    ref_solution=row.ref_solution,
+                    user_prompt=user_prompt,
+                    output_tb=packaged_tb_text,
+                    design_rtl="\n",
+                    cot_response="cot_response\n",
+                )
+                results.append(response)
         return results
 
 
@@ -478,13 +497,11 @@ class Design2SVALauncher(BenchmarkLauncher):
         dataset_path: str,
         task: str = "design2sva",
         model_name_list: list[str] = ["gpt-4"],
-        num_assertions: int = 1,
         debug: bool = False,
     ):
         super().__init__(
             save_dir, dataset_path, task, model_name_list, 0, debug
         )
-        self.num_assertions = num_assertions
 
     def generate_system_prompt(self):
         return prompts_design2sva.SVAGEN_HEADER
@@ -513,17 +530,17 @@ class Design2SVALauncher(BenchmarkLauncher):
 
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         if cot_strategy == "default":
-            return [("question", prompts_design2sva.get_design2sva_direct_question_prompt(self.num_assertions))]
+            return [("question", prompts_design2sva.get_design2sva_direct_question_prompt(1))]
         elif cot_strategy == "plan-act":
             return [
-                ("plan", prompts_design2sva.get_design2sva_planning_prompt(self.num_assertions)),
-                ("question", prompts_design2sva.get_design2sva_question_prompt(self.num_assertions)),
+                ("plan", prompts_design2sva.get_design2sva_planning_prompt(1)),
+                ("question", prompts_design2sva.get_design2sva_question_prompt(1)),
             ]
         elif cot_strategy == "plan-model-act":
             return [
-                ("plan", prompts_design2sva.get_design2sva_planning_prompt(self.num_assertions)),
+                ("plan", prompts_design2sva.get_design2sva_planning_prompt(1)),
                 ("model", prompts_design2sva.SVAGEN_MODELING_QUESTION),
-                ("question", prompts_design2sva.get_design2sva_question_prompt(self.num_assertions)),
+                ("question", prompts_design2sva.get_design2sva_question_prompt(1)),
             ]
         else:
             utils.print_error("ERROR", f"Unsupported COT strategy: {cot_strategy}")
@@ -537,6 +554,7 @@ class Design2SVALauncher(BenchmarkLauncher):
         cot_question_chain: list[tuple[str, str]] = [
             ("question", prompts_design2sva.get_design2sva_direct_question_prompt(1))
         ],
+        num_cases: int = 1,
     ):
         results = []
         # generate system prompt
@@ -544,50 +562,54 @@ class Design2SVALauncher(BenchmarkLauncher):
 
         # iterate over dataset
         for row in self._build_iterator(model_name):
+            # for trial_id in range(self.num_assertions):
             if self.debug:
                 print(len(self._build_iterator(model_name)))
             # generate user prompt
             user_prompt = self.generate_user_prompt_prefix(row)
             cot_responses = {}
 
-            # iterate over COT question chain
-            for q_type, q_str in cot_question_chain:
-                # append question to user prompt
-                user_prompt += "\n" + q_str
-                # run LM chain
-                lm_response = self.run_lm_chain(
-                    row=row,
+            for i in range(num_cases):
+                # iterate over COT question chain
+                for q_type, q_str in cot_question_chain:
+                    # append question to user prompt
+                    user_prompt += "\n" + q_str
+                    # run LM chain
+                    lm_response_list = self.run_lm_chain(
+                        row=row,
+                        model_name=model_name,
+                        system_prompt=system_prompt,
+                        user_prompt=user_prompt,
+                        temperature=temperature,
+                        max_tokens=max_tokens,
+                        num_cases=1,
+                    )
+                    lm_response = lm_response_list[0]
+                    if q_type != cot_question_chain[-1][0]:
+                        cot_responses[q_type] = lm_response
+                        user_prompt += "\n" + lm_response
+
+                # stringify cot_responses
+                cot_response = "cot_response\n"
+                for key, value in cot_responses.items():
+                    cot_response += f"{key}: {value}\n"
+
+                # package testbench
+                packaged_tb_text = self.package_testbench(row, lm_response)
+
+                # construct response
+                response = LMResult(
+                    experiment_id=self.experiment_id,
+                    task_id=row.design_name + "_" + row.task_id + f"_trial_{i}",
                     model_name=model_name,
-                    system_prompt=system_prompt,
+                    response=lm_response,
+                    ref_solution=row.ref_solution,
                     user_prompt=user_prompt,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
+                    output_tb=packaged_tb_text,
+                    design_rtl=row.prompt,
+                    cot_response=cot_response,
                 )
-                if q_type != cot_question_chain[-1][0]:
-                    cot_responses[q_type] = lm_response
-                    user_prompt += "\n" + lm_response
-
-            # stringify cot_responses
-            cot_response = "cot_response\n"
-            for key, value in cot_responses.items():
-                cot_response += f"{key}: {value}\n"
-
-            # package testbench
-            packaged_tb_text = self.package_testbench(row, lm_response)
-
-            # construct response
-            response = LMResult(
-                experiment_id=self.experiment_id,
-                task_id=row.design_name + "_" + row.task_id,
-                model_name=model_name,
-                response=lm_response,
-                ref_solution=row.ref_solution,
-                user_prompt=user_prompt,
-                output_tb=packaged_tb_text,
-                design_rtl=row.prompt,
-                cot_response=cot_response,
-            )
-            results.append(response)
+                results.append(response)
         return results
 
 

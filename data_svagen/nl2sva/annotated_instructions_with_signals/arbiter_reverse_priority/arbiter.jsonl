@@ -1,6 +1,4 @@
 {"task_id": "arbiter_0", "prompt": "that the arbiter grant signal is 0-1-hot. Use the signal 'tb_gnt'."}
-{"task_id": "arbiter_1", "prompt": "that the arbiter holds requests until valid. Use the signals 'tb_gnt' and 'tb_req_for_starvation'."}
-{"task_id": "arbiter_2", "prompt": "that whether starvation occurs, i.e. check that each request from client is eventually granted. Use the signals 'tb_gnt' and 'req_seen_flag'."}
 {"task_id": "arbiter_3", "prompt": "that if there is a req, there will be a grant except when busy. Use the signals 'tb_req', 'busy', and 'tb_gnt'."}
 {"task_id": "arbiter_4", "prompt": "that each grant must be to a requesting client only. Use the signals 'tb_req' and 'tb_gnt'."}
 {"task_id": "arbiter_5", "prompt": "that no grants are made when the arbiter downstream is busy. Use the signals 'tb_gnt', 'hold', 'busy', and 'last_gnt'."}

@@ -617,9 +617,9 @@ if __name__ == "__main__":
     # (1) single pipeline designs
     experiment_id = "pipeline_single"
     # single pipeline & no guarantee of e2e data equivalence
-    for ns in [2, 5, 10]:
-        for width in [128, 256]:
-            for opd in [2, 3, 4]:
+    for ns in [2, 5, 10, 50]:
+        for width in [128]:
+            for opd in [2, 3, 4, 5]:
                 for i in range(args.num_test_cases):
                     depths = []
                     for _ in range(ns):

@@ -8,6 +8,7 @@ from dataclasses import dataclass, asdict
 from typing import Optional, Callable, Dict
 
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
 import evaluate
 
@@ -21,6 +22,7 @@ class Evaluator(object):
         self,
         task: str,
         llm_output_dir: str,
+        model_name: str,
         temp_dir: str,
         save_dir: str,
         parallel_jobs: int = 8,
@@ -36,7 +38,11 @@ class Evaluator(object):
         self.debug = debug
 
         # load all results and store them in a list of FVEvalLMResponse
-        llm_results = glob.glob(f"{llm_output_dir}/*.csv")
+        if model_name:
+            llm_results = glob.glob(f"{llm_output_dir}/*{model_name}_*.csv")
+        else:
+            # if empty model name, load all results in the directory
+            llm_results = glob.glob(f"{llm_output_dir}/*.csv")
         assert len(llm_results) > 0, "No LLM results found"
         llm_results = [
             (f.split("/")[-1].split(".csv")[0], pd.read_csv(f)) for f in llm_results
@@ -206,22 +212,32 @@ class Evaluator(object):
                 assert lm_result.model_name == model_name
                 assert lm_result.experiment_id == experiment_id
 
-                p = multiprocessing.Process(
-                    target=fv_tool_execution.launch_jg_with_queue,
-                    kwargs={
-                        "tcl_file_path": self.tcl_file_path,
-                        "sv_dir": self.temp_dir,
-                        "experiment_id": lm_result.experiment_id,
-                        "task_id": lm_result.task_id,
-                        "output_queue": output_queue,
-                    },
-                )
-                processes.append(p)
-                p.start()
-            for p in processes:
-                p.join()
-            while not output_queue.empty():
-                jasper_outputs.append(output_queue.get())
+                if self.parallel_jobs == 1:
+                    jasper_out_str = fv_tool_execution.launch_jg(
+                        tcl_file_path=self.tcl_file_path,
+                        sv_dir=self.temp_dir,
+                        experiment_id=lm_result.experiment_id,
+                        task_id=lm_result.task_id,
+                    )
+                    jasper_outputs.append(jasper_out_str)
+                else:
+                    p = multiprocessing.Process(
+                        target=fv_tool_execution.launch_jg_with_queue,
+                        kwargs={
+                            "tcl_file_path": self.tcl_file_path,
+                            "sv_dir": self.temp_dir,
+                            "experiment_id": lm_result.experiment_id,
+                            "task_id": lm_result.task_id,
+                            "output_queue": output_queue,
+                        },
+                    )
+                    processes.append(p)
+                    p.start()
+            if self.parallel_jobs > 1:
+                for p in processes:
+                    p.join()
+                while not output_queue.empty():
+                    jasper_outputs.append(output_queue.get())
 
             for jasper_out_str in jasper_outputs:
                 # regex match *.sva in jasper_out_str
@@ -263,6 +279,12 @@ class Evaluator(object):
             jg_eval_results = pd.DataFrame(jg_eval_results)
             jg_eval_results.to_csv(f"{self.save_dir}/{exp_name}_jg.csv", index=False)
 
+            jg_eval_results["unique_task_id"] = jg_eval_results["task_id"].apply(
+                lambda x: x.split("_trial")[0]
+            )
+            # for rows that share same unique_task_id, only take the max value
+            jg_eval_results = jg_eval_results.groupby("unique_task_id").max()
+        
             # take only the metric values from the evaluation results
             combined_results = pd.merge(
                 text_similiarty_eval_results,
@@ -284,8 +306,6 @@ class Evaluator(object):
                 [combined_results, mean_values], ignore_index=True
             )
             combined_results.to_csv(f"{self.save_dir}/{exp_name}.csv", index=False)
-        if self.cleanup_temp_files:
-            shutil.rmtree(self.temp_dir)
         return combined_results
 
     def save_evaluation_results(
@@ -302,6 +322,7 @@ class NL2SVAHumanEvaluator(Evaluator):
     def __init__(
         self,
         llm_output_dir: str,
+        model_name: str,
         temp_dir: str,
         save_dir: str,
         parallel_jobs: int = 8,
@@ -311,6 +332,7 @@ class NL2SVAHumanEvaluator(Evaluator):
         super().__init__(
             task="nl2sva_human",
             llm_output_dir=llm_output_dir,
+            model_name=model_name,
             temp_dir=temp_dir,
             save_dir=save_dir,
             parallel_jobs=parallel_jobs,
@@ -390,25 +412,38 @@ class NL2SVAHumanEvaluator(Evaluator):
                 signal_list.extend(params)
                 signal_list_text = ",".join(signal_list)
 
-                p = multiprocessing.Process(
-                    target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
-                    kwargs={
-                        "tcl_file_path": self.tcl_file_path,
-                        "lm_assertion_text": lm_assertion_text,
-                        "ref_assertion_text": ref_assertion_text,
-                        "signal_list_text": signal_list_text,
-                        "sv_dir": self.temp_dir,
-                        "experiment_id": lm_result.experiment_id,
-                        "task_id": lm_result.task_id,
-                        "output_queue": output_queue,
-                    },
-                )
-                processes.append(p)
-                p.start()
-            for p in processes:
-                p.join()
-            while not output_queue.empty():
-                jasper_outputs.append(output_queue.get())
+                if self.parallel_jobs == 1:
+                    jasper_out_str = fv_tool_execution.launch_jg_custom_equiv_check(
+                        tcl_file_path=self.tcl_file_path,
+                        lm_assertion_text=lm_assertion_text,
+                        ref_assertion_text=ref_assertion_text,
+                        signal_list_text=signal_list_text,
+                        sv_dir=self.temp_dir,
+                        experiment_id=lm_result.experiment_id,
+                        task_id=lm_result.task_id,
+                    )
+                    jasper_outputs.append(jasper_out_str)
+                else:
+                    p = multiprocessing.Process(
+                        target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
+                        kwargs={
+                            "tcl_file_path": self.tcl_file_path,
+                            "lm_assertion_text": lm_assertion_text,
+                            "ref_assertion_text": ref_assertion_text,
+                            "signal_list_text": signal_list_text,
+                            "sv_dir": self.temp_dir,
+                            "experiment_id": lm_result.experiment_id,
+                            "task_id": lm_result.task_id,
+                            "output_queue": output_queue,
+                        },
+                    )
+                    processes.append(p)
+                    p.start()
+            if self.parallel_jobs > 1:
+                for p in processes:
+                    p.join()
+                while not output_queue.empty():
+                    jasper_outputs.append(output_queue.get())
 
             for jasper_out_str in jasper_outputs:
                 # regex match *.sva in jasper_out_str
@@ -475,6 +510,7 @@ class NL2SVAMachineEvaluator(Evaluator):
     def __init__(
         self,
         llm_output_dir: str,
+        model_name: str,
         temp_dir: str,
         save_dir: str,
         parallel_jobs: int = 8,
@@ -484,6 +520,7 @@ class NL2SVAMachineEvaluator(Evaluator):
         super().__init__(
             task="nl2sva_machine",
             llm_output_dir=llm_output_dir,
+            model_name=model_name,
             temp_dir=temp_dir,
             save_dir=save_dir,
             parallel_jobs=parallel_jobs,
@@ -550,35 +587,38 @@ class NL2SVAMachineEvaluator(Evaluator):
                 signal_list = list(set(signal_list))
                 signal_list_text = ",".join(signal_list)
 
-                # fv_tool_execution.launch_jg_with_queue_custom_equiv_check(
-                #     tcl_file_path=self.tcl_file_path,
-                #     lm_assertion_text=lm_assertion_text,
-                #     ref_assertion_text=ref_assertion_text,
-                #     signal_list_text=signal_list_text,
-                #     sv_dir=self.temp_dir,
-                #     experiment_id=lm_result.experiment_id,
-                #     task_id=lm_result.task_id,
-                #     output_queue=output_queue
-                # )
-                p = multiprocessing.Process(
-                    target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
-                    kwargs={
-                        "tcl_file_path": self.tcl_file_path,
-                        "lm_assertion_text": lm_assertion_text,
-                        "ref_assertion_text": ref_assertion_text,
-                        "signal_list_text": signal_list_text,
-                        "sv_dir": self.temp_dir,
-                        "experiment_id": lm_result.experiment_id,
-                        "task_id": lm_result.task_id,
-                        "output_queue": output_queue,
-                    },
-                )
-                processes.append(p)
-                p.start()
-            for p in processes:
-                p.join()
-            while not output_queue.empty():
-                jasper_outputs.append(output_queue.get())
+                if self.parallel_jobs == 1:
+                    jasper_out_str = fv_tool_execution.launch_jg_custom_equiv_check(
+                        tcl_file_path=self.tcl_file_path,
+                        lm_assertion_text=lm_assertion_text,
+                        ref_assertion_text=ref_assertion_text,
+                        signal_list_text=signal_list_text,
+                        sv_dir=self.temp_dir,
+                        experiment_id=lm_result.experiment_id,
+                        task_id=lm_result.task_id,
+                    )
+                    jasper_outputs.append(jasper_out_str)
+                else:
+                    p = multiprocessing.Process(
+                        target=fv_tool_execution.launch_jg_with_queue_custom_equiv_check,
+                        kwargs={
+                            "tcl_file_path": self.tcl_file_path,
+                            "lm_assertion_text": lm_assertion_text,
+                            "ref_assertion_text": ref_assertion_text,
+                            "signal_list_text": signal_list_text,
+                            "sv_dir": self.temp_dir,
+                            "experiment_id": lm_result.experiment_id,
+                            "task_id": lm_result.task_id,
+                            "output_queue": output_queue,
+                        },
+                    )
+                    processes.append(p)
+                    p.start()
+            if self.parallel_jobs > 1:
+                for p in processes:
+                    p.join()
+                while not output_queue.empty():
+                    jasper_outputs.append(output_queue.get())
             for jasper_out_str in jasper_outputs:
                 # regex match *.sva in jasper_out_str
                 task_id_match = re.findall(r"\bTASK_ID[^\n]*", jasper_out_str)
@@ -643,6 +683,7 @@ class Design2SVAEvaluator(Evaluator):
     def __init__(
         self,
         llm_output_dir: str,
+        model_name:str,
         temp_dir: str,
         save_dir: str,
         parallel_jobs: int = 8,
@@ -652,6 +693,7 @@ class Design2SVAEvaluator(Evaluator):
         super().__init__(
             task="design2sva",
             llm_output_dir=llm_output_dir,
+            model_name=model_name,
             temp_dir=temp_dir,
             save_dir=save_dir,
             parallel_jobs=parallel_jobs,
@@ -668,18 +710,43 @@ class Design2SVAEvaluator(Evaluator):
             jg_eval_results = pd.DataFrame(jg_eval_results)
             jg_eval_results.to_csv(f"{self.save_dir}/{exp_name}_jg.csv", index=False)
 
-            # take only the metric values from the evaluation results
-            final_results = jg_eval_results.drop(
-                columns=["experiment_id", "task_id", "model_name"]
+            jg_eval_results["unique_task_id"] = jg_eval_results["task_id"].apply(
+                lambda x: x.split("_trial")[0]
             )
-            # for each remaining column, calculate the mean value
-            # add as a separate row
-            mean_values = final_results.mean(axis=0)
-            mean_values = mean_values.to_frame().T
-            mean_values["experiment_id"] = exp_name
-            mean_values["task_id"] = "mean"
-            mean_values["model_name"] = "mean"
-            final_results = pd.concat([final_results, mean_values], ignore_index=True)
+            # take only the metric values from the evaluation results
+            final_results = jg_eval_results.copy()
+            # # for rows that share same unique_task_id, only take the max value
+            # # measure pass@k for each unique_task_id
+            # count_num_trials = jg_eval_results.groupby("unique_task_id").count().iloc[0,0]
+            # count_pass = jg_eval_results.groupby("unique_task_id").sum()
+            
+            # syntax_pass_at_1 = utils.pass_at_k(count_pass["syntax"].values, count_num_trials, 1)
+            # syntax_pass_at_5 = utils.pass_at_k(count_pass["syntax"].values, count_num_trials, 5)
+            # func_pass_at_1 = utils.pass_at_k(count_pass["functionality"].values, count_num_trials, 1)
+            # func_pass_at_5 = utils.pass_at_k(count_pass["functionality"].values, count_num_trials, 5)
+                
+            # jg_eval_results = jg_eval_results.groupby("unique_task_id").mean()
+            # jg_eval_results = jg_eval_results.drop(columns=["experiment_id", "task_id", "model_name"])
+
+            # # for each remaining column, calculate the mean value
+            # # add as a separate row
+            # import pdb; pdb.set_trace()
+            # pass_at_1 = jg_eval_results.copy()
+            # pass_at_1["syntax"] = syntax_pass_at_1
+            # pass_at_1["functionality"] = func_pass_at_1
+            # pass_at_1 = pass_at_1.mean(axis=0)
+            # pass_at_1 = pass_at_1.to_frame().T
+            # pass_at_1["experiment_id"] = exp_name
+            # pass_at_1["task_id"] = "Pass@1"
+            # pass_at_1["model_name"] = "Pass@1"
+            # pass_at_5 = jg_eval_results.copy()
+            # pass_at_5["syntax"] = syntax_pass_at_5
+            # pass_at_5["functionality"] = func_pass_at_5
+            # pass_at_5 = pass_at_5.mean(axis=0)
+            # pass_at_5 = pass_at_5.to_frame().T
+            # pass_at_5["experiment_id"] = exp_name
+            # pass_at_5["task_id"] = "Pass@5"
+            # final_results = pd.concat([final_results, pass_at_1, pass_at_5], ignore_index=True)
             final_results.to_csv(f"{self.save_dir}/{exp_name}.csv", index=False)
         return final_results
 

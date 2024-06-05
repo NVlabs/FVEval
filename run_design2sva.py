@@ -71,6 +71,7 @@ if __name__ == "__main__":
         save_dir = args.save_dir
     utils.mkdir_p(save_dir)
 
+    temperature = args.temperature if args.num_assertions < 2 else 0.8
     dataset_paths = data.read_datasets_from_dir(dataset_dir)
     for dataset_path in dataset_paths:
         bmark_launcher = benchmark_launcher.Design2SVALauncher(
@@ -78,11 +79,11 @@ if __name__ == "__main__":
             dataset_path=dataset_path,
             task="design2sva",
             model_name_list=args.models.split(";"),
-            num_assertions=args.num_assertions,
             debug=args.debug,
         )
         bmark_launcher.run_benchmark(
-            temperature=args.temperature,
+            temperature=temperature,
             max_tokens=2000,
             cot_strategy=args.cot_strategy,
+            num_cases=args.num_assertions,
         )
