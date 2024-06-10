@@ -232,6 +232,7 @@ class BenchmarkLauncher(object):
                         max_tokens=max_tokens,
                         temperature=temperature,
                     )
+                    time.sleep(2)
                     return [textblock.text for textblock in completion.content]
 
             # Raise exceptions for any errors specified
