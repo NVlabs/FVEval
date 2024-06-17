@@ -1,0 +1,5 @@
+for (genvar i=1;i<wr_port;i++) begin
+    asrt: assert property (@(posedge clk) disable iff (tb_reset)
+        (wr_ready[i] && !(&wr_ready[(i-1):0])) !== 1'b1
+    );
+end

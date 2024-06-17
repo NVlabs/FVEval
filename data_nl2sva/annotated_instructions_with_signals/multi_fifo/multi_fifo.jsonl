@@ -1,0 +1,5 @@
+{"task_id": "multi_fifo_1", "prompt": "for forward progress: whenever there is a push, an output data pop eventually happens. Use the signals 'tb_push_cnt' and 'tb_pop_cnt'."}
+{"task_id": "multi_fifo_2", "prompt": "for forward progress: whenever the FIFO becomes full, an output data pop eventually happens. Use the signals 'tb_fifo_filled_cnt' and 'tb_pop_cnt'."}
+{"task_id": "multi_fifo_4", "prompt": "that when the pop count is greater than current filled count, then FIFO goes through underflow. Use the signals 'tb_fifo_filled_cnt' and 'tb_pop_cnt'."}
+{"task_id": "multi_fifo_5", "prompt": "that the filled count is less than or equal to maximum allowed entires in the FIFO. Use the signal 'tb_fifo_filled_cnt'."}
+{"task_id": "multi_fifo_6", "prompt": "that the FIFO does not experience overflow. Use the signals 'tb_push_cnt', 'tb_pop_cnt, and 'tb_fifo_filled_cnt'."}

@@ -1,0 +1,5 @@
+for (genvar i = 0; i < num_of_states; i++) begin
+    asrt: assert property (@(posedge clk) disable iff (tb_reset)
+        (fsm_state == tb_fsm_sequence[num_of_states-1-i]) |-> strong(##[1:$] (fsm_state != tb_fsm_sequence[num_of_states-1-i])) 
+    );
+end

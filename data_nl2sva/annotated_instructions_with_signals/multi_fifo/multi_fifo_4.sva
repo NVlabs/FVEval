@@ -1,0 +1,3 @@
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    (tb_pop_cnt > tb_fifo_filled_cnt) !== 1'b1
+);

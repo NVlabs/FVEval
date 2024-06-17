@@ -1,0 +1,1 @@
+{"task_id": "fsm_transition_1", "prompt": "that each of the FSM states provided as the input sequence should end in the final end state. Use the signal 'match_tracker'."}

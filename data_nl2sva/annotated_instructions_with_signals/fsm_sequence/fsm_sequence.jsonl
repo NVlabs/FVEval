@@ -1,0 +1,3 @@
+{"task_id": "fsm_sequence_0", "prompt": "that the specified fsm_sequence is never seen. Use the signal 'tb_sequence_seen'."}
+{"task_id": "fsm_sequence_1", "prompt": "that the current FSM state is legal. Use the signals 'check_state_legal_precondition' and 'match_tracker'."}
+{"task_id": "fsm_sequence_3", "prompt": "that if the current FSM state is legal, the FSM should not continue to be the same legal state. Use the signals 'fsm_state', 'tb_random_state', and 'tb_fsm_sequence'."}

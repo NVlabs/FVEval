@@ -1,0 +1,10801 @@
+design_name,task_id,prompt,ref_solution,testbench
+nl2sva_machine,3_0_0,"Both sig_F and sig_H are high, or all bits of sig_I are high, or sig_B is high.","assert property(@(posedge clk)
+	(((sig_F && sig_H) || &sig_I) || sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_1_0,"The value of sig_C not being equal to the bitwise NOR of sig_D, checked for equality with sig_A, differs from the logical and between sig_J and sig_I","assert property(@(posedge clk)
+	(((sig_C !== ~|sig_D) === sig_A) !== (sig_J && sig_I))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_2_0,"If both sig_G and sig_C are high and sig_A is high, then sig_I must not be high 5 clock cycles later","assert property(@(posedge clk)
+	(sig_G && (sig_C && sig_A)) |-> ##5 (sig_I !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_3_0,"It is never the case that sig_C is equal to the logical AND of sig_A and sig_H","assert property(@(posedge clk)
+	((sig_C === (sig_A && sig_H)) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_4_0,sig_H being equal to sig_F must differ from the value of sig_J,"assert property(@(posedge clk)
+	((sig_H === sig_F) !== sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_5_0,"Whenever there is a change in whether sig_D equals sig_E and not sig_C, sig_B must be high on the next clock cycle","assert property(@(posedge clk)
+	$changed((sig_D === (sig_E && ~sig_C))) |-> sig_B
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_6_0,sig_F must not be equal to 1'b1,"assert property(@(posedge clk)
+	(sig_F !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_7_0,"If sig_G is high, then between 5 to 9 clock cycles later, sig_J being different from sig_E must not be equivalent to sig_H being different from sig_B","assert property(@(posedge clk)
+	sig_G |-> ##[5:9] ((sig_J !== sig_E) !== (sig_H !== sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_8_0,"If the bitwise XOR of sig_F and the reduction XOR of sig_A equals sig_H, then the bitwise XOR of sig_G and the reduction OR of sig_C must be true, and either sig_H or sig_J must be true","assert property(@(posedge clk)
+	(((sig_F ^ ^sig_A) === sig_H) <= ((sig_G ^ |sig_C) && (sig_H || sig_J)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_9_0,"If sig_C is not 1, then sig_F should be true","assert property(@(posedge clk)
+	((sig_C !== 1'b1) || sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_10_0,Either sig_J is equal to sig_E or sig_C is true,"assert property(@(posedge clk)
+	((sig_J === sig_E) || sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_11_0,"If sig_G and sig_J are both true, then two clock cycles later, sig_G must have an odd number of 1s and all bits of sig_B must be 1","assert property(@(posedge clk)
+	(sig_G && sig_J) |-> ##2 (^sig_G === 1'b1) && &sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_12_0,"If sig_B is less than sig_A or sig_E is true, then one cycle later, sig_F must be equal to sig_A","assert property(@(posedge clk)
+	((sig_B < sig_A) || sig_E) |-> ##1 (sig_F === sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_13_0,"If sig_C is high, then sig_J will be high and sig_B must have no '1' bits afterwards","assert property(@(posedge clk)
+	sig_C |=> (sig_J && ~|sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_14_0,"Whenever sig_I is not equal to sig_G and sig_C is not 1, this holds true","assert property(@(posedge clk)
+	((sig_I !== sig_G) && (sig_C !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_15_0,"If sig_C is true, then after three clock cycles, sig_B must not be equal to 1'b1","assert property(@(posedge clk)
+	sig_C |-> ##3 (~sig_B !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_16_0,"sig_I is not equal to the NOR of sig_C","assert property(@(posedge clk)
+	(sig_I !== ~|sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_17_0,"If sig_J is true, then sig_G must eventually become false","assert property(@(posedge clk)
+	sig_J |-> s_eventually(!sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_18_0,"If sig_G is not equal to 1'b1, then four cycles later, sig_J must be true","assert property(@(posedge clk)
+	(sig_G !== 1'b1) |-> ##4 sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_19_0,"sig_A or the bitwise negation of sig_J, exclusive OR sig_D, is true at each rising clock edge","assert property(@(posedge clk)
+	((sig_A || ~^sig_J) ^ sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_20_0,"If sig_G is true, then eventually ((sig_C or sig_H has at least one '1' bit) XOR (sig_C XOR sig_I)) must be true","assert property(@(posedge clk)
+	sig_G |-> s_eventually(((sig_C || |sig_H) ^ (sig_C ^ sig_I)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_21_0,"If sig_C is high or sig_D is low, then sig_J must be different from sig_E in the next cycle","assert property(@(posedge clk)
+	(sig_C || !sig_D) |=> (sig_J ^ sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_22_0,"If sig_C is true and sig_F is greater than sig_A, then this is not equal to sig_E","assert property(@(posedge clk)
+	((sig_C && (sig_F > sig_A)) !== sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_23_0,"If sig_A is true, then seven cycles ago sig_D must have been equal to sig_F","assert property(@(posedge clk)
+	sig_A |-> $past((sig_D === sig_F), 7)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_24_0,sig_G and sig_E must both be high,"assert property(@(posedge clk)
+	(sig_G && sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_25_0,"If either sig_G is high or both sig_D and sig_H are high, or if either sig_A or sig_C is high, then the property holds true","assert property(@(posedge clk)
+	((sig_G || (sig_A || sig_C)) || (sig_D && sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_26_0,"If sig_C is high or the exclusive OR between sig_G not equal to sig_D and sig_E is true, the property holds","assert property(@(posedge clk)
+	(sig_C || ((sig_G !== sig_D) ^ sig_E))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_27_0,"sig_H is high and the logical AND of sig_I and sig_F is equal to sig_B","assert property(@(posedge clk)
+	(sig_H && ((sig_I && sig_F) === sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_28_0,"When sig_E is high and not all bits of sig_A are high, the value must not be equal to sig_F","assert property(@(posedge clk)
+	((sig_E && ~&sig_A) !== sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_29_0,"When sig_D is true, sig_F must be true on the following clock cycle","assert property(@(posedge clk)
+	sig_D |=> sig_F
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_30_0,"If sig_H is true, then sig_A must not be equal to 1","assert property(@(posedge clk)
+	sig_H |=> (sig_A !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_31_0,"sig_A and sig_E are different, and sig_C is equal to sig_H","assert property(@(posedge clk)
+	(sig_A ^ sig_E) && (sig_C === sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_32_0,"If sig_F is true and sig_A contains all '0' bits, then every bit of sig_J must eventually be '1'","assert property(@(posedge clk)
+	((sig_F && ~|sig_A) !== 1'b1) |=> &sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_33_0,"If the inequality between sig_F and sig_A is different from sig_B, then two clock cycles later sig_D will be true","assert property(@(posedge clk)
+	((sig_F !== sig_A) !== sig_B) |-> ##2 sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_34_0,sig_C must not be the same as the value of sig_I XORed with whether sig_A is greater than or equal to sig_F,"assert property(@(posedge clk)
+	(sig_C !== (sig_I ^ (sig_A >= sig_F)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_35_0,"If the exclusive OR of sig_E and sig_G is equal to the exclusive OR of sig_A and sig_J, then sig_C should at least one '0' bit and sig_F be true simultaneously in the following cycle","assert property(@(posedge clk)
+	((sig_E ^ sig_G) === (sig_A ^ sig_J)) |=> (~&sig_C && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_36_0,"If sig_F is different from whether sig_H is greater than sig_G, then it must always be true that sig_C is not equal to the exclusive OR of sig_J and sig_E","assert property(@(posedge clk)
+	(sig_F ^ (sig_H > sig_G)) |-> s_always((sig_C !== (sig_J ^ sig_E)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_37_0,"If either sig_G or sig_E is true, then sig_G must be true after 4 clock cycles","assert property(@(posedge clk)
+	(sig_G || sig_E) |-> ##4 sig_G
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_38_0,"If sig_H is true, then the logical XOR of (sig_F or sig_J) with sig_E must be true in the next cycle","assert property(@(posedge clk)
+	sig_H |=> ((sig_F || sig_J) ^ sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_39_0,"If sig_C is not equal to the logical AND of all bits in sig_I, then sig_G must be true in the next clock cycle","assert property(@(posedge clk)
+	(sig_C !== &sig_I) |=> sig_G
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_40_0,sig_I being true while exactly one of sig_B and sig_H is true must be different from sig_A being true while exactly one of sig_F and sig_B is true,"assert property(@(posedge clk)
+	(((sig_B ^ sig_H) && sig_I) ^ ((sig_F ^ sig_B) && sig_A))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_41_0,"If sig_G is not the complement of sig_F, then sig_I must eventually be less than sig_H","assert property(@(posedge clk)
+	(sig_G !== ~sig_F) |-> s_eventually((sig_I < sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_42_0,"When sig_J is not equal to sig_D, the XOR of this result and the AND of sig_G and sig_I should not equal 1","assert property(@(posedge clk)
+	(((sig_J !== sig_D) ^ (sig_G && sig_I)) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_43_0,"If sig_B is high or sig_H is true, then within 3 to 7 cycles, sig_D must be high and all bits of sig_A must not be high","assert property(@(posedge clk)
+	(sig_B || sig_H) |-> ##[3:7] (sig_D && ~&sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_44_0,"Whenever sig_F transitions from high to low, sig_D must be high on the next clock cycle","assert property(@(posedge clk)
+	$fell(sig_F) |-> sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_45_0,Either sig_I or sig_F (or both) must be false,"assert property(@(posedge clk)
+	((sig_I || sig_F) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_46_0,"sig_I is not equal to 1'b1 matches sig_F or sig_D is high","assert property(@(posedge clk)
+	((sig_F === (sig_I !== 1'b1)) || sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_47_0,"If sig_E was equal to sig_F ten clock cycles ago, then sig_H must be high and the XOR of all bits in sig_D and sig_C must be true","assert property(@(posedge clk)
+	$past((sig_E === sig_F), 10) |-> (sig_H && (^sig_D ^ sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_48_0,"If sig_J has an odd number of '1' bits or sig_H is true, then on the next cycle, sig_A must not be equal to 1'b1","assert property(@(posedge clk)
+	(^sig_J || sig_H) |-> ##1 (sig_A !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_49_0,"If either sig_E or sig_F is high, sig_J must always contain all '1' bits","assert property(@(posedge clk)
+	(sig_E || sig_F) |-> s_always((&sig_J === 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_50_0,"If sig_D is false, then the transition of sig_F from high to low must occur when the XOR of its bits is true and the AND of sig_B's bits is different from sig_I","assert property(@(posedge clk)
+	!sig_D |-> $fell((^sig_F && (&sig_B !== sig_I)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_51_0,sig_H and sig_B must always be high simultaneously,"assert property(@(posedge clk)
+	(sig_H && sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_52_0,"sig_B or sig_F is high and sig_I contains at least one '1' bit","assert property(@(posedge clk)
+	((sig_B || sig_F) && |sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_53_0,"If sig_C and sig_I are both high, then one cycle later, sig_E and sig_I will have different values","assert property(@(posedge clk)
+	(sig_C && sig_I) |-> ##1 (sig_E ^ sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_54_0,"If sig_F or sig_E remains stable, then sig_I being equal to sig_E must match the XOR operation between sig_C and sig_A","assert property(@(posedge clk)
+	$stable((sig_F || sig_E)) |-> ((sig_I === sig_E) === (sig_C ^ sig_A))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_55_0,"Whenever sig_D is true and sig_E is less than sig_H, it must be equivalent to the exclusive OR of sig_B and sig_A being true and sig_D not being equal to sig_J","assert property(@(posedge clk)
+	((sig_D && (sig_E < sig_H)) === ((sig_B && sig_A) ^ (sig_D !== sig_J)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_56_0,"If sig_D is equal to sig_G or sig_D is true, then sig_F must not be high until at least one bit of sig_C is high","assert property(@(posedge clk)
+	((sig_D === sig_G) || sig_D) |-> s_until(((sig_F !== 1'b1) && |sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_57_0,sig_F must always equal the bitwise XOR of sig_I and sig_B,"assert property(@(posedge clk)
+	(sig_F === (sig_I ^ sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_58_0,"Whenever sig_H is equal to sig_F and sig_H is true, the evaluation holds true","assert property(@(posedge clk)
+	((&sig_H === sig_F) && sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_59_0,"sig_J, sig_B, sig_I, or sig_E is high","assert property(@(posedge clk)
+	((sig_J || (sig_B || sig_I)) || sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_60_0,"If sig_G is not equal to the negation of sig_J being high, then sig_D must be true","assert property(@(posedge clk)
+	(sig_G !== (sig_J !== 1'b1)) |=> sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_61_0,"When either sig_D is high or sig_H has an odd number of bits set to '1', and sig_F is also high, the requirement is satisfied","assert property(@(posedge clk)
+	((sig_D || ^sig_H) && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_62_0,sig_C or sig_I exclusive-OR sig_G must be equal to whether sig_D is equal to sig_F,"assert property(@(posedge clk)
+	(((sig_C || sig_I) ^ sig_G) === (sig_D === sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_63_0,"sig_G or sig_F must be true, or sig_G must not be equal to 1'b1","assert property(@(posedge clk)
+	((sig_G || sig_F) || (sig_G !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_64_0,"If sig_I is not 1 and sig_A is 1, or if sig_I is 1 and sig_A is 0, the condition holds true","assert property(@(posedge clk)
+	(((sig_I !== 1'b1) !== 1'b1) !== ~sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_65_0,sig_J must be equal sig_C,"assert property(@(posedge clk)
+	(sig_J === sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_66_0,"If sig_E is not equal to 1'b1, then two cycles later, either sig_I or sig_G must be true","assert property(@(posedge clk)
+	(sig_E !== 1'b1) |-> ##2 (sig_I || sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_67_0,"If either sig_I is true or both sig_D and sig_I are true, the property holds","assert property(@(posedge clk)
+	(sig_I || (sig_D && sig_I))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_68_0,"If the comparison of sig_B being greater than sig_H is different from the XOR of sig_F and sig_J, then after 5 cycles, either sig_B must be true or sig_D must contain at least one '1' bit or sig_C must be true","assert property(@(posedge clk)
+	((sig_B > sig_H) !== (sig_F ^ sig_J)) |-> ##5 (sig_B || (|sig_D || sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_69_0,"If both sig_J and sig_B are true XORed with the XOR of sig_F and sig_B, then sig_H is different from sig_D in the next cycle","assert property(@(posedge clk)
+	(((sig_J && sig_B) ^ (^sig_F && sig_B)) |=> (sig_H ^ sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_70_0,"If sig_H remains unchanged, then all bits of sig_D must be high","assert property(@(posedge clk)
+	$stable(sig_H) |-> &sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_71_0,"If either sig_G or sig_A is true, then after exactly two clock cycles, both sig_E will be false and sig_D will be true","assert property(@(posedge clk)
+	(sig_G || sig_A) |-> ##2 (!sig_E && sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_72_0,"Whenever sig_G is true, sig_H must be true on the next cycle","assert property(@(posedge clk)
+	sig_G |=> sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_73_0,The bitwise OR reduction of sig_I must be equal to the bitwise OR reduction of sig_G,"assert property(@(posedge clk)
+	(|sig_I === |sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_74_0,"If sig_D is high, then sig_F must eventually become true","assert property(@(posedge clk)
+	sig_D |-> s_eventually(sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_75_0,sig_I must be less than or equal to the result of a bitwise XOR operation between sig_D and the logical OR of sig_G and sig_H,"assert property(@(posedge clk)
+	(sig_I <= ((sig_G || sig_H) ^ sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_76_0,"sig_F is not 1 and sig_J is less than or equal to sig_H, or sig_F is 1 and sig_J is greater than sig_H","assert property(@(posedge clk)
+	((sig_F !== 1'b1) ^ (sig_J <= sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_77_0,"If sig_B and sig_C are both high, then sig_H must be high within 1 to 4 clock cycles","assert property(@(posedge clk)
+	(sig_B && sig_C) |-> ##[1:4] sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_78_0,"If sig_C is high and either sig_B or sig_I is high, then after 5 clock cycles, either sig_G or sig_J will be high","assert property(@(posedge clk)
+	(sig_C && (sig_B || sig_I)) |-> ##5 (sig_G || sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_79_0,"If sig_D is high and sig_E is not equal to 1, then either sig_H or sig_G must eventually be high","assert property(@(posedge clk)
+	(sig_D && (sig_E !== 1'b1)) |=> (sig_H || sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_80_0,"When sig_E equals sig_F or sig_H is greater than sig_B, and both sig_A and sig_E are high along with sig_D being high, all these signals must be true simultaneously","assert property(@(posedge clk)
+	(((sig_E === sig_F) || (sig_H > sig_B)) && ((sig_A && sig_E) && sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_81_0,"If sig_E is true, then one cycle later sig_A must be true","assert property(@(posedge clk)
+	sig_E |-> ##1 sig_A
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_82_0,sig_C or sig_E must not be equivalent to sig_D being high or sig_A being high,"assert property(@(posedge clk)
+	(sig_C || sig_E) !== (sig_D || sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_83_0,"If sig_D is greater than sig_C or sig_E is low or sig_F is high, or sig_I is high, the check passes","assert property(@(posedge clk)
+	((sig_D > sig_C) || ((~sig_E || sig_F) || sig_I))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_84_0,"If sig_G is high, then sig_D must be high on the next cycle","assert property(@(posedge clk)
+	sig_G |-> ##1 sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_85_0,"If sig_H is high, then either sig_D or sig_G must be true","assert property(@(posedge clk)
+	sig_H <= (sig_D || sig_G))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_86_0,The condition where either sig_A is true or sig_H bitwise NOR'd with sig_G is true must not be exactly equal to sig_I,"assert property(@(posedge clk)
+	((sig_A || (~&sig_H ^ sig_G)) !== sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_87_0,"If sig_C is equal to sig_H, then sig_E must not be high at the next clock cycle","assert property(@(posedge clk)
+	(sig_C === sig_H) |=> (sig_E !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_88_0,sig_A must be true if and only if sig_F is not equal to sig_D,"assert property(@(posedge clk)
+	((sig_F !== sig_D) === sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_89_0,sig_C must be equal to sig_A,"assert property(@(posedge clk)
+	(sig_C === sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_90_0,"Either sig_F, sig_E, or sig_H is true, and sig_A is true","assert property(@(posedge clk)
+	(((sig_F || sig_E) || sig_H) && sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_91_0,"If sig_F is high and sig_E differs from sig_F, then sig_A must be true in the next cycle","assert property(@(posedge clk)
+	(sig_F && (sig_E ^ sig_F)) |=> sig_A
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_92_0,"If all bits of sig_B are not equal to sig_H, then within 3 to 7 clock cycles, none of the bits in sig_F will be '1'","assert property(@(posedge clk)
+	(sig_H !== &sig_B) |-> ##[3:7] ~|sig_F
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_93_0,The condition where sig_J is less than the logical AND of sig_I and sig_G must not be true,"assert property(@(posedge clk)
+	((sig_J < (sig_I && sig_G)) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_94_0,"If sig_H being less than sig_A is not equal to sig_G, then ((sig_C XOR the AND reduction of sig_D) XOR (sig_B OR sig_J)) must always be true","assert property(@(posedge clk)
+	((sig_H < sig_A) !== sig_G) |-> s_always(((sig_C ^ &sig_D) ^ (sig_B || sig_J)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_95_0,sig_I not being equal to 1 must be different from the bitwise XNOR of all bits in sig_F,"assert property(@(posedge clk)
+	((sig_I !== 1'b1) !== ~^sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_96_0,"If sig_C is true, then after two clock cycles, sig_H must be true","assert property(@(posedge clk)
+	sig_C |-> ##2 sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_97_0,"When sig_F is different from sig_C, sig_B will be low on the following clock cycle","assert property(@(posedge clk)
+	(sig_F !== sig_C) |-> ##1 !sig_B
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_98_0,"If the bitwise negation of sig_J is not equal to the negated XOR of sig_F compared to 1'b1, then the result of this comparison XORed with the logical OR of sig_C and sig_G must be true","assert property(@(posedge clk)
+	((~sig_J !== (~^sig_F !== 1'b1)) ^ (sig_C || sig_G))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_99_0,"If sig_D is not equal to 1 or sig_A is false, then within 5 to 9 cycles, sig_G must be true","assert property(@(posedge clk)
+	((sig_D !== 1'b1) >= ~sig_A) |-> ##[5:9] sig_G
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_100_0,"If the bitwise NOR of sig_J XORed with the bitwise NOR of sig_C, XORed with sig_G, is true, then after exactly 4 clock cycles, both sig_A and sig_B will be high","assert property(@(posedge clk)
+	((~|sig_J ^ ~|sig_C) ^ sig_G) |-> ##4 (sig_A && sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_101_0,"Whenever sig_J is high and sig_D is equal to sig_C, then sig_H is high or sig_D is high","assert property(@(posedge clk)
+	(sig_J && (sig_D === sig_C)) |-> (sig_H || sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_102_0,"When sig_G is low, it must be true that (sig_A equals sig_G) is not equal to (sig_D and sig_G)","assert property(@(posedge clk)
+	(!sig_G <= ((sig_A === sig_G) !== (sig_D && sig_G)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_103_0,"When sig_A or sig_D has the same value as sig_F or sig_H, sig_C must be less than sig_J in the subsequent cycle","assert property(@(posedge clk)
+	((sig_A || sig_D) === (sig_F || sig_H)) |=> (sig_C < sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_104_0,"If sig_G is true, then sig_E must be true in the next cycle","assert property(@(posedge clk)
+	sig_G |=> sig_E
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_105_0,"Whenever sig_I changes or sig_B becomes unequal to sig_C, sig_E must be true on the next clock cycle","assert property(@(posedge clk)
+	$changed((sig_I || (sig_B !== sig_C))) |-> sig_E
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_106_0,"If sig_E is high and either sig_H or sig_F is high, then sig_E will be high three clock cycles later","assert property(@(posedge clk)
+	(sig_E && (sig_H || sig_F)) |-> ##3 sig_E
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_107_0,"If sig_G is true, then sig_B must not contain all '1' bits afterward","assert property(@(posedge clk)
+	sig_G |=> ~&sig_B
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_108_0,"If sig_C is high and sig_H is different from sig_E, or if sig_C is low and sig_H is the same as sig_E, then sig_D must contain at least one '1' bit in the next cycle","assert property(@(posedge clk)
+	(sig_C ^ (sig_H === sig_E)) |=> |sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_109_0,"sig_G is less than or equal to sig_H or the exclusive NOR of sig_F is true","assert property(@(posedge clk)
+	((sig_G <= sig_H) || ~^sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_110_0,"If the bitwise OR reduction of sig_C XOR NOT sig_J is true and sig_C is true, then after one cycle, sig_F and sig_C will be both high","assert property(@(posedge clk)
+	((|sig_C ^ !sig_J) && sig_C) |-> ##1 (sig_F && sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_111_0,"sig_B is equal to sig_H AND the bitwise NOR of sig_C XOR sig_A equals 1","assert property(@(posedge clk)
+	(sig_B === sig_H) && (~|sig_C ^ sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_112_0,"If sig_A transitions from high to low, then sig_I being 1 must not equal sig_B in the next cycle","assert property(@(posedge clk)
+	$fell(sig_A) |-> (sig_I !== sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_113_0,"If sig_D is not equal to 1, then between 5 to 8 clock cycles later, the combination of sig_H and sig_E must differ from the combination of !sig_J and sig_F","assert property(@(posedge clk)
+	(sig_D !== 1'b1) |-> ##[5:8] ((sig_H && sig_E) ^ (!sig_J && sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_114_0,"If sig_J is less than or equal to sig_I, then sig_A must be different from the result of (sig_H not equal to sig_J)","assert property(@(posedge clk)
+	(sig_J <= sig_I) > (sig_A !== (sig_H !== sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_115_0,The values of sig_E and sig_I must always be different,"assert property(@(posedge clk)
+	(sig_E ^ sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_116_0,"If sig_I is less than sig_A, which is logically equivalent to sig_H being low, then sig_D will transition from high to low at the next clock cycle","assert property(@(posedge clk)
+	((sig_I < sig_A) === !sig_H) |-> $fell(sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_117_0,"If sig_J is high or sig_E is less than sig_B, the requirement is satisfied","assert property(@(posedge clk)
+	(sig_J || (sig_E < sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_118_0,"sig_D is not equal to sig_E","assert property(@(posedge clk)
+	(sig_D !== sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_119_0,"Either sig_J or sig_E must be high, or both sig_B and sig_F must be high","assert property(@(posedge clk)
+	((sig_J || sig_E) || (sig_B && sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_120_0,"If sig_F is high or sig_E is equal to sig_F, then two cycles later, sig_E must not be 1","assert property(@(posedge clk)
+	(sig_F || (sig_E === sig_F)) |-> ##2 (sig_E !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_121_0,"If the value of sig_J XOR sig_A remains unchanged, then sig_D and sig_J should both be high in the next cycle","assert property(@(posedge clk)
+	$stable((sig_J ^ sig_A)) |-> (sig_D && sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_122_0,"If sig_E is true, then it must always be that either sig_H is high or sig_F is high","assert property(@(posedge clk)
+	sig_E |-> s_always((sig_H || sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_123_0,"If the parity of sig_B XORed with sig_I matches sig_F, then sig_J should remain stable","assert property(@(posedge clk)
+	(sig_F ^ (~^sig_B ^ ^sig_I)) |-> $stable(sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_124_0,"sig_E is different from the value of sig_J being 1","assert property(@(posedge clk)
+	(sig_E ^ (sig_J !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_125_0,"If sig_J is true, then between 5 to 8 cycles later, sig_E being less than or equal to sig_I must differ from sig_F","assert property(@(posedge clk)
+	sig_J |-> ##[5:8] ((sig_E <= sig_I) !== sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_126_0,"If sig_E is true, then three cycles later, the XOR of (not sig_I or sig_D) and (sig_H XOR the NOR of sig_J) must be true","assert property(@(posedge clk)
+	sig_E |-> ##3 ((!sig_I || sig_D) ^ (sig_H ^ ~|sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_127_0,"If sig_G is not equal to 1 or sig_D is equal to sig_E, then sig_J must not be all '1' bits eventually","assert property(@(posedge clk)
+	((sig_G !== 1'b1) || (sig_D === sig_E)) |=> ~&sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_128_0,The XOR of sig_E and sig_B must always equal sig_C,"assert property(@(posedge clk)
+	((sig_E ^ sig_B) === sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_129_0,"If sig_H is greater than sig_B, then sig_D must be true on the next clock cycle","assert property(@(posedge clk)
+	(sig_H > sig_B) |=> sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_130_0,"Either sig_J is true, or sig_C has an odd number of 1's, or sig_A is true","assert property(@(posedge clk)
+	((sig_J || ^sig_C) || sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_131_0,"If sig_F is true and sig_D has at least one '1' bit, but this combined state is not equal to sig_B, then sig_E will be true in the next cycle","assert property(@(posedge clk)
+	((sig_F && |sig_D) !== sig_B) |=> sig_E
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_132_0,"If either sig_G or sig_H is true, then sig_C must become true within 1 to 6 clock cycles","assert property(@(posedge clk)
+	(sig_G || sig_H) |-> ##[1:6] sig_C
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_133_0,sig_E must be not equal to 1'b1 if and only if sig_B is false,"assert property(@(posedge clk)
+	((sig_E !== 1'b1) === sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_134_0,sig_D must be high or both sig_E and sig_J must be high,"assert property(@(posedge clk)
+	(sig_D || (sig_E && sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_135_0,"If sig_A equals whether sig_C is not 1, then sig_J and the parity of sig_E must equal sig_A in the next cycle","assert property(@(posedge clk)
+	(sig_A === (sig_C !== 1'b1)) |=> ((sig_J && ^sig_E) === sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_136_0,"If sig_B is true, then sig_F must be true in the following cycle","assert property(@(posedge clk)
+	sig_B |=> sig_F
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_137_0,"Whenever sig_H is different from sig_I, the comparison between sig_F and sig_H must remain unchanged in the next clock cycle","assert property(@(posedge clk)
+	(sig_H !== sig_I) |-> $stable((sig_F !== sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_138_0,"If sig_I or sig_J is true and sig_I is also true, or if sig_H is true, the requirement is met","assert property(@(posedge clk)
+	(((sig_I || sig_J) && sig_I) || sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_139_0,"If sig_C is high and not all bits in sig_A are high, in the next cycyle, sig_G and sig_I must either both be high or both not be high","assert property(@(posedge clk)
+	(sig_C && ~&sig_A) |-> sig_G === sig_I
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_140_0,"If sig_D is true, then either sig_E must be true or sig_J must be less than or equal to sig_B in the next cycle","assert property(@(posedge clk)
+	sig_D |=> (sig_E || (sig_J <= sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_141_0,"sig_J is all zeroes or sig_D is all ones, or both sig_I and sig_B are true","assert property(@(posedge clk)
+	((~|sig_J || &sig_D) || (sig_I && sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_142_0,sig_D XOR sig_F must never be equal to 1,"assert property(@(posedge clk)
+	((sig_D ^ sig_F) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_143_0,Sig_F and sig_G must be high simultaneously,"assert property(@(posedge clk)
+	(sig_F && sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_144_0,sig_C being true and sig_F containing at least one '1' bit must be in opposite states to sig_D not being 1 and sig_B being true,"assert property(@(posedge clk)
+	((sig_C && |sig_F) ^ ((sig_D !== 1'b1) && sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_145_0,"If sig_D becomes high, then after 5 clock cycles, sig_J must be high","assert property(@(posedge clk)
+	sig_D |-> ##5 sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_146_0,"If sig_A is different from sig_B, then sig_H must be equal to sig_A in the next cycle","assert property(@(posedge clk)
+	(sig_A ^ sig_B) |=> (sig_H === sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_147_0,"Whenever `sig_J` is not equal to 1'b1, the requirement is satisfied","assert property(@(posedge clk)
+	(sig_J !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_148_0,"Either sig_C or sig_H is high, but not both","assert property(@(posedge clk)
+	(sig_C ^ sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,3_149_0,"sig_G not equal to 1 or sig_H high implies that in the next cycle, sig_D is low and none of the bits in sig_J are high","assert property(@(posedge clk)
+	((sig_G !== 1'b1) || sig_H) |=> (!sig_D && ~|sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_0_0,"If sig_A is high, then within 1 to 3 cycles, either all bits of sig_C will be high or sig_H will be high","assert property(@(posedge clk)
+	sig_A |-> ##[1:3] (&sig_C || sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_1_0,"If sig_H is not equal to '1' XOR (sig_F OR sig_A) is true, then sig_F must not be equal to '1' in the next cycle","assert property(@(posedge clk)
+	((sig_H !== 1'b1) ^ (sig_F || sig_A)) |=> (sig_F !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_2_0,"If sig_C is true, then sig_I being not equal to 1'b1 must be the same as sig_J","assert property(@(posedge clk)
+	sig_C |=> ((sig_I !== 1'b1) === sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_3_0,sig_D must never be equal to 1'b1,"assert property(@(posedge clk)
+	(sig_D !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_4_0,sig_B must be true if and only if the exclusive OR of (sig_C not equal to sig_B) and sig_E is true,"assert property(@(posedge clk)
+	(sig_B ^ ((sig_C !== sig_B) ^ sig_E))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_5_0,The value of sig_H must be equal to the XOR of the expression where the inequality comparison of sig_F and 1'b1 is XORed with the AND result of the XOR of sig_C and sig_I and the inequality comparison of the negation of sig_E and sig_A,"assert property(@(posedge clk)
+	(((!sig_F !== 1'b1) !== sig_H) ^ ((sig_C ^ sig_I) && (~sig_E !== sig_A)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_6_0,"If sig_H is high, it must be followed by sig_A not being equal to 1'b1 eventually","assert property(@(posedge clk)
+	sig_H |-> strong(##[0:$] (sig_A !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_7_0,"If either sig_H or sig_J is high, then after four clock cycles, sig_I must be high and sig_C must be less than or equal to sig_E","assert property(@(posedge clk)
+	(sig_H || sig_J) |-> ##4 (sig_I && (sig_C <= sig_E))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_8_0,"If not all bits of sig_G are 1, then sig_H must be high after two clock cycles","assert property(@(posedge clk)
+	~&sig_G |-> ##2 sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_9_0,sig_H must be low and sig_G must be high,"assert property(@(posedge clk)
+	(~sig_H && sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_10_0,"If sig_I is low, then four cycles later, sig_E and the bitwise-NOR of sig_A should not equal 1","assert property(@(posedge clk)
+	!sig_I |-> ##4 ((sig_E && ~|sig_A) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_11_0,"If sig_H is true, then five clock cycles later, sig_D must not be equal to 1","assert property(@(posedge clk)
+	sig_H |-> ##5 (sig_D !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_12_0,"If sig_J is not 1 at a given time, then sig_C must be true between 4 to 6 cycles later","assert property(@(posedge clk)
+	(sig_J !== 1'b1) |-> ##[4:6] sig_C
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_13_0,sig_B must not be equal to sig_D,"assert property(@(posedge clk)
+	(sig_B !== sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_14_0,"If sig_D is not logic high, then either sig_E must be high or all bits of sig_F must be high","assert property(@(posedge clk)
+	(sig_D !== 1'b1) |=> (sig_E || &sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_15_0,"Whenever both sig_F and sig_E are high, and sig_J is high, either sig_C or sig_E must be high","assert property(@(posedge clk)
+	(((sig_F && sig_E) && sig_J) <= (sig_C || sig_E))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_16_0,"If sig_A and sig_G are both true, then within 1 to 6 cycles, either sig_E or sig_G will be true","assert property(@(posedge clk)
+	(sig_A && sig_G) |-> ##[1:6] (sig_E || sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_17_0,"sig_C, sig_J, and sig_H together will have an odd number of 1s","assert property(@(posedge clk)
+	((sig_C ^ sig_J) ^ sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_18_0,"If sig_E is not equal to 1, then sig_H must be true","assert property(@(posedge clk)
+	((sig_E !== 1'b1) || sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_19_0,"If sig_E, sig_J, and sig_I are all high, then sig_A must be true in the next cycle","assert property(@(posedge clk)
+	((sig_E && sig_J) && sig_I) |=> sig_A
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_20_0,"If sig_F is low and both sig_H is low and sig_I is high, three cycles later sig_C must have an odd number of 1 bits","assert property(@(posedge clk)
+	((~sig_F && (~sig_H && sig_I)) |-> ##3 (^sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_21_0,"If sig_E is different from sig_C not being equal to 1'b1, then sig_D must eventually become true","assert property(@(posedge clk)
+	(sig_E !== (sig_C !== 1'b1)) |-> s_eventually(sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_22_0,"If sig_F becomes true, then sig_H must be true five cycles later","assert property(@(posedge clk)
+	sig_F |-> ##5 sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_23_0,sig_D must not be equal to the bitwise XOR of sig_A and sig_B,"assert property(@(posedge clk)
+	((sig_D !== (sig_A ^ sig_B)) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_24_0,"If sig_J contains all '0' bits and sig_C is low, or sig_A contains all '0' bits, the property will hold","assert property(@(posedge clk)
+	((~|sig_J && !sig_C) || ~|sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_25_0,"If sig_G is equal to the logical AND of all bits of sig_F, then sig_E must have been true four clock cycles ago","assert property(@(posedge clk)
+	(sig_G === &sig_F) |-> $past(sig_E, 4)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_26_0,"If sig_J is true, then sig_A or sig_H must transition from low to high immediately after","assert property(@(posedge clk)
+	sig_J |-> $rose((sig_A || sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_27_0,"If not all bits of sig_E are high, then sig_J must be greater than the logical negation of sig_G","assert property(@(posedge clk)
+	~&sig_E |=> (sig_J > !sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_28_0,"If sig_G equaling sig_B is the same as sig_I, then sig_F must not be high at the next clock cycle","assert property(@(posedge clk)
+	((sig_G === sig_B) === sig_I) |=> (sig_F !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_29_0,"Whenever sig_J is not equal to sig_G, the property holds true","assert property(@(posedge clk)
+	(sig_J ^ ~^sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_30_0,"If both sig_A and sig_F are high, then sig_A must also be high","assert property(@(posedge clk)
+	((sig_A && sig_F) && sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_31_0,"If sig_I is true, then sig_A must be true between 4 and 9 cycles later","assert property(@(posedge clk)
+	sig_I |-> ##[4:9] sig_A
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_32_0,"If sig_H is equal to sig_D, then sig_E and sig_J will both be true on the subsequent clock cycle","assert property(@(posedge clk)
+	(sig_H === sig_D) |=> (sig_E && sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_33_0,Either sig_B or sig_F must be true,"assert property(@(posedge clk)
+	(sig_B || sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_34_0,sig_H must be true when sig_G is not equal to 1'b1 and false when sig_G is equal to 1'b1,"assert property(@(posedge clk)
+	(sig_H === (sig_G !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_35_0,"If sig_I has no bits set and sig_J is not all ones, then the value of (~^sig_I ^ (sig_G !== sig_E)) must change in the next cycle","assert property(@(posedge clk)
+	(~|sig_I && ~&sig_J) |-> $changed((~^sig_I ^ (sig_G !== sig_E)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_36_0,The combined value of sig_I and sig_E must never be true simultaneously,"assert property(@(posedge clk)
+	((sig_I && sig_E) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_37_0," sig_F is not equal to sig_C, or sig_F is high","assert property(@(posedge clk)
+	((!sig_F !== sig_C) || sig_F )
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_38_0,"If either sig_B is true or sig_H is not equal to sig_A, then sig_E will transition from high to low in the following cycle","assert property(@(posedge clk)
+	(sig_B || (sig_H ^ !sig_A)) |-> $fell(sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_39_0,"If sig_B is true, then sig_I must become 1 between 4 to 8 cycles later","assert property(@(posedge clk)
+	sig_B |-> ##[4:8] sig_I
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_40_0,"sig_E is greater than sig_D","assert property(@(posedge clk)
+	(sig_E >= sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_41_0,sig_H must have an even number of bits set to '1',"assert property(@(posedge clk)
+	^sig_H !== 1'b1
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_42_0,"If sig_F is true, then sig_A must be true at a time between 4 to 6 cycles later","assert property(@(posedge clk)
+	sig_F |-> ##[4:6] sig_A
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_43_0,"If sig_A and sig_B have opposite values, then sig_A and sig_F must both be true in the next cycle","assert property(@(posedge clk)
+	(sig_A ^ sig_B) |=> (sig_A && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_44_0,"If sig_E and sig_D are different, then sig_I must be high or sig_F must be low in the following cycles","assert property(@(posedge clk)
+	(sig_E ^ sig_D) |=> (sig_I || ~sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_45_0,"Sig_F has an odd number of 1's and sig_J is low while all bits of sig_C are high","assert property(@(posedge clk)
+	((^sig_F === 1'b1) && (~sig_J && &sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_46_0,sig_F must not be equal to the equivalence check between sig_H and sig_J,"assert property(@(posedge clk)
+	(sig_F !== (sig_H === sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_47_0,"If sig_A is equal to sig_C, then sig_D must be true within the next 1 to 4 cycles","assert property(@(posedge clk)
+	(sig_A === sig_C) |-> ##[1:4] sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_48_0,"When the falling edge of ((sig_D XOR-reduction NOT equals sig_I) XOR sig_J) occurs, it implies that (!sig_F AND sig_A) must not be 1'b1","assert property(@(posedge clk)
+	$fell(((~^sig_D === sig_I) ^ sig_J)) |-> ((!sig_F && sig_A) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_49_0,"If either sig_A or sig_C is true and both sig_I and sig_D are true, then either sig_F or sig_H must be true exactly two cycles later","assert property(@(posedge clk)
+	((sig_A || sig_C) && (sig_I && sig_D)) |-> ##2 (sig_F || sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_50_0,"If sig_B is high, then sig_H will be high one cycle later","assert property(@(posedge clk)
+	sig_B |-> ##1 sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_51_0,"If sig_F or sig_A is true, then within 1 to 5 cycles, either sig_H is not equal to sig_J or sig_F is true","assert property(@(posedge clk)
+	(sig_F || sig_A) |-> ##[1:5] ((sig_H !== sig_J) ^ sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_52_0,"If no bit in sig_C is '1', then either sig_J must equal sig_H or sig_E or sig_G must eventually become true","assert property(@(posedge clk)
+	~|sig_C |-> s_until(((sig_J === sig_H) || (sig_E || sig_G)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_53_0,"If sig_F is true and the bitwise OR of sig_F equals the bitwise negation of the bitwise OR of sig_I, then the condition holds","assert property(@(posedge clk)
+	((|sig_F === ~|sig_I) && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_54_0,"Sig_I not being 1'b1 should exclusively match the logic of sig_B or sig_E being true","assert property(@(posedge clk)
+	((sig_I !== 1'b1) ^ (sig_B || sig_E))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_55_0,"If sig_A and sig_J are both high, then after 5 clock cycles, either sig_F or sig_I will be high","assert property(@(posedge clk)
+	(sig_A && sig_J) |-> ##5 (sig_F || sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_56_0,(((sig_I > sig_F) !== 1'b1) must be equal to ((sig_B XOR sig_I) AND sig_D)),"assert property(@(posedge clk)
+	(((sig_I > sig_F) !== 1'b1) === ((sig_B ^ sig_I) && sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_57_0,"If sig_I and sig_H together have a different value than sig_C, and sig_H is high, then the verification will pass","assert property(@(posedge clk)
+	(((sig_I && sig_H) !== sig_C) && sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_58_0,"If the XOR reduction of sig_J equals 1, then either sig_F or the inversion of sig_J must be different from 1 in the following cycle","assert property(@(posedge clk)
+	(^sig_J === 1'b1) |=> ((sig_F || ~sig_J) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_59_0,sig_F must be equal to sig_G,"assert property(@(posedge clk)
+	((sig_F !== sig_G) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_60_0,"If sig_H is not 1 or sig_C is true, or sig_A is true, then the requirement is satisfied","assert property(@(posedge clk)
+	(((sig_H !== 1'b1) === sig_C) || sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_61_0,sig_C or sig_E must be true,"assert property(@(posedge clk)
+	(sig_C || sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_62_0,"If sig_F is true, then the condition that the bitwise AND reduction of sig_I being greater than or equal to sig_G is false","assert property(@(posedge clk)
+	sig_F |=> ((&sig_I >= sig_G) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_63_0,sig_H must never be high,"assert property(@(posedge clk)
+	(sig_H !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_64_0,"If sig_J is high, then sig_E or sig_A must transition from high to low in the next cycle","assert property(@(posedge clk)
+	sig_J |-> $fell((sig_E || sig_A))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_65_0,"When sig_F is not equal to the logical AND of sig_I and sig_G, both sig_B and sig_I must be true in the subsequent cycle","assert property(@(posedge clk)
+	(sig_F !== (sig_I && sig_G)) |=> (sig_B && sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_66_0,"If sig_H changes state, then sig_E must be true on the next clock cycle","assert property(@(posedge clk)
+	$changed(sig_H) |-> sig_E
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_67_0,"If sig_B remains stable, either sig_D or sig_G will be true in the next cycle","assert property(@(posedge clk)
+	$stable(sig_B) |-> (sig_D || sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_68_0,"If sig_D contains at least one '1' bit or sig_H is true, then (sig_D and none of the bits in sig_B are '1') must not be equal to sig_C","assert property(@(posedge clk)
+	(|sig_D || sig_H) |=> ((sig_D && ~|sig_B) !== sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_69_0,"If sig_D is not equal to sig_A, then it must eventually be true that sig_G does not contain all '1' bits","assert property(@(posedge clk)
+	(sig_D !== sig_A) |-> s_eventually((|sig_G !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_70_0,"Whenever sig_B is not 1, the logical XOR with sig_I must equal sig_G","assert property(@(posedge clk)
+	(((sig_B !== 1'b1) ^ sig_I) === sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_71_0,"If sig_G is equal to and either sig_F or sig_B being false, then after 5 or 6 clock cycles, both sig_D and sig_F must be true","assert property(@(posedge clk)
+	(sig_G === (!sig_F || !sig_B)) |-> ##[5:6] (sig_D && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_72_0,"If sig_I is different from sig_D being high, then after 5 clock cycles, either sig_J will be true or both sig_D and sig_F will be true","assert property(@(posedge clk)
+	(sig_I ^ (sig_D !== 1'b1)) |-> ##5 (sig_J || (sig_D && sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_73_0,sig_B must be greater than sig_I and sig_F must be true,"assert property(@(posedge clk)
+	((sig_B > sig_I) && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_74_0,"If sig_A is true or the bitwise NOT of sig_C XOR-ed with the bitwise AND of sig_A is true, then sig_H XOR-ed with sig_C must be true in the next cycle","assert property(@(posedge clk)
+	(sig_A || (~sig_C ^ &sig_A)) |=> (sig_H ^ sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_75_0,sig_A XOR sig_D must not be equal to sig_C OR (sig_J reduced XORed AND sig_H),"assert property(@(posedge clk)
+	((sig_A ^ sig_D) !== (sig_C || (^sig_J && sig_H)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_76_0,sig_E not being the bitwise negation of sig_J must not be equal to sig_H XOR the bitwise negation of the AND reduction of sig_E,"assert property(@(posedge clk)
+	((sig_E !== ~sig_J) !== (sig_H ^ ~&sig_E))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_77_0,sig_E XORed with sig_I must be equal to (sig_E XOR sig_F) XOR sig_J,"assert property(@(posedge clk)
+	((sig_E ^ sig_I) ^ ((sig_E ^ sig_F) ^ sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_78_0,"If sig_D does not contain any '1' bit, then either sig_E or sig_H is true","assert property(@(posedge clk)
+	(~|sig_D ^ (sig_E || sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_79_0,"Whenever there is an exclusive OR between sig_H and sig_I, the signal combination of sig_B XOR sig_J and sig_D must transition from true to false on the following cycle","assert property(@(posedge clk)
+	(sig_H ^ sig_I) |-> $fell(((sig_B ^ sig_J) && sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_80_0,"If sig_C is greater than or equal to the logical negation of sig_H, the check passes","assert property(@(posedge clk)
+	(sig_C >= !sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_81_0,"If sig_J is true, then sig_I must become true and remain true within the current cycle or any subsequent cycle","assert property(@(posedge clk)
+	sig_J |-> strong(##[0:$] sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_82_0,"If either sig_H, sig_J, or sig_F is true, then after 5 clock cycles, sig_I must be equal to sig_G","assert property(@(posedge clk)
+	((sig_H || sig_J) || sig_F) |-> ##5 (sig_I === sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_83_0,The exclusive OR of sig_J and sig_A must be less than the exclusive OR of sig_D with the NOR of sig_H and then exclusive OR with sig_G,"assert property(@(posedge clk)
+	((sig_J ^ sig_A) < ((sig_D ^ ~|sig_H) ^ sig_G))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_84_0,"If sig_G is high, then after five clock cycles, sig_I will be high","assert property(@(posedge clk)
+	sig_G |-> ##5 sig_I
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_85_0,"Whenever sig_J has all bits low, and sig_G is high, it is required that (sig_D XOR NOT sig_I) equals 1","assert property(@(posedge clk)
+	((~|sig_J && sig_G) ^ ((sig_D ^ ~sig_I) === 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_86_0,"Either sig_C or sig_J is true","assert property(@(posedge clk)
+	(sig_C || sig_J)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_87_0,"Sig_F is true and the bitwise XOR of sig_I and sig_D equals the bitwise negation of the AND of sig_J and sig_A","assert property(@(posedge clk)
+	(sig_F && ((sig_I ^ sig_D) === (~&sig_J && sig_A)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_88_0,"If sig_A is greater than or equal to sig_B and sig_D is high, the eventually sig_E is high","assert property(@(posedge clk)
+	((sig_A >= sig_B) && sig_D) |-> s_eventually(sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_89_0,"If either sig_D or the negation of sig_F is different from sig_G, or if sig_F has an odd number of bits set to '1' and this count is greater than sig_C, then the requirement is satisfied","assert property(@(posedge clk)
+	(((sig_D || !sig_F) !== sig_G) || ((^sig_F === 1'b1) > sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_90_0,"The OR reduction of sig_J is equal to the inverted OR reduction of sig_G","assert property(@(posedge clk)
+	(|sig_J === ~|sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_91_0,"When sig_J is the bitwise inverse of sig_C and sig_F is true, the condition must hold true","assert property(@(posedge clk)
+	((sig_J === ~sig_C) && sig_F)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_92_0,"For every rising edge of the clock, sig_H must be high when all bits of sig_B are high","assert property(@(posedge clk)
+	(&sig_B && sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_93_0,"Either sig_H is true, or sig_G is not equal to the binary value 1","assert property(@(posedge clk)
+	(sig_H || (sig_G !== 1'b1))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_94_0,sig_C or sig_I must be true,"assert property(@(posedge clk)
+	(sig_C || sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_95_0,"If either sig_I or sig_D is true, then sig_A and sig_G must always be different","assert property(@(posedge clk)
+	(sig_I || sig_D) |-> s_always((sig_A ^ sig_G))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_96_0,sig_C must be high and sig_F must be greater than sig_A,"assert property(@(posedge clk)
+	(sig_C && (sig_F > sig_A))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_97_0,"If sig_B or sig_H is high, then after 4 to 6 clock cycles, sig_F and sig_D will have opposite values","assert property(@(posedge clk)
+	(sig_B || sig_H) |-> ##[4:6] (sig_F ^ sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_98_0,"Whenever sig_E and sig_G are both high, the check passes","assert property(@(posedge clk)
+	(sig_E && sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_99_0,"If any bit in sig_I is high, then sig_J will be true in the next clock cycle","assert property(@(posedge clk)
+	|sig_I |=> sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_100_0,"If sig_D is high and all bits of sig_G are high, then sig_J will be high 4 clock cycles later","assert property(@(posedge clk)
+	(sig_D && &sig_G) |-> ##4 sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_101_0,"If sig_I is true, then sig_J must be true and sig_H must be equal to sig_J","assert property(@(posedge clk)
+	(sig_I  <= (sig_J && (sig_H === sig_J)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_102_0,"If sig_A, sig_C, or sig_G was true nine cycles ago, then both sig_I and sig_D must be true now","assert property(@(posedge clk)
+	$past((sig_A || (sig_C || sig_G)), 9) |-> (sig_I && sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_103_0,"If sig_G is true, then sig_J must be true after exactly 4 clock cycles","assert property(@(posedge clk)
+	sig_G |-> ##4 sig_J
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_104_0,"If a falling edge is detected in the value of (sig_H or (not reduction OR of sig_C XOR sig_D)), then sig_H or not sig_B must be true","assert property(@(posedge clk)
+	$fell((sig_H || (~|sig_C ^ sig_D))) |-> (sig_H || !sig_B)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_105_0,"If sig_A is equal to sig_E and sig_D is high, then after 5 clock cycles, sig_C will be high","assert property(@(posedge clk)
+	((sig_A === sig_E) && sig_D) |-> ##5 sig_C
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_106_0,"sig_B is equal to 1 and sig_C is true","assert property(@(posedge clk)
+	(sig_B && sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_107_0,"When sig_H is true and sig_G is not equal to 1'b1, the result is not equal to sig_E","assert property(@(posedge clk)
+	((sig_H && (sig_G !== 1'b1)) !== sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_108_0,"If either sig_J or sig_A is true, then sig_I must have been true two cycles ago","assert property(@(posedge clk)
+	(sig_J || sig_A) |-> $past(sig_I, 2)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_109_0,"When sig_H becomes true, both sig_F and sig_E must be true in the next cycle","assert property(@(posedge clk)
+	sig_H |=> (sig_F && sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_110_0,"Sig_C XOR sig_F is less than or equal to sig_G not equal to the reduction XOR of sig_J","assert property(@(posedge clk)
+	((sig_C ^ sig_F) <= (sig_G !== ^sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_111_0,sig_A and sig_J together should never both be true,"assert property(@(posedge clk)
+	((sig_A && sig_J) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_112_0,"Either sig_B is high or both sig_G and sig_H are high","assert property(@(posedge clk)
+	(sig_B || (sig_G && sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_113_0,"Either sig_I must be true, or sig_H must be true, or sig_A must be true","assert property(@(posedge clk)
+	(sig_I || (sig_H || sig_A))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_114_0,"If sig_G is not equal to sig_D and sig_G is not equal to the bitwise XNOR of sig_B, then sig_C must not be all 1's","assert property(@(posedge clk)
+	((sig_G !== sig_D) && (sig_G !== ~^sig_B)) |=> (~&sig_C !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_115_0,"If sig_B is not equal to 1, then sig_G must be low or sig_A must be equal to sig_B","assert property(@(posedge clk)
+	((sig_B !== 1'b1) || (~sig_G || (sig_A === sig_B)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_116_0,"If sig_F is high, then sig_B will be true after two clock cycles","assert property(@(posedge clk)
+	sig_F |-> ##2 ^sig_B
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_117_0,The combination of (sig_J or sig_B) and sig_A must not be equal to the combination of sig_G being greater than or equal to sig_A and sig_G,"assert property(@(posedge clk)
+	(((sig_J || sig_B) && sig_A) !== ((sig_G >= sig_A) && sig_G))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_118_0,"If sig_J is true, then within 1 to 4 clock cycles, sig_I must be equal to sig_G","assert property(@(posedge clk)
+	sig_J |-> ##[1:4] (sig_I === sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_119_0,"If sig_D and sig_H are both high, then the bitwise XOR of sig_J must change or sig_H must be high in the current or next cycle","assert property(@(posedge clk)
+	(sig_D && sig_H) |-> $changed(((^sig_J === sig_D) || sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_120_0,"If sig_H is not equal to sig_D, then sig_J must have an odd number of '1' bits or sig_I must be true in the next cycle","assert property(@(posedge clk)
+	(sig_H !== sig_D) |=> (^sig_J || sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_121_0,sig_F and sig_I cannot both be high simultaneously,"assert property(@(posedge clk)
+	((sig_F && sig_I) !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_122_0,"Sig_I is less or equal to sig_D, or sig_A is true","assert property(@(posedge clk)
+	((sig_I <= sig_D) || sig_A)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_123_0,"If sig_J is true, then the value of sig_D and sig_B being both true or both false is equivalent to sig_E not being equal to sig_C","assert property(@(posedge clk)
+	sig_J |=> ((sig_D && sig_B) === (sig_E !== sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_124_0,The value of sig_J must be the inverse of whether sig_E is less than sig_B,"assert property(@(posedge clk)
+	(~sig_J !== (sig_E < sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_125_0,sig_F must not be 1 while sig_D is 1,"assert property(@(posedge clk)
+	((sig_F !== 1'b1) && sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_126_0,"sig_E is not equal to 1, or sig_D must be equal to sig_F","assert property(@(posedge clk)
+	((sig_E !== 1'b1) || (sig_D === sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_127_0,"If sig_J is true, then sig_B must be true after three clock cycles","assert property(@(posedge clk)
+	sig_J |-> ##3 sig_B
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_128_0,"If sig_F is less than the logical negation of sig_I, then sig_J must be different from sig_H in the next cycle","assert property(@(posedge clk)
+	(sig_F < !sig_I) |=> (sig_J ^ sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_129_0,"When sig_J and sig_E are not both true, and sig_J is true while sig_A or sig_J is true, then the overall condition is met","assert property(@(posedge clk)
+	(((sig_J && sig_E) !== 1'b1) && ((sig_J || sig_A) && sig_J))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_130_0,"If sig_A is not high, then either sig_G should not be high or sig_I must be true immediately after","assert property(@(posedge clk)
+	(sig_A !== 1'b1) |=> ((sig_G !== 1'b1) || sig_I)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_131_0,"If sig_J XORed with the complement of the AND reduction of sig_A is true, then sig_H must eventually be true","assert property(@(posedge clk)
+	(sig_J ^ ~&sig_A) |-> s_eventually(sig_H)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_132_0,"If sig_G is high or sig_A is equal to the logical OR of sig_I and sig_J, then the property holds","assert property(@(posedge clk)
+	(sig_G || (sig_A === (sig_I || sig_J)))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_133_0,The value of sig_I XOR sig_D must be equal to the inequality comparison between sig_G XOR sig_A and sig_F,"assert property(@(posedge clk)
+	((sig_I ^ sig_D) ^ ((sig_G ^ sig_A) !== sig_F))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_134_0,"If sig_A has at least one high bit and sig_J is true, and this combination is less than either sig_C being high or all bits of sig_A being high, then within 4 to 9 cycles, sig_C and sig_E must be different","assert property(@(posedge clk)
+	((|sig_A && sig_J) < (sig_C || &sig_A)) |-> ##[4:9] (sig_C ^ sig_E)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_135_0,"sig_F must be true if and only if sig_H is true or all bits of sig_E are true, matching the value of sig_D","assert property(@(posedge clk)
+	(sig_F === ((sig_H || &sig_E) === sig_D))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_136_0,"If sig_B being low or sig_J being high transitions from true to false, then sig_I must be high on the immediate next clock cycle","assert property(@(posedge clk)
+	$fell((~sig_B || sig_J)) |-> sig_I
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_137_0,sig_A should never be a binary value that makes its negation equal to 1,"assert property(@(posedge clk)
+	(~sig_A !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_138_0,"Both sig_D and sig_C are high implies that both sig_D and sig_B are high,","assert property(@(posedge clk)
+	((sig_D && sig_C) |-> (sig_D && sig_B))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_139_0,"If sig_D is high, then sig_C must be true in the next cycle","assert property(@(posedge clk)
+	sig_D |=> sig_C
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_140_0,"If sig_B is high, then sig_H must become high between 3 and 7 cycles later","assert property(@(posedge clk)
+	sig_B |-> ##[3:7] sig_H
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_141_0,"If sig_J is high and sig_F differs from the OR reduction of sig_C, then sig_B not being equal to 1'b1 must differ from sig_G","assert property(@(posedge clk)
+	(sig_J && (sig_F ^ |sig_C)) |=> ((sig_B !== 1'b1) ^ sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_142_0,The bitwise negation of the logical AND of all bits in sig_F should not be equal to 1 XORed with the XOR of sig_A and sig_H,"assert property(@(posedge clk)
+	((~&sig_F !== 1'b1) ^ (sig_A ^ sig_H))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_143_0,"If sig_J is true, then either sig_I must be true or all bits in sig_D must be low at the next clock edge","assert property(@(posedge clk)
+	sig_J |=> (sig_I || ~|sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_144_0,"If either sig_H or sig_I is high, or sig_E differs from the negated value of sig_I, then sig_D will transition from low to high","assert property(@(posedge clk)
+	((sig_H || sig_I) || (sig_E ^ ~^sig_I)) |-> $rose(sig_D)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_145_0,"If sig_H and sig_I are different values, then sig_D holds in the next cycle","assert property(@(posedge clk)
+	(sig_H ^ sig_I) |=> sig_D
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_146_0,"When sig_J is less than sig_F and sig_I is true, the result of the expression is bitwise negated XOR of sig_C","assert property(@(posedge clk)
+	(((sig_J < sig_F) && sig_I) === ~^sig_C)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_147_0,"sig_G is less than sig_A or sig_I is less than or equal to sig_G, and sig_B contains at least one '1' bit while sig_C is high","assert property(@(posedge clk)
+	(((sig_G < sig_A) || (sig_I <= sig_G)) && (|sig_B && sig_C))
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_148_0,"If sig_F is true, then five cycles later sig_D must not be equal to 1'b1","assert property(@(posedge clk)
+	sig_F |-> ##5 (sig_D !== 1'b1)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"
+nl2sva_machine,4_149_0,"If sig_G is true, then after three clock cycles, sig_B must be different from sig_G","assert property(@(posedge clk)
+	sig_G |-> ##3 (sig_B ^ sig_G)
+);","module dummy (
+clk, reset_, 
+sig_A,
+sig_B,
+sig_C,
+sig_D,
+sig_E
+);
+
+input clk;
+input reset_;//clock and reset
+input sig_A;  
+input sig_B;
+input sig_C;
+input sig_D;  
+input sig_E;
+
+logic sig_F;
+logic sig_G;
+logic sig_H;
+logic sig_I;
+logic sig_J;
+
+wire tb_reset;
+assign tb_reset = (reset_ == 1'b0);
+
+assign sig_F = sig_A;
+assign sig_G = sig_B;
+assign sig_H = sig_C;
+assign sig_I = sig_D;
+assign sig_J = sig_E;
+
+
+endmodule"

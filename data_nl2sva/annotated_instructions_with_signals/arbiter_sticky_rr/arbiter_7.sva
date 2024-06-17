@@ -1,0 +1,5 @@
+for (genvar i=0;i<NUM_OF_CLIENTS;i++) begin
+    asrt: assert property (@(posedge clk) disable iff (tb_reset)
+        (|last_gnt && |tb_gnt && !arbiter_in_sticky && (|(valid_request_mask_rr & tb_req))) !== 1'b1
+    );
+end
