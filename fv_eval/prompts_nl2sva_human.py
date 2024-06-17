@@ -1,8 +1,6 @@
 # NL2SVA-Human Question Prompts
 SVAGEN_HEADER = """You are an AI assistant tasked with formal verification of register transfer level (RTL) designs.
 Your job is to translate a description of an assertion to concrete SystemVerilog Assertion (SVA) implementation.
-Do not add code to output an error message string.
-Enclose your SVA code with ```systemverilog and ```. Only output the code snippet and do NOT output anything else.
 """
 
 SVAGEN_MACHINE_ICL_EXAMPLE_1 = """As an example:
@@ -211,7 +209,7 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
 ```
 """
 
-SVAGEN_TB_PREAMBLE = """Now here is the testbench to perform your translation:\n"""
+SVAGEN_TB_PREAMBLE = """Here is the testbench to perform your translation:\n"""
 
 SVAGEN_IC_EX_PREAMBLE = """\n\nMore detailed examples of correct translations from description into an SVA assertion:"""
 

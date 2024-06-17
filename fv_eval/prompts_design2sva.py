@@ -1,5 +1,5 @@
 SVAGEN_HEADER = """You are an AI assistant tasked with formal verification of register transfer level (RTL) designs.
-Your job is to generate a SystemVerilog for the design-under-test provided.
+Your job is to generate a SystemVerilog assertion for the design-under-test provided.
 """
 
 SVAGEN_DUT_PREAMBLE = """Here is the design RTL to generate assertions for:\n"""
