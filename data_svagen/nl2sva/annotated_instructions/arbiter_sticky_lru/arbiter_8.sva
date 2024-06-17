@@ -1,5 +1,0 @@
-for (genvar i=0;i<NUM_OF_CLIENTS;i++) begin
-    asrt: assert property (@(posedge clk) disable iff (tb_reset)
-        (arbiter_in_sticky && (tb_gnt != 'd0) && (tb_gnt != sticky_req)) !== 1'b1
-    );
-end

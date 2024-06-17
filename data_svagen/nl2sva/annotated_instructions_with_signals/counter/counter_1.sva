@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-    ((count_d1 === min) && !jump_vld_d1 && ((count < min) || (count >= max)) && !tb_reset_1_cycle_pulse_shadow) !== 1'b1
-);

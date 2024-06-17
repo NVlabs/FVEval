@@ -1,9 +1,23 @@
+# Copyright 2024 NVIDIA CORPORATION & AFFILIATES
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import argparse
 from datetime import datetime
 import pathlib
 
 
-from fv_eval import data, utils, benchmark_launcher
+from fv_eval import utils, benchmark_launcher
 
 
 if __name__ == "__main__":
@@ -34,13 +48,6 @@ if __name__ == "__main__":
         "--num_icl", type=int, help="number of in-context examples to use", default=3
     )
     parser.add_argument(
-        "--num_assertions",
-        "-k",
-        type=int,
-        help="Measure out of k assertions, i.e. measure pass@k",
-        default=1,
-    )
-    parser.add_argument(
         "--models",
         "-m",
         type=str,
@@ -61,18 +68,14 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     timestamp_str = datetime.now().strftime("%Y%m%d%H")
-    # if not isinstance(args.dataset_path, str):
-    #     dataset_path = args.dataset_path.as_posix()
-    # else:
-    #     dataset_path = args.dataset_path
-    temperature = args.temperature if args.num_assertions < 2 else 0.8
+    temperature = 0.0
 
     if args.debug:
         print("Executing in debug mode")
 
     if args.mode == "human":
         if not args.dataset_path:
-            dataset_path = ROOT / "data_svagen" / "nl2sva" / "data" / "nl2sva_human.csv"
+            dataset_path = ROOT / "data_nl2sva" / "data" / "nl2sva_human.csv"
             assert dataset_path.exists()
             dataset_path = dataset_path.as_posix()
         else:
@@ -94,11 +97,11 @@ if __name__ == "__main__":
             num_icl_examples=args.num_icl,
             debug=args.debug,
         )
-        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=200, num_cases=args.num_assertions)
+        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=200, num_cases=1)
     elif args.mode == "machine":
         if not args.dataset_path:
             dataset_path = (
-                ROOT / "data_svagen" / "nl2sva" / "data" / "nl2sva_machine.csv"
+                ROOT / "data_nl2sva" / "data" / "nl2sva_machine.csv"
             )
             assert dataset_path.exists()
             dataset_path = dataset_path.as_posix()
@@ -120,7 +123,7 @@ if __name__ == "__main__":
             num_icl_examples=args.num_icl,
             debug=args.debug,
         )
-        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=100, num_cases=args.num_assertions)
+        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=100, num_cases=1)
     else:
         print(f"Unsupported eval mode: {args.mode}")
         raise NotImplementedError

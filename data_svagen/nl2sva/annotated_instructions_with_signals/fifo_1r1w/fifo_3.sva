@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-       !fifo_empty |-> strong(##[0:$] rd_pop)
-);

@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-    (arbiter_in_sticky && !(|(sticky_req & tb_req)) && (tb_gnt != 'd0)) !== 1'b1
-);

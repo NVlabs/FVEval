@@ -1,3 +1,0 @@
-asrt: assert property(@(posedge clk) disable iff (tb_reset)
-    (|tb_fifo_filled_cnt) |-> strong(##[0:$] |tb_pop_cnt)
-);

@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-    (|last_gnt && |tb_gnt && !hold && (|(valid_request_mask_rr & tb_req))) !== 1'b1
-);

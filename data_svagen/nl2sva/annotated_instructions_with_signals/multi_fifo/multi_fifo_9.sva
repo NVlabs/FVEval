@@ -1,5 +1,0 @@
-for (genvar i=1;i<rd_port;i++) begin
-    asrt: assert property (@(posedge clk) disable iff (tb_reset)
-        (rd_vld[i] && !(&rd_vld[(i-1):0])) !== 1'b1
-    );
-end

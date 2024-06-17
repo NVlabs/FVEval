@@ -1,20 +1,13 @@
 # FVEval: Evaluating LLMs on Hardware Formal Verification
 
-
 ## Installation
-Public-facing versions of our repository will be based on the same OpenAI API to support a wider range of models (and endpoint servers), where only the base_url and API_keys need to be modified.
-
-```{python}
-# NVIDIA internal only
-pip config set global.index-url https://urm.nvidia.com/artifactory/api/pypi/nv-shared-pypi/simple
-```
-
 ```
 conda create -n fveval python=3.10
 conda activate fveval
 pip install -r requirements.txt
 pip install -e .
 ```
+
 ##  Running Dataset Generation and Preprocessing
 
 ```{python}

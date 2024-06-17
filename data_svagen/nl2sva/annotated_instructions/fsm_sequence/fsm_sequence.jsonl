@@ -1,4 +1,0 @@
-{"task_id": "fsm_sequence_0", "prompt": "that the specified fsm_sequence is never seen"}
-{"task_id": "fsm_sequence_1", "prompt": "that the current FSM state is legal"}
-{"task_id": "fsm_sequence_2", "prompt": "that the FSM should not continue to remain in a particular state eternally"}
-{"task_id": "fsm_sequence_3", "prompt": "that if the current FSM state is legal, the FSM should not continue to be the same legal state. "}

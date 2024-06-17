@@ -1,8 +1,19 @@
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import errno
 import gzip
 import json
 import os
-import re
 import numpy as np
 from typing import Iterable, Dict
 
@@ -91,19 +102,6 @@ def write_jsonl(filename: str, data: Iterable[Dict], append: bool = False):
             for x in data:
                 if x:
                     fp.write((json.dumps(x) + "\n").encode("utf-8"))
-
-
-# def parse_code_response(lm_response_str) -> str:
-#     code_tags = re.findall(r"```systemverilog(.*?)```", lm_response_str, re.DOTALL)
-#     if len(code_tags) > 0:
-#         # remove all substrings before and after code_tag
-#         for code in code_tags:
-#             lm_response_str = lm_response_str.replace(f"```systemverilog{code}```", code)
-#     code_tags = re.findall(r"```systemverilog(.*?)", lm_response_str, re.DOTALL)
-#     if len(code_tags) > 0:
-#         for code in code_tags:
-#             lm_response_str = lm_response_str.replace(f"```systemverilog{code}", code)
-#     return lm_response_str
 
 
 def parse_code_response(lm_response_str) -> str:

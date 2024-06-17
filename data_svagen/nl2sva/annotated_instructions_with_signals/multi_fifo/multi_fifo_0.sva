@@ -1,6 +1,0 @@
-for (genvar i=0;i<rd_port;i++) begin
-    asrt: assert property (@(posedge clk) disable iff (tb_reset)
-        ((rd_vld[i] & rd_ready[i]) & (tb_rd_ptr + i[(fifo_entry_cntr-1):0] == registered_ptr)) |->
-        (rd_data[(i * data_width) + tb_random_1_bit_data_selector_registered] == registered_data)
-    );
-end

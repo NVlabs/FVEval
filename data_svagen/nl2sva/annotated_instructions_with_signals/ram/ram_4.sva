@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-    (addr_ar_seen |-> !(re && (ra == symbolic_constant_a)))
-);

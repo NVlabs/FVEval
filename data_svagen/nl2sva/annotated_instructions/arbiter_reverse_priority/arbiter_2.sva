@@ -1,5 +1,0 @@
-for (i = 0; i < NUM_OF_CLIENTS; i++) begin
-    asrt: assert property (@(posedge clk) disable iff (tb_reset)
-        (req_seen_flag[0]) |-> strong(##[0:$] tb_gnt[0])
-    );
-end

@@ -1,3 +1,0 @@
-asrt : assert property (@(posedge clk) disable iff (tb_reset)
-    ((last_gnt === 'd0) && |tb_gnt && ( ((tb_gnt-'d1) & tb_req) !== 'd0)) !== 1'b1
-);

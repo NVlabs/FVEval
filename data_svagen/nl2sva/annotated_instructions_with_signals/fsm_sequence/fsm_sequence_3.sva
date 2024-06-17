@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-    (fsm_state == tb_random_state) |-> strong(##[1:$] (fsm_state != tb_random_state)) 
-);

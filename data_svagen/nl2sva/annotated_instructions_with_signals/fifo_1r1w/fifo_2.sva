@@ -1,3 +1,0 @@
-asrt: assert property (@(posedge clk) disable iff (tb_reset)
-       (rd_pop && (fifo_out_data != rd_data)) !== 1'b1
-);
