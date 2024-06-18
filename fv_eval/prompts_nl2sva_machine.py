@@ -11,6 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+"""
+Prompts used for NL2SVA-Machine
+Subject to modifications and improvements
+"""
 
 # NL2SVA-Machine Question Prompts
 SVAGEN_HEADER = """You are an AI assistant tasked with formal verification of register transfer level (RTL) designs.

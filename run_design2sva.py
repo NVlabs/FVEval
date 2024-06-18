@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import argparse
 from datetime import datetime
 import pathlib
@@ -43,10 +44,10 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--num_assertions",
-        "-k",
+        "-n",
         type=int,
-        help="Measure out of k assertions",
-        default=1,
+        help="Generate n assertions",
+        default=10,
     )
     parser.add_argument(
         "--models",
@@ -78,7 +79,10 @@ if __name__ == "__main__":
 
     timestamp_str = datetime.now().strftime("%Y%m%d%H")
     if not args.save_dir:
-        save_dir = ROOT / f"results_design2sva/{args.cot_strategy}_{args.num_assertions}/{timestamp_str}"
+        save_dir = (
+            ROOT
+            / f"results_design2sva/{args.cot_strategy}_{args.num_assertions}/{timestamp_str}"
+        )
         save_dir = save_dir.as_posix()
     else:
         save_dir = args.save_dir

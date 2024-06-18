@@ -45,7 +45,11 @@ if __name__ == "__main__":
         default=0.0,
     )
     parser.add_argument(
-        "--num_icl", type=int, help="number of in-context examples to use", default=3
+        "--num_icl",
+        "-k",
+        type=int,
+        help="number of in-context examples to use",
+        default=3,
     )
     parser.add_argument(
         "--models",
@@ -97,12 +101,12 @@ if __name__ == "__main__":
             num_icl_examples=args.num_icl,
             debug=args.debug,
         )
-        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=200, num_cases=1)
+        bmark_launcher.run_benchmark(
+            temperature=temperature, max_tokens=200, num_cases=1
+        )
     elif args.mode == "machine":
         if not args.dataset_path:
-            dataset_path = (
-                ROOT / "data_nl2sva" / "data" / "nl2sva_machine.csv"
-            )
+            dataset_path = ROOT / "data_nl2sva" / "data" / "nl2sva_machine.csv"
             assert dataset_path.exists()
             dataset_path = dataset_path.as_posix()
         else:
@@ -123,7 +127,9 @@ if __name__ == "__main__":
             num_icl_examples=args.num_icl,
             debug=args.debug,
         )
-        bmark_launcher.run_benchmark(temperature=temperature, max_tokens=100, num_cases=1)
+        bmark_launcher.run_benchmark(
+            temperature=temperature, max_tokens=100, num_cases=1
+        )
     else:
         print(f"Unsupported eval mode: {args.mode}")
         raise NotImplementedError

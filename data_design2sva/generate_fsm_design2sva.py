@@ -24,8 +24,140 @@ import networkx as nx
 from fv_eval.data import InputData
 
 
+"""
+Helper functions to generate SystemVerilog design of a random FSM module
+"""
+
+
 def decimal_to_binary(decimal: int, num_bits: int):
     return f"{num_bits}'b{decimal:0{num_bits}b}"
+
+
+def generate_random_digraph(num_nodes: int, num_edges: int):
+    G = nx.DiGraph()
+    for i in range(num_nodes):
+        G.add_node(i)
+
+    # create edges such that each node has at least one outgoing edge
+    # total number of edges is num_nodes + num_edges
+    # ensure that graph is connected and there are no self edges
+    for i in range(num_nodes):
+        node_list = list(range(num_nodes))
+        node_list.remove(i)
+        j = random.choice(node_list)
+        G.add_edge(j, i)
+
+    # add random edges
+    for i in range(num_edges - num_nodes):
+        node_list = list(range(num_nodes))
+        src = random.choice(node_list)
+        node_list.remove(src)
+        dst = random.choice(node_list)
+        G.add_edge(src, dst)
+
+    # ensure that there is an outedge from state 0
+    if len(list(G.successors(0))) == 0:
+        node_list = list(range(num_nodes))
+        node_list.remove(0)
+        dst = random.choice(node_list)
+        G.add_edge(0, dst)
+    return G
+
+
+def generate_random_fsm(
+    num_inputs: int, num_nodes: int, num_edges: int, max_recursive_dapth: int = 2
+):
+    G = generate_random_digraph(num_nodes, num_edges)
+    # annotate edges with random operations
+    for src, dst in G.edges():
+        expression_string = generate_transition_condition(
+            num_inputs=num_inputs, depth=0, max_recursive_dapth=max_recursive_dapth
+        )
+        # check that if there are more than two signals in expr, they must all not be the same
+
+        G[src][dst]["operation"] = expression_string
+        print(f"Edge {src} -> {dst}: {G[src][dst]['operation']}")
+    return G
+
+
+def generate_binary_operator():
+    # List of operators we can use in assertions
+    logical_operators = ["&&", "||", "^"]
+    relational_operators = ["<=", ">=", "<", ">"]
+    equivalence_operator = ["==", "!="]
+
+    # weighted random choice
+    knob = random.random()
+    if knob < 0.5:
+        return f"{random.choice(logical_operators)}"
+    elif knob < 0.9:
+        return f"{random.choice(equivalence_operator)}"
+    else:
+        return f"{random.choice(relational_operators)}"
+
+
+def generate_unary_operator():
+    # List of operators we can use in assertions
+    operators = ["!", "~", "&", "~&", "|", "~|", "^", "~^"]
+    return f"{random.choice(operators)}"
+
+
+def generate_transition_condition(
+    num_inputs: int, depth: int = 0, max_recursive_dapth: int = 2
+):
+    expression = generate_expression(
+        num_inputs=num_inputs, depth=depth, max_recursive_dapth=max_recursive_dapth
+    )
+    # map "signals" to symbolic names
+    # count number of sigals in expression
+    num_signals = expression.count("signal")
+    prev_symbol = ""
+    for i in range(num_signals):
+        symbol = generate_random_signal(num_inputs=num_inputs)
+        while symbol == prev_symbol:
+            symbol = generate_random_signal(num_inputs=num_inputs)
+        expression = expression.replace("signal", symbol, 1)
+        prev_symbol = symbol
+    return expression
+
+
+def generate_random_signal(num_inputs: int = 10):
+    # Generate a signal name randomly from sig_A
+    # limit to max_int signals
+    max_val = min(num_inputs, 26)
+    return f"in_{chr(random.randint(65, 65 + max_val - 1))}"
+
+
+def generate_expression(num_inputs: int, depth: int = 0, max_recursive_dapth: int = 2):
+    # Base case: Return a simple signal
+    is_leaf = random.random() < (1.0 / max_recursive_dapth) * depth
+    if is_leaf:
+        return "signal"
+    if random.random() < 0.2:
+        # Generate a unary operator
+        unary_operators = ["!", "~", "&", "~&", "|", "~|", "^", "~^"]
+        return f"{random.choice(unary_operators)}({generate_expression(num_inputs=num_inputs, depth=depth + 1)})"
+    # Generate a binary operator
+    logical_operators = ["&&", "||", "^"]
+    relational_operators = ["<=", ">=", "<", ">"]
+    equivalence_operator = ["==", "!="]
+    knob = random.random()
+    if knob < 0.5:
+        return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(logical_operators)} {generate_expression(num_inputs=num_inputs, depth=depth + 1)})"
+    elif knob < 0.9:
+        options = [
+            generate_expression(num_inputs=num_inputs, depth=depth + 1),
+            "'d1",
+            "'d0",
+        ]
+        return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(equivalence_operator)} {random.choice(options)})"
+    else:
+        options = [
+            generate_expression(num_inputs=num_inputs, depth=depth + 1),
+            "'d1",
+            "'d0",
+        ]
+        return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(relational_operators)} {random.choice(options)})"
 
 
 def generate_module_header(
@@ -157,133 +289,6 @@ bind fsm fsm_tb #(
     return module_header + module_body + module_suffix
 
 
-def generate_random_digraph(num_nodes: int, num_edges: int):
-    G = nx.DiGraph()
-    for i in range(num_nodes):
-        G.add_node(i)
-
-    # create edges such that each node has at least one outgoing edge
-    # total number of edges is num_nodes + num_edges
-    # ensure that graph is connected and there are no self edges
-    for i in range(num_nodes):
-        node_list = list(range(num_nodes))
-        node_list.remove(i)
-        j = random.choice(node_list)
-        G.add_edge(j, i)
-
-    # add random edges
-    for i in range(num_edges - num_nodes):
-        node_list = list(range(num_nodes))
-        src = random.choice(node_list)
-        node_list.remove(src)
-        dst = random.choice(node_list)
-        G.add_edge(src, dst)
-
-    # ensure that there is an outedge from state 0
-    if len(list(G.successors(0))) == 0:
-        node_list = list(range(num_nodes))
-        node_list.remove(0)
-        dst = random.choice(node_list)
-        G.add_edge(0, dst)
-    return G
-
-
-def generate_random_fsm(
-    num_inputs: int, num_nodes: int, num_edges: int, max_recursive_dapth: int = 2
-):
-    G = generate_random_digraph(num_nodes, num_edges)
-    # annotate edges with random operations
-    for src, dst in G.edges():
-        expression_string = generate_transition_condition(
-            num_inputs=num_inputs, depth=0, max_recursive_dapth=max_recursive_dapth
-        )
-        # check that if there are more than two signals in expr, they must all not be the same
-
-        G[src][dst]["operation"] = expression_string
-        print(f"Edge {src} -> {dst}: {G[src][dst]['operation']}")
-    return G
-
-
-def generate_binary_operator():
-    # List of operators we can use in assertions
-    logical_operators = ["&&", "||", "^"]
-    relational_operators = ["<=", ">=", "<", ">"]
-    equivalence_operator = ["==", "!="]
-
-    # weighted random choice
-    knob = random.random()
-    if knob < 0.5:
-        return f"{random.choice(logical_operators)}"
-    elif knob < 0.9:
-        return f"{random.choice(equivalence_operator)}"
-    else:
-        return f"{random.choice(relational_operators)}"
-
-
-def generate_unary_operator():
-    # List of operators we can use in assertions
-    operators = ["!", "~", "&", "~&", "|", "~|", "^", "~^"]
-    return f"{random.choice(operators)}"
-
-
-def generate_transition_condition(
-    num_inputs: int, depth: int = 0, max_recursive_dapth: int = 2
-):
-    expression = generate_expression(
-        num_inputs=num_inputs, depth=depth, max_recursive_dapth=max_recursive_dapth
-    )
-    # map "signals" to symbolic names
-    # count number of sigals in expression
-    num_signals = expression.count("signal")
-    prev_symbol = ""
-    for i in range(num_signals):
-        symbol = generate_random_signal(num_inputs=num_inputs)
-        while symbol == prev_symbol:
-            symbol = generate_random_signal(num_inputs=num_inputs)
-        expression = expression.replace("signal", symbol, 1)
-        prev_symbol = symbol
-    return expression
-
-
-def generate_random_signal(num_inputs: int = 10):
-    # Generate a signal name randomly from sig_A
-    # limit to max_int signals
-    max_val = min(num_inputs, 26)
-    return f"in_{chr(random.randint(65, 65 + max_val - 1))}"
-
-
-def generate_expression(num_inputs: int, depth: int = 0, max_recursive_dapth: int = 2):
-    # Base case: Return a simple signal
-    is_leaf = random.random() < (1.0 / max_recursive_dapth) * depth
-    if is_leaf:
-        return "signal"
-    if random.random() < 0.2:
-        # Generate a unary operator
-        unary_operators = ["!", "~", "&", "~&", "|", "~|", "^", "~^"]
-        return f"{random.choice(unary_operators)}({generate_expression(num_inputs=num_inputs, depth=depth + 1)})"
-    # Generate a binary operator
-    logical_operators = ["&&", "||", "^"]
-    relational_operators = ["<=", ">=", "<", ">"]
-    equivalence_operator = ["==", "!="]
-    knob = random.random()
-    if knob < 0.5:
-        return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(logical_operators)} {generate_expression(num_inputs=num_inputs, depth=depth + 1)})"
-    elif knob < 0.9:
-        options = [
-            generate_expression(num_inputs=num_inputs, depth=depth + 1),
-            "'d1",
-            "'d0",
-        ]
-        return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(equivalence_operator)} {random.choice(options)})"
-    else:
-        options = [
-            generate_expression(num_inputs=num_inputs, depth=depth + 1),
-            "'d1",
-            "'d0",
-        ]
-        return f"({generate_expression(num_inputs=num_inputs, depth=depth + 1)} {random.choice(relational_operators)} {random.choice(options)})"
-
-
 """
 Top-level function to generate each random pipeline design/testbench RTL
 Both SV code is saved as .sv files
@@ -338,6 +343,11 @@ if __name__ == "__main__":
         help="random seed",
         default=0,
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="debug",
+    )
 
     args = parser.parse_args()
     if not isinstance(args.save_dir, str):
@@ -348,17 +358,23 @@ if __name__ == "__main__":
 
     dataset = []
     experiment_id = "fsm"
-    for ni_log in [1, ]:
-        for nn_log in [3, ]:
-            for ne_multiplier in [2, 3]:
+    for ni_log in [2, 4]:
+        for nn_log in [2, 3, 4]:
+            for ne_multiplier in [1, 2, 3, 4]:
                 for wd in [32]:
-                    for opd in [2]:
+                    for opd in [2, 3, 4, 5]:
                         for i in range(args.num_test_cases):
                             ni = 2**ni_log
                             nn = 2**nn_log
                             ne = nn * ne_multiplier
                             tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
-                            fsm_rtl, fsm_tb_rtl = generate_testcase(num_inputs=ni, num_nodes=nn, num_edges=ne, width=wd, op_recursive_depth=opd)
+                            fsm_rtl, fsm_tb_rtl = generate_testcase(
+                                num_inputs=ni,
+                                num_nodes=nn,
+                                num_edges=ne,
+                                width=wd,
+                                op_recursive_depth=opd,
+                            )
                             dataset.append(
                                 InputData(
                                     design_name=experiment_id,
@@ -368,37 +384,12 @@ if __name__ == "__main__":
                                     testbench=fsm_tb_rtl,
                                 )
                             )
-    # for ni_log in [2, 4]:
-    #     for nn_log in [2, 3, 4]:
-    #         for ne_multiplier in [1, 2, 3, 4]:
-    #             for wd in [32]:
-    #                 for opd in [2, 3, 4, 5]:
-    #                     for i in range(args.num_test_cases):
-    #                         ni = 2**ni_log
-    #                         nn = 2**nn_log
-    #                         ne = nn * ne_multiplier
-    #                         tag = f"ni_{ni}_nn_{nn}_ne_{ne}_wd_{wd}_opd_{opd}_{i}"
-    #                         fsm_rtl, fsm_tb_rtl = generate_testcase(
-    #                             num_inputs=ni,
-    #                             num_nodes=nn,
-    #                             num_edges=ne,
-    #                             width=wd,
-    #                             op_recursive_depth=opd,
-    #                         )
-    #                         dataset.append(
-    #                             InputData(
-    #                                 design_name=experiment_id,
-    #                                 task_id=tag,
-    #                                 prompt=fsm_rtl,
-    #                                 ref_solution="",
-    #                                 testbench=fsm_tb_rtl,
-    #                             )
-    #                         )
     df = pd.DataFrame([asdict(d) for d in dataset])
     df.to_csv(args.save_dir / f"design2sva_{experiment_id}.csv", index=False)
     print(f"generated {len(df)} cases")
 
-    with open("fsm.sv", "w") as f:
-        f.write(dataset[-1].prompt)
-    with open("fsm.sva", "w") as f:
-        f.write(dataset[-1].testbench)
+    if args.debug:
+        with open("fsm.sv", "w") as f:
+            f.write(dataset[-1].prompt)
+        with open("fsm.sva", "w") as f:
+            f.write(dataset[-1].testbench)

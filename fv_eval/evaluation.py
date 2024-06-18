@@ -27,6 +27,10 @@ import evaluate
 from fv_eval import utils, fv_tool_execution
 from fv_eval.data import LMResult, TextSimilarityEvaluationResult, JGEvaluationResult
 
+"""
+Base Evaluator Class for Executing FVEval Evaluation Flow
+"""
+
 
 class Evaluator(object):
     def __init__(
@@ -295,7 +299,7 @@ class Evaluator(object):
             )
             # for rows that share same unique_task_id, only take the max value
             jg_eval_results = jg_eval_results.groupby("unique_task_id").max()
-        
+
             # take only the metric values from the evaluation results
             combined_results = pd.merge(
                 text_similiarty_eval_results,
@@ -327,6 +331,14 @@ class Evaluator(object):
         eval_results = pd.DataFrame(eval_results)
         eval_results.to_csv(f"{self.save_dir}/jg_eval_results.csv", index=False)
         return eval_results
+
+
+"""
+Evaluator for NL2SVA-HUman
+Implements a custom:
+    - 'evaluate_jg' method that invokes proprety-equivalence checks
+    - 'calculate_jg_metric' method that analyzes and reports syntax and funcational correctness specific to NL2SVA-Human
+"""
 
 
 class NL2SVAHumanEvaluator(Evaluator):
@@ -517,6 +529,14 @@ class NL2SVAHumanEvaluator(Evaluator):
         }
 
 
+"""
+Evaluator for NL2SVA-Machine
+Implements a custom:
+    - 'evaluate_jg' method that invokes proprety-equivalence checks
+    - 'calculate_jg_metric' method that analyzes and reports syntax and funcational correctness specific to NL2SVA-Machine
+"""
+
+
 class NL2SVAMachineEvaluator(Evaluator):
     def __init__(
         self,
@@ -690,11 +710,18 @@ class NL2SVAMachineEvaluator(Evaluator):
         }
 
 
+"""
+Evaluator for Design2SVA
+Implements a custom:
+    - 'calculate_jg_metric' method that analyzes and reports syntax and funcational correctness specific to Design2SVA
+"""
+
+
 class Design2SVAEvaluator(Evaluator):
     def __init__(
         self,
         llm_output_dir: str,
-        model_name:str,
+        model_name: str,
         temp_dir: str,
         save_dir: str,
         parallel_jobs: int = 8,
@@ -724,40 +751,7 @@ class Design2SVAEvaluator(Evaluator):
             jg_eval_results["unique_task_id"] = jg_eval_results["task_id"].apply(
                 lambda x: x.split("_trial")[0]
             )
-            # take only the metric values from the evaluation results
             final_results = jg_eval_results.copy()
-            # # for rows that share same unique_task_id, only take the max value
-            # # measure pass@k for each unique_task_id
-            # count_num_trials = jg_eval_results.groupby("unique_task_id").count().iloc[0,0]
-            # count_pass = jg_eval_results.groupby("unique_task_id").sum()
-            
-            # syntax_pass_at_1 = utils.pass_at_k(count_pass["syntax"].values, count_num_trials, 1)
-            # syntax_pass_at_5 = utils.pass_at_k(count_pass["syntax"].values, count_num_trials, 5)
-            # func_pass_at_1 = utils.pass_at_k(count_pass["functionality"].values, count_num_trials, 1)
-            # func_pass_at_5 = utils.pass_at_k(count_pass["functionality"].values, count_num_trials, 5)
-                
-            # jg_eval_results = jg_eval_results.groupby("unique_task_id").mean()
-            # jg_eval_results = jg_eval_results.drop(columns=["experiment_id", "task_id", "model_name"])
-
-            # # for each remaining column, calculate the mean value
-            # # add as a separate row
-            # import pdb; pdb.set_trace()
-            # pass_at_1 = jg_eval_results.copy()
-            # pass_at_1["syntax"] = syntax_pass_at_1
-            # pass_at_1["functionality"] = func_pass_at_1
-            # pass_at_1 = pass_at_1.mean(axis=0)
-            # pass_at_1 = pass_at_1.to_frame().T
-            # pass_at_1["experiment_id"] = exp_name
-            # pass_at_1["task_id"] = "Pass@1"
-            # pass_at_1["model_name"] = "Pass@1"
-            # pass_at_5 = jg_eval_results.copy()
-            # pass_at_5["syntax"] = syntax_pass_at_5
-            # pass_at_5["functionality"] = func_pass_at_5
-            # pass_at_5 = pass_at_5.mean(axis=0)
-            # pass_at_5 = pass_at_5.to_frame().T
-            # pass_at_5["experiment_id"] = exp_name
-            # pass_at_5["task_id"] = "Pass@5"
-            # final_results = pd.concat([final_results, pass_at_1, pass_at_5], ignore_index=True)
             final_results.to_csv(f"{self.save_dir}/{exp_name}.csv", index=False)
         return final_results
 
@@ -788,114 +782,12 @@ class Design2SVAEvaluator(Evaluator):
         functionality_score = float(proof_result_list.count("proven")) / float(
             len(proof_result_list)
         )
-        relaxed_funcality_score = (float(proof_result_list.count("proven")) + float(proof_result_list.count("undetermined")))/ float(
-            len(proof_result_list)
-        )
+        relaxed_funcality_score = (
+            float(proof_result_list.count("proven"))
+            + float(proof_result_list.count("undetermined"))
+        ) / float(len(proof_result_list))
         return {
             "syntax": syntax_score,
             "functionality": functionality_score,
             "func_relaxed": relaxed_funcality_score,
         }
-        # parse formal func_relaxed
-        # cov_report_match = re.findall(r"\bformal_func_relaxed[^\n]*", jasper_out_str)
-        # if not cov_report_match:
-        #     return {"syntax": syntax_score, "functionality": functionality_score, "func_relaxed": 0.0, "bound_improve": 0.0}
-        # testbench_name = f"{top_module_name}"
-        # escaped_testbench_name = re.escape(testbench_name)
-        # testbench_cov_match = re.findall(fr"\b{escaped_testbench_name}\b[^\n]*", cov_report_match[0])
-        # if not testbench_cov_match:
-        #     return {"syntax": syntax_score, "functionality": functionality_score, "func_relaxed": 0.0, "bound_improve": 0.0}
-        # cov_value = re.search(r"func_relaxed_percentage {\s*(\d+\.\d+)%", testbench_cov_match[0]).group(1)
-        # return {"syntax": syntax_score, "functionality": functionality_score, "func_relaxed": float(cov_value), "bound_improve": 0.0}
-
-
-# class HelperGenEvaluator(Evaluator):
-#     def __init__(
-#         self,
-#         llm_output_dir: str,
-#         temp_dir: str,
-#         save_dir: str,
-#         parallel_jobs: int = 8,
-#         cleanup_temp_files: bool = True,
-#         debug: bool = False,
-#     ):
-#         super().__init__(
-#             task="helpergen",
-#             llm_output_dir=llm_output_dir,
-#             temp_dir=temp_dir,
-#             save_dir=save_dir,
-#             parallel_jobs=parallel_jobs,
-#             cleanup_temp_files=cleanup_temp_files,
-#             debug=debug,
-#         )
-
-#     def run_evaluation(
-#         self,
-#     ):
-#         for exp_name, result_list in self.llm_results:
-#             jg_eval_results = self.evaluate_jg(result_list, with_rtl_design=True)
-#             jg_eval_results = [asdict(r) for r in jg_eval_results]
-#             jg_eval_results = pd.DataFrame(jg_eval_results)
-#             jg_eval_results.to_csv(f"{self.save_dir}/{exp_name}_jg.csv", index=False)
-
-#             # take only the metric values from the evaluation results
-#             final_results = jg_eval_results.drop(
-#                 columns=["experiment_id", "task_id", "model_name"]
-#             )
-#             # for each remaining column, calculate the mean value
-#             # add as a separate row
-#             mean_values = final_results.mean(axis=0)
-#             mean_values = mean_values.to_frame().T
-#             mean_values["experiment_id"] = exp_name
-#             mean_values["task_id"] = "mean"
-#             mean_values["model_name"] = "mean"
-#             final_results = pd.concat([final_results, mean_values], ignore_index=True)
-#             final_results.to_csv(f"{self.save_dir}/{exp_name}.csv", index=False)
-#         return final_results
-
-#     def calculate_jg_metric(
-#         self,
-#         jasper_out_str: str,
-#     ):
-#         # check for syntax error
-#         top_module = re.findall(r"top: [^\n]*", jasper_out_str)
-#         if not top_module:
-#             return {
-#                 "syntax": 0.0,
-#                 "functionality": 0.0,
-#                 "func_relaxed": 0.0,
-#                 "bound_improve": 0.0,
-#             }
-#         top_module_name = top_module[-1].split(":")[-1].strip()
-
-#         syntax_error_match = re.findall(r"syntax error", jasper_out_str)
-#         if syntax_error_match:
-#             return {
-#                 "syntax": 0.0,
-#                 "functionality": 0.0,
-#                 "func_relaxed": 0.0,
-#                 "bound_improve": 0.0,
-#             }
-#         syntax_score = 1.0
-
-#         # check for number of assertions proven
-#         proof_result_match = re.findall(r"\bproofs:[^\n]*", jasper_out_str)
-#         if not proof_result_match:
-#             return {
-#                 "syntax": syntax_score,
-#                 "functionality": 0.0,
-#                 "func_relaxed": 0.0,
-#                 "bound_improve": 0.0,
-#             }
-#         proof_result_list = proof_result_match[-1].split(":")[-1].strip().split(" ")
-#         # count # of "proven"
-#         functionality_score = float(proof_result_list.count("proven")) / float(
-#             len(proof_result_list)
-#         )
-
-#         return {
-#             "syntax": syntax_score,
-#             "functionality": functionality_score,
-#             "func_relaxed": 0.0,
-#             "bound_improve": 0.0,
-#         }

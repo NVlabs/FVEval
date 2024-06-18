@@ -20,6 +20,11 @@ import pathlib
 
 ROOT = pathlib.Path(__file__).parent.parent
 
+"""
+Methods for launching Cadence Jasper
+"""
+
+
 def launch_jg(
     tcl_file_path: str,
     sv_dir: str,
@@ -84,6 +89,7 @@ def launch_jg_with_queue(
     ]
     result = subprocess.run(jg_command, capture_output=True, text=True)
     output_queue.put(result.stdout.strip())
+
 
 def launch_jg_custom_equiv_check(
     tcl_file_path: str,

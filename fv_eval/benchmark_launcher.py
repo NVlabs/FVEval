@@ -19,7 +19,6 @@ import random
 
 from openai import OpenAI
 from together import Together
-import google.generativeai as genai
 from anthropic import Anthropic
 import pandas as pd
 from tqdm import tqdm
@@ -29,9 +28,12 @@ from fv_eval import (
     prompts_nl2sva_machine,
     prompts_nl2sva_human,
     utils,
-    prompts_avr_helpergen,
 )
 from fv_eval.data import InputData, LMResult
+
+"""
+Base Class to Launch LLM Inference on Tasks in FVEval
+"""
 
 
 class BenchmarkLauncher(object):
@@ -113,11 +115,6 @@ class BenchmarkLauncher(object):
                 api_key = os.getenv("TOGETHER_API_KEY")
                 base_url = "https://api.together.xyz/v1"
                 full_model_name = TOGETHER_MODEL_DICT[model_name]
-            elif "gemini" in model_name:
-                api_provider = "google"
-                api_key = os.getenv("GOOGLE_API_KEY")
-                base_url = "https://gemini.googleapis.com/v1"
-                full_model_name = model_name
             elif "claude" in model_name:
                 api_provider = "anthropic"
                 api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -179,10 +176,6 @@ class BenchmarkLauncher(object):
                 base_url=base_url,
             )
             self.api_provider = api_provider
-        elif api_provider == "google":
-            genai.configure(api_key=api_key)
-            self.chat_client = genai.GenerativeModel(model_name)
-            self.api_provider = api_provider
         elif api_provider == "anthropic":
             self.chat_client = Anthropic(
                 api_key=api_key,
@@ -206,6 +199,10 @@ class BenchmarkLauncher(object):
         delay = 1.0
         error = None
         api_provider = self.api_provider
+        if temperature == 0.0:
+            top_p = 1.0
+        else:
+            top_p = 0.95
         while num_retries <= 20:
             try:
                 if (
@@ -221,20 +218,10 @@ class BenchmarkLauncher(object):
                         ],
                         max_tokens=max_tokens,
                         temperature=temperature,
-                        top_p=0.95,
+                        top_p=top_p,
                         n=num_cases,
                     )
-                    #return completion.choices[0].message
                     return [choice.message.content for choice in completion.choices]
-                elif api_provider == "google":
-                    completion = self.chat_client.generate_content(
-                        prompt=user_prompt,
-                        max_tokens=max_tokens,
-                        temperature=temperature,
-                        top_p=0.95,
-                        n=num_cases,
-                    )
-                    return completion.text
                 elif api_provider == "anthropic":
                     completion = Anthropic().messages.create(
                         model=model_name,
@@ -333,6 +320,12 @@ class BenchmarkLauncher(object):
         )
 
 
+"""
+LLM Inference Launcher Specific to NL2SVA Benchmark Tasks
+- Launcher classes for NL2SVA-Human and NL2SVA-Machine inherit this class
+"""
+
+
 class NL2SVALauncher(BenchmarkLauncher):
     def __init__(
         self,
@@ -391,7 +384,7 @@ class NL2SVALauncher(BenchmarkLauncher):
                 user_prompt=user_prompt,
                 temperature=temperature,
                 max_tokens=max_tokens,
-                num_cases=num_cases
+                num_cases=num_cases,
             )
             for i, lm_response in enumerate(lm_response_list):
                 if self.debug:
@@ -410,6 +403,11 @@ class NL2SVALauncher(BenchmarkLauncher):
                 )
                 results.append(response)
         return results
+
+
+"""
+LLM Inference Launcher Specific to NL2SVA-Human
+"""
 
 
 class NL2SVAHumanLauncher(NL2SVALauncher):
@@ -432,10 +430,7 @@ class NL2SVAHumanLauncher(NL2SVALauncher):
     def generate_question_prompt(self, row: InputData):
         question_prompt = prompts_nl2sva_human.SVAGEN_QUESTION_PREAMBLE
         question_prompt += row.prompt + "\n"
-        return (
-            question_prompt
-            + prompts_nl2sva_human.SVAGEN_QUESTION_POSTAMBLE
-        )
+        return question_prompt + prompts_nl2sva_human.SVAGEN_QUESTION_POSTAMBLE
 
     def generate_user_prompt_prefix(self, row: InputData):
         if self.num_icl_examples == 0:
@@ -452,6 +447,11 @@ class NL2SVAHumanLauncher(NL2SVALauncher):
         user_prompt_prefix += "\n\n" + prompts_nl2sva_human.SVAGEN_TB_PREAMBLE
         user_prompt_prefix += "\n" + row.testbench
         return user_prompt_prefix
+
+
+"""
+LLM Inference Launcher Specific to NL2SVA-Machine
+"""
 
 
 class NL2SVAMachineLauncher(NL2SVALauncher):
@@ -480,11 +480,7 @@ class NL2SVAMachineLauncher(NL2SVALauncher):
                 question_prompt
                 + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE_ZERO_SHOT
             )
-        return (
-            question_prompt
-            + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE
-        )
-
+        return question_prompt + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE
 
     def generate_user_prompt_prefix(self, row: InputData):
         if self.num_icl_examples == 0:
@@ -504,6 +500,11 @@ class NL2SVAMachineLauncher(NL2SVALauncher):
         return user_prompt_prefix
 
 
+"""
+LLM Inference Launcher Specific to Design2SVA
+"""
+
+
 class Design2SVALauncher(BenchmarkLauncher):
     def __init__(
         self,
@@ -513,9 +514,7 @@ class Design2SVALauncher(BenchmarkLauncher):
         model_name_list: list[str] = ["gpt-4"],
         debug: bool = False,
     ):
-        super().__init__(
-            save_dir, dataset_path, task, model_name_list, 0, debug
-        )
+        super().__init__(save_dir, dataset_path, task, model_name_list, 0, debug)
 
     def generate_system_prompt(self):
         return prompts_design2sva.SVAGEN_HEADER
@@ -544,7 +543,12 @@ class Design2SVALauncher(BenchmarkLauncher):
 
     def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
         if cot_strategy == "default":
-            return [("question", prompts_design2sva.get_design2sva_direct_question_prompt(1))]
+            return [
+                (
+                    "question",
+                    prompts_design2sva.get_design2sva_direct_question_prompt(1),
+                )
+            ]
         elif cot_strategy == "plan-act":
             return [
                 ("plan", prompts_design2sva.get_design2sva_planning_prompt(1)),
@@ -624,119 +628,4 @@ class Design2SVALauncher(BenchmarkLauncher):
                     cot_response=cot_response,
                 )
                 results.append(response)
-        return results
-
-
-class HelperGenLauncher(BenchmarkLauncher):
-    def __init__(
-        self,
-        save_dir: str,
-        dataset_path: str,
-        task: str = "helpergen",
-        model_name_list: list[str] = ["gpt-4"],
-        num_icl_examples: int = 0,
-        debug: bool = False,
-    ):
-        super().__init__(
-            save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
-        )
-
-    def generate_system_prompt(self):
-        return prompts_avr_helpergen.AGR_HELPERGEN_HEADER
-
-    def generate_user_prompt_prefix(self, row: InputData):
-        user_prompt_prefix = prompts_avr_helpergen.AGR_HELPERGEN_DUT_PREAMBLE
-        user_prompt_prefix += row.prompt
-        user_prompt_prefix += "\n\n" + prompts_avr_helpergen.AGR_HELPERGEN_TB_PREAMBLE
-        user_prompt_prefix += row.testbench
-        return user_prompt_prefix
-
-    def package_testbench(self, row: InputData, lm_response: str):
-        assertion_text = utils.parse_code_response(lm_response)
-
-        # retrieve question text
-        testbench_text = row.testbench
-        packaged_tb_text = (
-            testbench_text.split("endmodule")[0]
-            + "\n\n"
-            + "\n\n"
-            + assertion_text
-            + "\n\n"
-            + "endmodule"
-        )
-        return packaged_tb_text
-
-    def get_cot_strategy(self, cot_strategy: str) -> list[tuple[str, str]]:
-        if cot_strategy == "default":
-            return [
-                ("question", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_ANSWER)
-            ]
-        elif cot_strategy == "plan-act":
-            return [
-                ("plan", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_THOUGHT),
-                ("question", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_ANSWER),
-            ]
-        else:
-            utils.print_error("ERROR", f"Unsupported COT strategy: {cot_strategy}")
-            raise NotImplementedError
-
-    def run_experiment_single_model(
-        self,
-        model_name: str,
-        temperature: float = 0.0,
-        max_tokens: int = 100,
-        cot_question_chain: list[tuple[str, str]] = [
-            ("question", prompts_avr_helpergen.AGR_HELPERGEN_QUESTION_COT_ANSWER)
-        ],
-    ):
-        results = []
-        # generate system prompt
-        system_prompt = self.generate_system_prompt()
-
-        # iterate over dataset
-        for row in self._build_iterator(model_name):
-            if self.debug:
-                print(len(self._build_iterator(model_name)))
-            # generate user prompt
-            user_prompt = self.generate_user_prompt_prefix(row)
-            cot_responses = {}
-
-            # iterate over COT question chain
-            for q_type, q_str in cot_question_chain:
-                # append question to user prompt
-                user_prompt += "\n" + q_str
-                # run LM chain
-                lm_response = self.run_lm_chain(
-                    row=row,
-                    model_name=model_name,
-                    system_prompt=system_prompt,
-                    user_prompt=user_prompt,
-                    temperature=temperature,
-                    max_tokens=max_tokens,
-                )
-                if q_type != cot_question_chain[-1][0]:
-                    cot_responses[q_type] = lm_response
-                    user_prompt += "\n" + lm_response
-
-            # stringify cot_responses
-            cot_response = "cot_response\n"
-            for key, value in cot_responses.items():
-                cot_response += f"{key}: {value}\n"
-
-            # package testbench
-            packaged_tb_text = self.package_testbench(row, lm_response)
-
-            # construct response
-            response = LMResult(
-                experiment_id=self.experiment_id,
-                task_id=row.design_name + "_" + row.task_id,
-                model_name=model_name,
-                response=lm_response,
-                ref_solution=row.ref_solution,
-                user_prompt=user_prompt,
-                output_tb=packaged_tb_text,
-                design_rtl=row.prompt,
-                cot_response=cot_responses,
-            )
-            results.append(response)
         return results
