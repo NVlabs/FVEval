@@ -6,3 +6,4 @@ evaluate
 absl-py
 nltk
 rouge_score
+torch

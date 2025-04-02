@@ -14,14 +14,34 @@
 # limitations under the License.
 
 NUM_ICL=$1
-MODELS=("gpt-4o" "gpt-4" "gpt-3.5-turbo" "llama-3-70b" "mixtral-8x22b" "llama-3-8b" "mixtral-8x7b" "claude-opus" "codellama-34b") 
+USE_COT=$2
+# MODELS=("gpt-4o" "gemini-1.5-pro" "gemini-1.5-flash" "llama-3.1-8b" "llama-3.1-70b" "mixtral-8x22b")
+# MODELS=("llama-3.1-8b" "llama-3.1-70b")
+MODELS=("llama-3.1-70b-vllm")
+# for MODEL in "${MODELS[@]}"; do
+#     (
+#         python run_nl2sva.py --mode "human" --num_icl ${NUM_ICL} -o "results_nl2sva_human/${NUM_ICL}" -m "${MODEL}"
+#         python run_evaluation.py --task "nl2sva-human" -i "results_nl2sva_human/${NUM_ICL}" --nparallel 1 -m "${MODEL}"
+#     )&
+# done
+# wait
 
-for MODEL in "${MODELS[@]}"; do
-    python run_nl2sva.py --mode "human" --num_icl ${NUM_ICL} -o "results_nl2sva_human/${NUM_ICL}" -m "${MODEL}" &
-done
-wait
-
-for MODEL in "${MODELS[@]}"; do
-    python run_evaluation.py --task "nl2sva-human" -i "results_nl2sva_human/${NUM_ICL}" --nparallel 1 -m "${MODEL}" &
-done
-wait
+if [ "$USE_COT" = 1 ]; then
+    for MODEL in "${MODELS[@]}"; do
+        (
+            python run_nl2sva.py --mode "human" --num_icl ${NUM_ICL} -o "results_nl2sva_human/${NUM_ICL}" -m "${MODEL}" --use_cot
+            #python run_evaluation.py --task "nl2sva-human" -i "results_nl2sva_human/${NUM_ICL}_cot" --nparallel 1 -m "${MODEL}"
+        )&
+    done
+    wait
+    exit 0
+else
+    for MODEL in "${MODELS[@]}"; do
+        (
+            python run_nl2sva.py --mode "human" --num_icl ${NUM_ICL} -o "results_nl2sva_human/${NUM_ICL}" -m "${MODEL}"
+            #python run_evaluation.py --task "nl2sva-human" -i "results_nl2sva_human/${NUM_ICL}" --nparallel 1 -m "${MODEL}"
+        )&
+    done
+    wait
+    exit 0
+fi

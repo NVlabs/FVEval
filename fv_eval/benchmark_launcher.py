@@ -20,6 +20,7 @@ import random
 from openai import OpenAI
 from together import Together
 from anthropic import Anthropic
+import google.generativeai
 import pandas as pd
 from tqdm import tqdm
 
@@ -44,15 +45,17 @@ class BenchmarkLauncher(object):
         task: str = "nl2sva_human",
         model_name_list: list[str] = ["gpt-4"],
         num_icl_examples: int = 3,
+        use_cot: bool = False,
         debug: bool = False,
     ):
         self.save_dir = save_dir
         self.dataset_path = dataset_path
         df = pd.read_csv(dataset_path)
         self.dataset = [InputData(**row) for _, row in df.iterrows()]
+        self.use_cot = use_cot
         # convert dataset into list of InputData
 
-        self.chat_client = OpenAI()
+        self.chat_client = None
         self.task = task
         self.model_api_list = self._prepare_models(model_name_list)
         self.num_icl_examples = num_icl_examples
@@ -90,7 +93,11 @@ class BenchmarkLauncher(object):
         TOGETHER_MODEL_DICT = {
             "llama-3-8b": "meta-llama/Llama-3-8b-chat-hf",
             "llama-3-70b": "meta-llama/Llama-3-70b-chat-hf",
-            "codellama-34b": "codellama/CodeLlama-34b-Instruct-hf",
+            "llama-3.1-8b": "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+            "llama-3.1-70b": "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo",
+            "gemma-2-27b": "google/gemma-2-27b-it",
+            "dbrx" : "databricks/dbrx-instruct",
+            "qwen-2-72b": "Qwen/Qwen2-72B-Instruct",
             "llama-2-70b": "meta-llama/Llama-2-70b-chat-hf",
             "mixtral-8x22b": "mistralai/Mixtral-8x22B-Instruct-v0.1",
             "mixtral-8x7b": "mistralai/Mixtral-8x7B-Instruct-v0.1",
@@ -119,14 +126,24 @@ class BenchmarkLauncher(object):
                 api_provider = "anthropic"
                 api_key = os.getenv("ANTHROPIC_API_KEY")
                 base_url = "https://api.anthropic.com/v1"
-                if "opus" in model_name:
+                if "3.5" in model_name:
+                    full_model_name = "claude-3-5-sonnet-20240620"
+                elif "opus" in model_name:
                     full_model_name = "claude-3-opus-20240229"
                 elif "sonnet" in model_name:
                     full_model_name = "claude-3-sonnet-20240229"
                 elif "haiku" in model_name:
-                    full_model_name = "claude-3-haiku-20240229"
+                    full_model_name = "claude-3-haiku-20240307"
                 else:
                     raise ValueError(f"Unknown Anthropic model: {model_name}")
+            elif "gemini" in model_name:
+                api_provider = "google"
+                api_key = os.getenv("GOOGLE_API_KEY")
+                if "flash" in model_name:
+                    full_model_name = "gemini-1.5-flash"
+                else:
+                    full_model_name = "gemini-1.5-pro"
+                base_url = ""
             elif "gpt" in model_name:
                 api_provider = "openai"
                 api_key = os.getenv("OPENAI_API_KEY")
@@ -134,8 +151,7 @@ class BenchmarkLauncher(object):
                 if "gpt-4-turbo" in model_name:
                     full_model_name = "gpt-4-0125-preview"
                 elif model_name == "gpt-4o":
-                    full_model_name = "gpt-4o"
-                    model_name = "gpt-4o"
+                    full_model_name = "gpt-4o-2024-05-13"
                 elif model_name == "gpt-4":
                     full_model_name = "gpt-4-0613"
                 elif "gpt-3.5-turbo" in model_name:
@@ -163,25 +179,27 @@ class BenchmarkLauncher(object):
         api_provider: str,
         api_key: str,
         base_url: str,
-    ):
+    ):  
+        self.api_provider = api_provider
         if api_provider == "vllm" or api_provider == "openai":
             self.chat_client = OpenAI(
                 api_key=api_key,
                 base_url=base_url,
             )
-            self.api_provider = api_provider
         elif api_provider == "together":
             self.chat_client = Together(
                 api_key=api_key,
                 base_url=base_url,
             )
-            self.api_provider = api_provider
         elif api_provider == "anthropic":
             self.chat_client = Anthropic(
                 api_key=api_key,
                 base_url=base_url,
             )
-            self.api_provider = api_provider
+        elif api_provider == "google":
+            self.chat_client = google.generativeai.GenerativeModel(
+                model_name=model_name
+            )
         else:
             raise ValueError(f"Unknown API provider: {api_provider}")
 
@@ -203,6 +221,7 @@ class BenchmarkLauncher(object):
             top_p = 1.0
         else:
             top_p = 0.95
+        
         while num_retries <= 20:
             try:
                 if (
@@ -221,6 +240,7 @@ class BenchmarkLauncher(object):
                         top_p=top_p,
                         n=num_cases,
                     )
+                    time.sleep(5)
                     return [choice.message.content for choice in completion.choices]
                 elif api_provider == "anthropic":
                     completion = Anthropic().messages.create(
@@ -232,8 +252,35 @@ class BenchmarkLauncher(object):
                         max_tokens=max_tokens,
                         temperature=temperature,
                     )
-                    time.sleep(2)
+                    time.sleep(10)
                     return [textblock.text for textblock in completion.content]
+                elif api_provider == "google":      
+                    chat = self.chat_client.start_chat(
+                        # history=[
+                        #     google.generativeai.types.ChatMessage(
+                        #         role=google.generativeai.types.Role.SYSTEM,
+                        #         content=system_prompt,
+                        #     ),
+                        #     google.generativeai.types.ChatMessage(
+                        #         role=google.generativeai.types.Role.USER,
+                        #         content=user_prompt,
+                        #     ),
+                        # ],
+                        history=[
+                            {"role": "user", "parts": system_prompt},
+                            {"role": "model", "parts": "Understood."},
+                        ]
+                    )
+                    
+                    completion = chat.send_message(
+                        user_prompt,
+                        generation_config=google.generativeai.types.GenerationConfig(
+                            candidate_count=1,
+                            max_output_tokens=max_tokens,
+                            temperature=temperature,
+                        ),
+                    )
+                    return [completion.text]
 
             # Raise exceptions for any errors specified
             except Exception as e:
@@ -334,10 +381,11 @@ class NL2SVALauncher(BenchmarkLauncher):
         task: str = "nl2sva_human",
         model_name_list: list[str] = ["gpt-4"],
         num_icl_examples: int = 3,
+        use_cot: bool = False,
         debug: bool = False,
     ):
         super().__init__(
-            save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
+            save_dir, dataset_path, task, model_name_list, num_icl_examples, use_cot, debug
         )
 
     def package_testbench(self, row: InputData, lm_response: str):
@@ -418,10 +466,11 @@ class NL2SVAHumanLauncher(NL2SVALauncher):
         task: str = "nl2sva_human",
         model_name_list: list[str] = ["gpt-4"],
         num_icl_examples: int = 3,
+        use_cot: bool = False,
         debug: bool = False,
     ):
         super().__init__(
-            save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
+            save_dir, dataset_path, task, model_name_list, num_icl_examples, use_cot, debug
         )
 
     def generate_system_prompt(self):
@@ -430,10 +479,12 @@ class NL2SVAHumanLauncher(NL2SVALauncher):
     def generate_question_prompt(self, row: InputData):
         question_prompt = prompts_nl2sva_human.SVAGEN_QUESTION_PREAMBLE
         question_prompt += row.prompt + "\n"
-        return question_prompt + prompts_nl2sva_human.SVAGEN_QUESTION_POSTAMBLE
+        return question_prompt + (prompts_nl2sva_human.SVAGEN_QUESTION_POSTAMBLE_COT if self.use_cot else prompts_nl2sva_human.SVAGEN_QUESTION_POSTAMBLE)
 
     def generate_user_prompt_prefix(self, row: InputData):
-        if self.num_icl_examples == 0:
+        if self.use_cot:
+            user_prompt_prefix = prompts_nl2sva_human.SVAGEN_HUMAN_ICL_EXAMPLE_3_COT
+        elif self.num_icl_examples == 0:
             user_prompt_prefix = ""
         elif self.num_icl_examples == 1:
             user_prompt_prefix = prompts_nl2sva_human.SVAGEN_HUMAN_ICL_EXAMPLE_1
@@ -462,10 +513,11 @@ class NL2SVAMachineLauncher(NL2SVALauncher):
         task: str = "nl2sva_machine",
         model_name_list: list[str] = ["gpt-4"],
         num_icl_examples: int = 3,
+        use_cot: bool = False,
         debug: bool = False,
     ):
         super().__init__(
-            save_dir, dataset_path, task, model_name_list, num_icl_examples, debug
+            save_dir, dataset_path, task, model_name_list, num_icl_examples, use_cot, debug
         )
 
     def generate_system_prompt(self):
@@ -475,6 +527,8 @@ class NL2SVAMachineLauncher(NL2SVALauncher):
         question_prompt = prompts_nl2sva_machine.SVAGEN_QUESTION_PREAMBLE
         question_prompt += row.prompt + "\n"
 
+        if self.use_cot:
+            return question_prompt + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE_COT
         if self.num_icl_examples == 0:
             return (
                 question_prompt
@@ -483,7 +537,9 @@ class NL2SVAMachineLauncher(NL2SVALauncher):
         return question_prompt + prompts_nl2sva_machine.SVAGEN_QUESTION_POSTAMBLE
 
     def generate_user_prompt_prefix(self, row: InputData):
-        if self.num_icl_examples == 0:
+        if self.use_cot:
+            user_prompt_prefix = prompts_nl2sva_machine.SVAGEN_MACHINE_ICL_EXAMPLE_3_COT
+        elif self.num_icl_examples == 0:
             user_prompt_prefix = ""
         elif self.num_icl_examples == 1:
             user_prompt_prefix = prompts_nl2sva_machine.SVAGEN_MACHINE_ICL_EXAMPLE_1
@@ -512,9 +568,10 @@ class Design2SVALauncher(BenchmarkLauncher):
         dataset_path: str,
         task: str = "design2sva",
         model_name_list: list[str] = ["gpt-4"],
+        use_cot: bool = False,
         debug: bool = False,
     ):
-        super().__init__(save_dir, dataset_path, task, model_name_list, 0, debug)
+        super().__init__(save_dir, dataset_path, task, model_name_list, 0, use_cot, debug)
 
     def generate_system_prompt(self):
         return prompts_design2sva.SVAGEN_HEADER

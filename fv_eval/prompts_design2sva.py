@@ -26,26 +26,11 @@ SVAGEN_TB_PREAMBLE = """Here is a partial testbench for you to work on:\n"""
 
 
 def get_design2sva_planning_prompt(num_assertions: int = 1) -> str:
-    return f"""The following are constraints you need to satisfy in completing the task:
-Do NOT use signals from the design RTL, only use the module input signals or internal signals you have added.
-Do NOT use any 'initial' blocks. This testbench is not for running RTL simulation but for formal verification.
-Do NOT instantiate the design module inside the testbench.
-When implementing the assertion, generate a concurrent SVA assertion and do not add code to output an error message string.
-Enclose your SystemVerilog code with ```systemverilog and ```. 
+    return f"""First, consider the high-level plans for verifying the design RTL.
 
-For example:
-```systemverilog
-logic [3:0] a, b;
-assign a = c & d;
-assign b = c | d;
+Question: in words, describe one feature of the design that should be verified. Write in detail what signals in the testbench RTL you would use to verify this feature.
+If necessary, include any extra code, including wires, registers, and their assignments.
 
-assert property (@(posedge clk) disable iff (tb_reset)
-    (a && b) != 1'b1
-);
-```
-Only output the code snippet and do NOT output anything else.
-
-Question: in words, describe {num_assertions} feature(s) of the design that should be verified.
 Answer:"""
 
 

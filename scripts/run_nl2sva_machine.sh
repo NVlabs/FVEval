@@ -13,14 +13,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 NUM_ICL=$1
-MODELS=("gpt-4o" "gpt-4" "gpt-3.5-turbo" "llama-3-70b" "mixtral-8x22b" "llama-3-8b" "mixtral-8x7b" "claude-opus" "codellama-34b") 
+USE_COT=$2
+# MODELS=("gpt-4o" "gpt-4" "gpt-3.5-turbo" "llama-3-70b" "mixtral-8x22b" "llama-3-8b" "mixtral-8x7b" "claude-opus" "codellama-34b") 
+# MODELS=("llama-3-8b" "llama-3-70b")
+# MODELS=("gpt-4o" "gemini-1.5-pro" "gemini-1.5-flash" "mixtral-8x22b")
+MODELS=("vllm")
 
-for MODEL in "${MODELS[@]}"; do
-    python run_nl2sva.py --mode "machine" --num_icl ${NUM_ICL} -o "results_nl2sva_machine/${NUM_ICL}" -m "${MODEL}" &
-done
-wait
-
-for MODEL in "${MODELS[@]}"; do
-    python run_evaluation.py --task "nl2sva-machine" -i "results_nl2sva_machine/${NUM_ICL}" --nparallel 1 -m "${MODEL}" &
-done
-wait
+if [ "$USE_COT" = "true" ]; then
+    for MODEL in "${MODELS[@]}"; do
+        (
+            python run_nl2sva.py --mode "machine" --num_icl ${NUM_ICL} -o "results_nl2sva_machine/${NUM_ICL}" -m "${MODEL}" --use_cot
+            
+        )&
+    done
+    wait
+    exit 0
+else
+    for MODEL in "${MODELS[@]}"; do
+        (
+            python run_nl2sva.py --mode "machine" --num_icl ${NUM_ICL} -o "results_nl2sva_machine/${NUM_ICL}" -m "${MODEL}"            
+        )&
+    done
+    wait
+    exit 0
+fi

@@ -227,6 +227,88 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
 ```
 """
 
+
+SVAGEN_HUMAN_ICL_EXAMPLE_3_COT = """As an example, consider the following SystemVerilog module:
+
+module ShiftRegister #(
+  parameter Width = 4
+) (
+  input  logic             clk,
+  input  logic             reset_,
+  input  logic             shiftRight,
+  input  logic             writeEnable,
+  input  logic [Width-1:0] dataIn,
+  output logic [Width-1:0] dataOut
+);
+
+  logic [Width-1:0] shiftRegisters;
+  logic [Width-1:0] shiftRegisters_delay1;
+
+  logic tb_reset = (reset_ == 1'b0)
+  always_ff @(posedge clk, negedge reset_) begin
+    if (!reset_) begin
+      shiftRegisters <= '0;
+    end
+    else if (writeEnable) begin
+        shiftRegisters <= dataIn;
+    end
+    else if (shiftRight) begin
+      shiftRegisters <= {shiftRegisters[0], shiftRegisters[Width-1:1]};
+    end
+    else begin
+      shiftRegisters <= {shiftRegisters[Width-2:0], shiftRegisters[Width-1]};
+    end
+  end
+  always_ff @(posedge clk, negedge reset_) begin
+    if (!reset_) begin
+      shiftRegisters_delay1 <= '0;
+    end
+    else begin
+      shiftRegisters_delay1 <= shiftRegisters;
+    end
+  end
+  assign dataOut = shiftRegisters;
+  
+
+endmodule
+
+Question: Create a SVA assertion that checks that in the same cycle that data input is written, the output matches the input.
+
+Thought: The assertion should check that the output data matches the input data when the writeEnable signal is high.
+
+Answer:
+```systemverilog
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    (writeEnable && (dataIn != dataOut) !== 1'b1)
+);
+```
+
+
+Question: Create a SVA assertion that checks that the total count of ones in the register is invariant to shift operations.
+
+Thought: The assertion should check that unless there is a write operation, the count of ones in the register remains the same in the following cycle.
+
+Answer:
+```systemverilog
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    !writeEnable |=> ($countones(shiftRegisters_delay1) == $countones(shiftRegisters))
+);
+```
+
+Question: Create a SVA assertion that checks that the shift to right operation correctly shifts bits of the registers.
+
+Thought: The assertion should check that when the shiftRight signal is high and there is no write operation, 
+the first bit of shiftRegisters_delay1 should be equal to the last bit of shiftRegisters, and the remaining bits should be shifted right.
+
+Answer:
+```systemverilog
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    shiftRight && !writeEnable |=> (shiftRegisters_delay1[0] == shiftRegisters[Width-1]) && (shiftRegisters_delay1[Width-1:1] == shiftRegisters[Width-2:0]) 
+);
+```
+"""
+
+
 SVAGEN_TB_PREAMBLE = """Here is the testbench to perform your translation:\n"""
 
 SVAGEN_IC_EX_PREAMBLE = """\n\nMore detailed examples of correct translations from description into an SVA assertion:"""
@@ -246,3 +328,20 @@ asrt: assert property (@(posedge clk) disable iff (tb_reset)
 );
 ```
 Answer:"""
+
+SVAGEN_QUESTION_POSTAMBLE_COT = """
+First produce your thought process for what assertion to write, then provide the SVA code.
+When providing the SVA implementation, do not add code to output an error message string.
+Enclose your SVA code with ```systemverilog and ```. Only output the code snippet and do NOT output anything else.
+
+For example,
+Thought: the assertion should check that a and b are not both high at the same time.
+
+Answer:
+```systemverilog
+asrt: assert property (@(posedge clk) disable iff (tb_reset)
+    (a && b) != 1'b1
+);
+```
+Thought:"""
+
