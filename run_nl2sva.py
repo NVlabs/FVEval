@@ -65,6 +65,11 @@ if __name__ == "__main__":
         default="human",
     )
     parser.add_argument(
+        "--use_cot",
+        action="store_true",
+        help="use_cot ",
+    )
+    parser.add_argument(
         "--debug",
         action="store_true",
         help="debug ",
@@ -91,6 +96,8 @@ if __name__ == "__main__":
             save_dir = save_dir.as_posix()
         else:
             save_dir = args.save_dir
+        if args.use_cot:
+            save_dir += "_cot"
         utils.mkdir_p(save_dir)
 
         bmark_launcher = benchmark_launcher.NL2SVAHumanLauncher(
@@ -99,6 +106,7 @@ if __name__ == "__main__":
             task="nl2sva_human",
             model_name_list=args.models.split(";"),
             num_icl_examples=args.num_icl,
+            use_cot=args.use_cot,
             debug=args.debug,
         )
         bmark_launcher.run_benchmark(
@@ -117,6 +125,8 @@ if __name__ == "__main__":
             save_dir = save_dir.as_posix()
         else:
             save_dir = args.save_dir
+        if args.use_cot:
+            save_dir += "_cot"
         utils.mkdir_p(save_dir)
 
         bmark_launcher = benchmark_launcher.NL2SVAMachineLauncher(
@@ -125,10 +135,11 @@ if __name__ == "__main__":
             task="nl2sva_machine",
             model_name_list=args.models.split(";"),
             num_icl_examples=args.num_icl,
+            use_cot=args.use_cot,
             debug=args.debug,
         )
         bmark_launcher.run_benchmark(
-            temperature=temperature, max_tokens=100, num_cases=1
+            temperature=temperature, max_tokens=300, num_cases=1
         )
     else:
         print(f"Unsupported eval mode: {args.mode}")

@@ -255,17 +255,6 @@ class BenchmarkLauncher(object):
                     time.sleep(10)
                     return [textblock.text for textblock in completion.content]
                 elif api_provider == "google":      
-                    chat = self.chat_client.start_chat(
-                        # history=[
-                        #     google.generativeai.types.ChatMessage(
-                        #         role=google.generativeai.types.Role.SYSTEM,
-                        #         content=system_prompt,
-                        #     ),
-                        #     google.generativeai.types.ChatMessage(
-                        #         role=google.generativeai.types.Role.USER,
-                        #         content=user_prompt,
-                        #     ),
-                        # ],
                         history=[
                             {"role": "user", "parts": system_prompt},
                             {"role": "model", "parts": "Understood."},

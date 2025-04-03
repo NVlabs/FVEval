@@ -14,24 +14,15 @@
 # limitations under the License.
 
 n=$1
-# MODELS=("gpt-4o" "mixtral-8x22b" "mixtral-8x7b" "gpt-4-turbo" "claude-opus" )
-# MODELS=("claude-3.5" )
-MODELS=("vllm")
+MODELS=("gpt-4o" "gemini-1.5-pro" "gemini-1.5-flash" "llama-3.1-8b" "llama-3.1-70b" "mixtral-8x22b")
+
+
 for MODEL in "${MODELS[@]}"; do
     (
         # Run the first script and wait for it to finish
         python run_design2sva.py -o "results_design2sva/default_${n}" --cot_strategy "default" -m "${MODEL}" --num_assertions "${n}"
         # Run the second script after the first has completed
+         python run_evaluation.py --task "design2sva" -i "results_design2sva/default_${n}" -m "${MODEL}" --nparallel 1
     ) &
 done
 wait
-# for MODEL in "${MODELS[@]}"; do
-#     (
-#         # Run the first script and wait for it to finish
-#         python run_design2sva.py -o "results_design2sva/plan-act_${n}" --cot_strategy "plan-act" -m "${MODEL}" --num_assertions "${n}"
-#         # Run the second script after the first has completed
-#         python run_evaluation.py --task "design2sva" -i "results_design2sva/plan-act_${n}" -m "${MODEL}" --nparallel 1
-#     ) &
-# done
-# wait
-
