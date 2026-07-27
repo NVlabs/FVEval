@@ -21,7 +21,7 @@ if [ "$USE_COT" = "true" ]; then
     for MODEL in "${MODELS[@]}"; do
         (
             python run_nl2sva.py --mode "machine" --num_icl ${NUM_ICL} -o "results_nl2sva_machine/${NUM_ICL}" -m "${MODEL}" --use_cot
-            python run_evaluation.py --task "nl2sva-machine" -i "results_nl2sva_machine/${NUM_ICL}_cot" --nparallel 1 -m "${MODEL}" &
+            python run_evaluation.py --task "nl2sva-machine" -i "results_nl2sva_machine/${NUM_ICL}_cot" --nparallel 1 -m "${MODEL}"
         )&
     done
     wait
@@ -30,7 +30,7 @@ else
     for MODEL in "${MODELS[@]}"; do
         (
             python run_nl2sva.py --mode "machine" --num_icl ${NUM_ICL} -o "results_nl2sva_machine/${NUM_ICL}" -m "${MODEL}"
-	    python run_evaluation.py --task "nl2sva-machine" -i "results_nl2sva_machine/${NUM_ICL}" --nparallel 1 -m "${MODEL}" &	    
+            python run_evaluation.py --task "nl2sva-machine" -i "results_nl2sva_machine/${NUM_ICL}" --nparallel 1 -m "${MODEL}"
         )&
     done
     wait
