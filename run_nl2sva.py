@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     timestamp_str = datetime.now().strftime("%Y%m%d%H")
-    temperature = 0.0
+    temperature = args.temperature
 
     if args.debug:
         print("Executing in debug mode")
