@@ -156,7 +156,6 @@ class BenchmarkLauncher(object):
                     full_model_name = "gpt-4-0613"
                 elif "gpt-3.5-turbo" in model_name:
                     full_model_name = "gpt-3.5-turbo-0125"
-                    full_model_name = model_name
                 else:
                     raise ValueError(f"Unknown OpenAI model: {model_name}")
             else:
@@ -222,7 +221,7 @@ class BenchmarkLauncher(object):
         else:
             top_p = 0.95
         
-        while num_retries <= 20:
+        while num_retries <= max_retries:
             try:
                 if (
                     api_provider == "vllm"
@@ -243,7 +242,7 @@ class BenchmarkLauncher(object):
                     time.sleep(5)
                     return [choice.message.content for choice in completion.choices]
                 elif api_provider == "anthropic":
-                    completion = Anthropic().messages.create(
+                    completion = self.chat_client.messages.create(
                         model=model_name,
                         system=system_prompt,
                         messages=[
@@ -254,13 +253,14 @@ class BenchmarkLauncher(object):
                     )
                     time.sleep(10)
                     return [textblock.text for textblock in completion.content]
-                elif api_provider == "google":      
+                elif api_provider == "google":
+                    chat = self.chat_client.start_chat(
                         history=[
                             {"role": "user", "parts": system_prompt},
                             {"role": "model", "parts": "Understood."},
                         ]
                     )
-                    
+
                     completion = chat.send_message(
                         user_prompt,
                         generation_config=google.generativeai.types.GenerationConfig(
